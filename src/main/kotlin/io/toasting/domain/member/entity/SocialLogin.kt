@@ -1,4 +1,3 @@
-import io.toasting.domain.member.entity.Member
 import io.toasting.domain.model.BaseEntity
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType

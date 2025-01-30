@@ -1,6 +1,3 @@
-package team.toasting.entity.post
-
-import Post
 import io.toasting.domain.model.BaseEntity
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
