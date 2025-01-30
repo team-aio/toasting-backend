@@ -1,4 +1,4 @@
-package io.toasting.common
+package io.toasting.domain.model
 
 import jakarta.persistence.MappedSuperclass
 import org.springframework.data.annotation.CreatedDate
