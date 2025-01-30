@@ -1,4 +1,4 @@
-package io.toasting.api
+package io.toasting.global.api
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty

@@ -1,7 +1,7 @@
 package io.toasting.global.api.exception
 
-import io.toasting.api.ApiResponse
 import io.toasting.api.code.status.ErrorStatus
+import io.toasting.global.api.ApiResponse
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
