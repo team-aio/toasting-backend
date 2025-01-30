@@ -1,4 +1,4 @@
-package team.toasting.api
+package io.toasting.api
 
 data class PageResponse<T>(
     val content: List<T>,
@@ -6,12 +6,15 @@ data class PageResponse<T>(
     val totalPages: Int,
 ) {
     companion object {
-        fun <T> of(content: List<T>, totalElements: Long, totalPages: Int): PageResponse<T> {
-            return PageResponse(
+        fun <T> of(
+            content: List<T>,
+            totalElements: Long,
+            totalPages: Int,
+        ): PageResponse<T> =
+            PageResponse(
                 content = content,
                 totalElements = totalElements,
-                totalPages = totalPages
+                totalPages = totalPages,
             )
-        }
     }
 }

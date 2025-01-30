@@ -1,4 +1,4 @@
-package team.toasting.api.code
+package io.toasting.api.code
 
 interface BaseErrorCode {
     fun getReason(): ErrorReasonDTO
