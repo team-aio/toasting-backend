@@ -1,3 +1,5 @@
+package io.toasting.domain.message.controller.response
+
 class GetMessageCountResponse(
     val count: Int,
 ) {

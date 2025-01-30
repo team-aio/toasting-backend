@@ -1,4 +1,10 @@
+package io.toasting.domain.member.application
+
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.toasting.domain.member.entity.Member
+import io.toasting.domain.member.entity.SocialLogin
+import io.toasting.domain.member.repository.MemberRepository
+import io.toasting.domain.member.repository.SocialLoginRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

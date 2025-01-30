@@ -1,3 +1,5 @@
+package io.toasting.domain.message.entity
+
 import io.toasting.domain.model.BaseEntity
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

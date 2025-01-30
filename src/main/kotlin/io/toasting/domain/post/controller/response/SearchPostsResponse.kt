@@ -1,3 +1,5 @@
+package io.toasting.domain.post.controller.response
+
 import java.time.LocalDateTime
 
 class SearchPostsResponse(
