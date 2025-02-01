@@ -18,7 +18,12 @@ class SecurityConfig {
         val corsConfig = CorsConfiguration()
         corsConfig.apply {
             allowedHeaders = listOf("*")
-            allowedOrigins = listOf("http://localhost:3000")
+            allowedOrigins =
+                listOf(
+                    "http://localhost:3000",
+                    "https://toasting.io",
+                    "http:://toasting.io",
+                )
             exposedHeaders = listOf("*")
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
             allowCredentials = true
