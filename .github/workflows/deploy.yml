@@ -60,9 +60,9 @@ jobs:
           user: ${{ secrets.DC_USER }}
           pass: ${{ secrets.DC_PASS }}
           scp: |
-            './docker-compose.yml' => /home/aio/
+            './docker-compose.yml' => /home/toasting/
           last_ssh: |
-            cd /home/aio
+            cd /home/toasting
             export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
             docker-compose down
             docker-compose pull
