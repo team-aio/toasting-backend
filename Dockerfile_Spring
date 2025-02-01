@@ -1,9 +1,9 @@
 FROM openjdk:21-jdk-slim AS build
 WORKDIR /app
 COPY . /app
-RUN ./gradlew dependencies --no-daemon
 RUN chmod +x gradlew
-RUN ./gradlew build --no-daemon
+RUN ./gradlew build
+RUN ls build/libs/
 COPY build/libs/*.jar /app/app.jar
 CMD ["java", "-jar", "app.jar"]
 EXPOSE 8000
