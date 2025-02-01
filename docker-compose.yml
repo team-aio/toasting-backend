@@ -1,0 +1,8 @@
+version: '3.7'
+services:
+  toasting-spring:
+    image: ${DOCKER_HUB_USERNAME}/toasting-spring:latest
+    restart: always
+    container_name: toasting-spring
+    ports:
+      - "8000:8000"
