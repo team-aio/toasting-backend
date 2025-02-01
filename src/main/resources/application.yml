@@ -1,10 +1,3 @@
 spring:
-  application:
-    name: toasting
-springdoc:
-  swagger-ui:
-    path: /api-test
-    groups-order: DESC
-    tags-sorter: alpha
-server:
-  port: 8000
+  profiles:
+    active: local
