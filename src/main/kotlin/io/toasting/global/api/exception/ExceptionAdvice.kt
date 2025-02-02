@@ -5,7 +5,9 @@ import io.toasting.global.api.ApiResponse
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.WebRequest
@@ -13,8 +15,24 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @RestControllerAdvice
 class ExceptionAdvice : ResponseEntityExceptionHandler() {
+    override fun handleMethodArgumentNotValid(
+        ex: MethodArgumentNotValidException,
+        headers: HttpHeaders,
+        status: HttpStatusCode,
+        request: WebRequest,
+    ): ResponseEntity<Any>? {
+        val errorMessage =
+            ex.bindingResult
+                .fieldErrors
+                .first()
+                .defaultMessage
+                ?: throw RuntimeException("MethodArgumentNotValidException 추출 오류 발생")
+
+        return handleExceptionInternalConstraint(ex, errorMessage, HttpHeaders.EMPTY, request)
+    }
+
     @ExceptionHandler
-    fun dbValidationException(
+    fun validatedException(
         e: ConstraintViolationException,
         request: WebRequest,
     ): ResponseEntity<Any>? {

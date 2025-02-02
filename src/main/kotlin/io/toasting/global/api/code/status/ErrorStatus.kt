@@ -15,6 +15,8 @@ enum class ErrorStatus(
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON4010", "인증이 필요합니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON4030", "금지된 요청입니다."),
     VALIDATION_FAIL(HttpStatus.BAD_REQUEST, "COMMON4031", "데이터베이스 유효성 에러"),
+
+    EXAMPLE_NOT_FOUND(HttpStatus.NOT_FOUND, "EXAMPLE_NOT_FOUND,", "example 엔티티를 찾을 수 없습니다."),
     ;
 
     override fun getReason() =
