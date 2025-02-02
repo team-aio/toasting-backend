@@ -1,7 +1,7 @@
 package io.toasting.global.api.exception
 
 import io.toasting.api.code.status.ErrorStatus
-import io.toasting.global.api.ApiResponse
+import io.toasting.global.api.ErrorApiResponse
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -52,7 +52,7 @@ class ExceptionAdvice : ResponseEntityExceptionHandler() {
         request: WebRequest,
     ): ResponseEntity<Any>? {
         val errorReasonDto = ex.getErrorReason()
-        val body = ApiResponse.onFailure(errorReasonDto.code, errorReasonDto.message, null)
+        val body = ErrorApiResponse.onFailure(errorReasonDto.code, errorReasonDto.message, null)
         return toResponseEntity(
             ex,
             HttpHeaders.EMPTY,
@@ -69,7 +69,7 @@ class ExceptionAdvice : ResponseEntityExceptionHandler() {
     ): ResponseEntity<Any>? {
         ex.printStackTrace()
         val errorReason = ErrorStatus.INTERNAL_SERVER_ERROR.getReason()
-        val errorPoint = ApiResponse.onFailure(errorReason.code, errorReason.message, ex.message)
+        val errorPoint = ErrorApiResponse.onFailure(errorReason.code, errorReason.message, ex.message)
 
         return toResponseEntity(ex, HttpHeaders.EMPTY, request, HttpStatus.INTERNAL_SERVER_ERROR, errorPoint)
     }
@@ -80,8 +80,8 @@ class ExceptionAdvice : ResponseEntityExceptionHandler() {
         headers: HttpHeaders,
         request: WebRequest,
     ): ResponseEntity<Any>? {
-        val body: ApiResponse<Any> =
-            ApiResponse.onFailure(
+        val body: ErrorApiResponse<Any> =
+            ErrorApiResponse.onFailure(
                 ErrorStatus.VALIDATION_FAIL.status,
                 errorMessage,
                 null,
@@ -95,7 +95,7 @@ class ExceptionAdvice : ResponseEntityExceptionHandler() {
         headers: HttpHeaders,
         request: WebRequest,
         httpStatus: HttpStatus,
-        body: ApiResponse<*>,
+        body: ErrorApiResponse<*>,
     ): ResponseEntity<Any>? =
         super.handleExceptionInternal(
             e,

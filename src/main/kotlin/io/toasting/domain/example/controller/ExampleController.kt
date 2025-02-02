@@ -1,7 +1,6 @@
 package io.toasting.domain.example.controller
 
 import io.toasting.api.code.status.ErrorStatus
-import io.toasting.api.code.status.SuccessStatus
 import io.toasting.domain.example.controller.request.SaveExampleRequest
 import io.toasting.domain.example.controller.response.GetExampleResponse
 import io.toasting.domain.example.exception.ExampleHandler
@@ -27,7 +26,7 @@ class ExampleController(
     ): ApiResponse<Void?> {
         val example = saveExampleRequest.toEntity()
         exampleRepository.save(example)
-        return ApiResponse.onSuccess(SuccessStatus.EXAMPLE_SAVE, null)
+        return ApiResponse.onSuccess(null)
     }
 
     @GetMapping("/find/{exampleId}")
@@ -44,7 +43,6 @@ class ExampleController(
         }
 
         return ApiResponse.onSuccess(
-            SuccessStatus.EXAMPLE_OK,
             GetExampleResponse(
                 name = example.name,
                 number = example.number,
