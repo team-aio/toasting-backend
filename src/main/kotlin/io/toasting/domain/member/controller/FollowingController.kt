@@ -19,5 +19,5 @@ class FollowingController {
     @PostMapping("/{followingId}")
     fun following(
         @PathVariable followingId: Long,
-    ): ApiResponse<Void> = ApiResponse.onSuccess(null)
+    ): ApiResponse<Void?> = ApiResponse.onSuccess<Void?>()
 }

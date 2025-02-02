@@ -26,7 +26,7 @@ class ExampleController(
     ): ApiResponse<Void?> {
         val example = saveExampleRequest.toEntity()
         exampleRepository.save(example)
-        return ApiResponse.onSuccess(null)
+        return ApiResponse.onSuccess<Void?>()
     }
 
     @GetMapping("/find/{exampleId}")

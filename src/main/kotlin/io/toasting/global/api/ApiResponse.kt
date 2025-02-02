@@ -17,5 +17,7 @@ class ApiResponse<T> private constructor(
                 isSuccess = true,
                 data = data,
             )
+
+        fun <T> onSuccess() = onSuccess<Void?>(null)
     }
 }

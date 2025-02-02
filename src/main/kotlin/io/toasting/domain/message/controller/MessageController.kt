@@ -39,5 +39,5 @@ class MessageController {
     @PutMapping("/partner/{partnerId}")
     fun readAllMessage(
         @PathVariable partnerId: Long,
-    ): ApiResponse<Void> = ApiResponse.onSuccess(null)
+    ): ApiResponse<Void?> = ApiResponse.onSuccess<Void?>()
 }
