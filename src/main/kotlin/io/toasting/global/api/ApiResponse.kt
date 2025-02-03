@@ -18,6 +18,6 @@ class ApiResponse<T> private constructor(
                 data = data,
             )
 
-        fun <T> onSuccess() = onSuccess<Void?>(null)
+        fun onSuccess(): ApiResponse<Unit> = onSuccess(null)
     }
 }

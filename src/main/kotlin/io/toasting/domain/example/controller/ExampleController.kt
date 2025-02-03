@@ -23,10 +23,10 @@ class ExampleController(
     @PostMapping("/save")
     fun successTest(
         @RequestBody @Valid saveExampleRequest: SaveExampleRequest,
-    ): ApiResponse<Void?> {
+    ): ApiResponse<Unit> {
         val example = saveExampleRequest.toEntity()
         exampleRepository.save(example)
-        return ApiResponse.onSuccess<Void?>()
+        return ApiResponse.onSuccess()
     }
 
     @GetMapping("/find/{exampleId}")
