@@ -7,8 +7,8 @@ spring:
     url: jdbc:h2:mem:test
     username: sa
 
-  #  jwt:
-  #    secret: ThisIsTestDontUseThisOnProductService
+  jwt:
+    secret: ThisIsTestDontUseThisOnProductService
   jpa:
     properties:
       hibernate:
