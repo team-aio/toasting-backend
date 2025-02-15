@@ -36,6 +36,7 @@ dependencies {
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0") // Swagger
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.4") // logging
+    implementation("com.auth0:java-jwt:4.4.0") // JWT
 
     // DB
     runtimeOnly("com.h2database:h2")
