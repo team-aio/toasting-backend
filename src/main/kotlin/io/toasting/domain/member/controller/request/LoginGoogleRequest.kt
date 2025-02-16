@@ -1,6 +1,8 @@
 package io.toasting.domain.member.controller.request
 
 import io.swagger.v3.oas.annotations.media.Schema
+import io.toasting.domain.member.application.input.LoginGoogleInput
+import io.toasting.domain.member.vo.SocialType
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -19,4 +21,12 @@ data class LoginGoogleRequest(
     @Schema(description = "snsId", example = "1234567890")
     @NotNull(message = "snsId는 필수입니다.")
     val snsId: String,
-)
+) {
+    fun toInput() =
+        LoginGoogleInput(
+            email = email,
+            username = username,
+            socialType = SocialType.from(snsType),
+            externalId = snsId,
+        )
+}

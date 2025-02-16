@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.toasting.api.code.status.SuccessStatus
+import io.toasting.domain.member.application.LoginMemberService
 import io.toasting.domain.member.controller.request.LoginGoogleRequest
 import io.toasting.domain.member.controller.response.LoginGoogleResponse
 import io.toasting.global.api.ApiResponse
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/v1/member")
 @Tag(name = "Member", description = "회원 관련 API")
-class MemberController {
+class MemberController(
+    private val loginMemberService: LoginMemberService,
+) {
     private val log = KotlinLogging.logger {}
 
     @PostMapping("/login/google")
@@ -38,11 +42,16 @@ class MemberController {
     )
     fun loginGoogle(
         @Valid @RequestBody loginGoogleRequest: LoginGoogleRequest,
-    ) = ApiResponse.onSuccess(
-        data =
-            LoginGoogleResponse(
-                accessToken = loginGoogleRequest.email,
-                refreshToken = loginGoogleRequest.snsId,
-            ),
-    )
+    ): ApiResponse<LoginGoogleResponse?> {
+        val loginGoogleOutput = processGoogleLogin(loginGoogleRequest)
+
+        return loginGoogleOutput
+            ?.let { ApiResponse.onSuccess(LoginGoogleResponse.from(loginGoogleOutput)) }
+            ?: run { ApiResponse.onSuccess(SuccessStatus.MEMBER_CREATED.status, null) }
+    }
+
+    private fun processGoogleLogin(loginGoogleRequest: LoginGoogleRequest) =
+        loginGoogleRequest
+            .toInput()
+            .let { loginGoogleInput -> loginMemberService.loginGoogle(loginGoogleInput) }
 }
