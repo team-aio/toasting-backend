@@ -9,6 +9,8 @@ spring:
 
   jwt:
     secret: ThisIsTestDontUseThisOnProductService
+    access-token-expired-ms: 600000 # 10 minutes
+    refresh-token-expired-ms: 86400000 # 1 day
   jpa:
     properties:
       hibernate:

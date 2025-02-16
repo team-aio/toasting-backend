@@ -8,21 +8,36 @@ import org.springframework.stereotype.Component
 import java.util.Date
 
 @Component
-class Jwt(
+class JwtFactory(
     @Value("\${spring.jwt.secret}") private val secret: String,
+    @Value("\${spring.jwt.access-token-expired-ms}") private val accessExpiredMs: Long,
+    @Value("\${spring.jwt.refresh-token-expired-ms}") private val refreshExpiredMs: Long,
 ) {
     private val log = KotlinLogging.logger {}
 
     fun createAccessToken(
         username: String,
         role: String,
-        expiredMs: Long,
+        accessExpiredMs: Long = this.accessExpiredMs,
     ): String =
         JWT
             .create()
             .withClaim("memberId", username)
             .withClaim("role", role)
-            .withExpiresAt(Date(System.currentTimeMillis() + expiredMs))
+            .withExpiresAt(Date(System.currentTimeMillis() + accessExpiredMs))
+            .withIssuedAt(Date(System.currentTimeMillis()))
+            .sign(Algorithm.HMAC256(secret))
+
+    fun createRefreshToken(
+        username: String,
+        role: String,
+        refreshExpiredMs: Long = this.refreshExpiredMs,
+    ): String =
+        JWT
+            .create()
+            .withClaim("memberId", username)
+            .withClaim("role", role)
+            .withExpiresAt(Date(System.currentTimeMillis() + refreshExpiredMs))
             .withIssuedAt(Date(System.currentTimeMillis()))
             .sign(Algorithm.HMAC256(secret))
 

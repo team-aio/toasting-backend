@@ -6,8 +6,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface SocialLoginRepository : JpaRepository<SocialLogin, Long> {
-    fun findByExternalIdAndAccessToken(
-        externalCode: String,
-        accessToken: String,
+    fun findBySocialTypeAndExternalId(
+        socialType: String,
+        externalId: String,
     ): SocialLogin?
 }
