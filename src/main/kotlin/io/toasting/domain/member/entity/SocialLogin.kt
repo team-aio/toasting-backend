@@ -13,7 +13,6 @@ import jakarta.persistence.OneToOne
 class SocialLogin(
     val socialCode: String,
     val externalId: String,
-    val accessToken: String,
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     val member: Member,
