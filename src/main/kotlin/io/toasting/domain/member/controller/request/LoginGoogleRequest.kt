@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotNull
 
 @Schema(description = "구글 로그인 요청")
-class LoginGoogleRequest(
+data class LoginGoogleRequest(
     @Schema(description = "이메일", example = "howudong@example.com")
     @field:Email(message = "이메일 형식이 아닙니다.")
     val email: String,
