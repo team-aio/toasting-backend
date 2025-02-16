@@ -2,6 +2,8 @@ package io.toasting.domain.member.controller
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.toasting.domain.member.controller.request.LoginGoogleRequest
 import io.toasting.domain.member.controller.response.LoginGoogleResponse
@@ -23,6 +25,12 @@ class MemberController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
         responseCode = "200",
         description = "로그인 성공, 기존에 가입했던 유저",
+        content = [
+            Content(
+                schema = Schema(implementation = LoginGoogleResponse::class),
+                mediaType = "application/json",
+            ),
+        ],
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
         responseCode = "201",
@@ -30,14 +38,11 @@ class MemberController {
     )
     fun loginGoogle(
         @Valid @RequestBody loginGoogleRequest: LoginGoogleRequest,
-    ): ApiResponse<LoginGoogleResponse> {
-        log.info { "loginGoogleRequest: $loginGoogleRequest" }
-        return ApiResponse.onSuccess(
-            data =
-                LoginGoogleResponse(
-                    accessToken = loginGoogleRequest.email,
-                    refreshToken = loginGoogleRequest.snsId,
-                ),
-        )
-    }
+    ) = ApiResponse.onSuccess(
+        data =
+            LoginGoogleResponse(
+                accessToken = loginGoogleRequest.email,
+                refreshToken = loginGoogleRequest.snsId,
+            ),
+    )
 }
