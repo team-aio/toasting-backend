@@ -1,11 +1,13 @@
 package io.toasting.global.api.exception
 
 import io.toasting.api.code.status.ErrorStatus
-import io.toasting.global.api.ApiResponse
+import io.toasting.global.api.ErrorApiResponse
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.WebRequest
@@ -13,8 +15,24 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @RestControllerAdvice
 class ExceptionAdvice : ResponseEntityExceptionHandler() {
+    override fun handleMethodArgumentNotValid(
+        ex: MethodArgumentNotValidException,
+        headers: HttpHeaders,
+        status: HttpStatusCode,
+        request: WebRequest,
+    ): ResponseEntity<Any>? {
+        val errorMessage =
+            ex.bindingResult
+                .fieldErrors
+                .first()
+                .defaultMessage
+                ?: throw RuntimeException("MethodArgumentNotValidException 추출 오류 발생")
+
+        return handleExceptionInternalConstraint(ex, errorMessage, HttpHeaders.EMPTY, request)
+    }
+
     @ExceptionHandler
-    fun dbValidationException(
+    fun validatedException(
         e: ConstraintViolationException,
         request: WebRequest,
     ): ResponseEntity<Any>? {
@@ -34,7 +52,7 @@ class ExceptionAdvice : ResponseEntityExceptionHandler() {
         request: WebRequest,
     ): ResponseEntity<Any>? {
         val errorReasonDto = ex.getErrorReason()
-        val body = ApiResponse.onFailure(errorReasonDto.code, errorReasonDto.message, null)
+        val body = ErrorApiResponse.onFailure(errorReasonDto.code, errorReasonDto.message, null)
         return toResponseEntity(
             ex,
             HttpHeaders.EMPTY,
@@ -51,7 +69,7 @@ class ExceptionAdvice : ResponseEntityExceptionHandler() {
     ): ResponseEntity<Any>? {
         ex.printStackTrace()
         val errorReason = ErrorStatus.INTERNAL_SERVER_ERROR.getReason()
-        val errorPoint = ApiResponse.onFailure(errorReason.code, errorReason.message, ex.message)
+        val errorPoint = ErrorApiResponse.onFailure(errorReason.code, errorReason.message, ex.message)
 
         return toResponseEntity(ex, HttpHeaders.EMPTY, request, HttpStatus.INTERNAL_SERVER_ERROR, errorPoint)
     }
@@ -62,8 +80,8 @@ class ExceptionAdvice : ResponseEntityExceptionHandler() {
         headers: HttpHeaders,
         request: WebRequest,
     ): ResponseEntity<Any>? {
-        val body: ApiResponse<Any> =
-            ApiResponse.onFailure(
+        val body: ErrorApiResponse<Any> =
+            ErrorApiResponse.onFailure(
                 ErrorStatus.VALIDATION_FAIL.status,
                 errorMessage,
                 null,
@@ -77,7 +95,7 @@ class ExceptionAdvice : ResponseEntityExceptionHandler() {
         headers: HttpHeaders,
         request: WebRequest,
         httpStatus: HttpStatus,
-        body: ApiResponse<*>,
+        body: ErrorApiResponse<*>,
     ): ResponseEntity<Any>? =
         super.handleExceptionInternal(
             e,
