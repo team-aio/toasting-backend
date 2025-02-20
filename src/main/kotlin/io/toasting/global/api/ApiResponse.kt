@@ -17,12 +17,15 @@ class ApiResponse<T> private constructor(
         fun <T> onSuccess(
             status: String,
             data: T?,
-        ) = ApiResponse(
-            isSuccess = true,
-            status = status,
-            data = data,
-        )
+        ): ApiResponse<T> =
+            ApiResponse(
+                isSuccess = true,
+                status = status,
+                data = data,
+            )
 
         fun onSuccess(): ApiResponse<Unit> = onSuccess(SuccessStatus.OK.status, null)
+
+        fun <T> onSuccess(data: T): ApiResponse<T> = onSuccess(SuccessStatus.OK.status, data)
     }
 }
