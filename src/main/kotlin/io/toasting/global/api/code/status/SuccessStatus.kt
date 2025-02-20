@@ -10,6 +10,7 @@ enum class SuccessStatus(
 ) : BaseCode {
     // 가장 일반적인 응답
     OK(HttpStatus.OK, "COMMON200"),
+    MEMBER_CREATED(HttpStatus.CREATED, "MEMBER_CREATED"),
     ;
 
     override fun getReason() =

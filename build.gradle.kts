@@ -36,6 +36,7 @@ dependencies {
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0") // Swagger
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.4") // logging
+    implementation("com.auth0:java-jwt:4.4.0") // JWT
 
     // DB
     runtimeOnly("com.h2database:h2")
@@ -45,6 +46,10 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("io.kotest:kotest-runner-junit5:5.6.2") // Kotest Runner
+    testImplementation("io.kotest:kotest-assertions-core:5.6.2") // Kotest Assertions
+    testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.2") // Kotest Spring dependency available
+    testImplementation("io.kotest:kotest-property:5.6.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
