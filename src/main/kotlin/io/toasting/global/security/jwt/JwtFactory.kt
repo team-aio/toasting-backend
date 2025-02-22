@@ -22,8 +22,9 @@ class JwtFactory(
     ): String =
         JWT
             .create()
-            .withClaim("memberId", username)
-            .withClaim("role", role)
+            .withClaim(JwtConstant.CATEGORY, JwtConstant.ACCESS_TOKEN)
+            .withClaim(JwtConstant.MEMBER_ID, username)
+            .withClaim(JwtConstant.ROLE, role)
             .withExpiresAt(Date(System.currentTimeMillis() + accessExpiredMs))
             .withIssuedAt(Date(System.currentTimeMillis()))
             .sign(Algorithm.HMAC256(secret))
@@ -35,8 +36,9 @@ class JwtFactory(
     ): String =
         JWT
             .create()
-            .withClaim("memberId", username)
-            .withClaim("role", role)
+            .withClaim(JwtConstant.CATEGORY, JwtConstant.REFRESH_TOKEN)
+            .withClaim(JwtConstant.MEMBER_ID, username)
+            .withClaim(JwtConstant.ROLE, role)
             .withExpiresAt(Date(System.currentTimeMillis() + refreshExpiredMs))
             .withIssuedAt(Date(System.currentTimeMillis()))
             .sign(Algorithm.HMAC256(secret))
@@ -47,7 +49,7 @@ class JwtFactory(
                 .require(Algorithm.HMAC256(secret))
                 .build()
                 .verify(accessToken)
-                .getClaim("role")
+                .getClaim(JwtConstant.ROLE)
                 .asString()
         }.onFailure {
             log.warn { "Token verification failed: ${it.message}" }
@@ -59,7 +61,7 @@ class JwtFactory(
                 .require(Algorithm.HMAC256(secret))
                 .build()
                 .verify(accessToken)
-                .getClaim("memberId")
+                .getClaim(JwtConstant.MEMBER_ID)
                 .asString()
         }.onFailure {
             log.warn { "Token verification failed: ${it.message}" }
