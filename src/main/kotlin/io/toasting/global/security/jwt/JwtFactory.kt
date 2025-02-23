@@ -3,6 +3,7 @@ package io.toasting.global.security.jwt
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.toasting.global.constants.Auth
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.Date
@@ -22,9 +23,9 @@ class JwtFactory(
     ): String =
         JWT
             .create()
-            .withClaim(JwtConstant.CATEGORY, JwtConstant.ACCESS_TOKEN)
-            .withClaim(JwtConstant.MEMBER_ID, username)
-            .withClaim(JwtConstant.ROLE, role)
+            .withClaim(Auth.CATEGORY, Auth.ACCESS_TOKEN)
+            .withClaim(Auth.MEMBER_ID, username)
+            .withClaim(Auth.ROLE, role)
             .withExpiresAt(Date(System.currentTimeMillis() + accessExpiredMs))
             .withIssuedAt(Date(System.currentTimeMillis()))
             .sign(Algorithm.HMAC256(secret))
@@ -36,9 +37,9 @@ class JwtFactory(
     ): String =
         JWT
             .create()
-            .withClaim(JwtConstant.CATEGORY, JwtConstant.REFRESH_TOKEN)
-            .withClaim(JwtConstant.MEMBER_ID, username)
-            .withClaim(JwtConstant.ROLE, role)
+            .withClaim(Auth.CATEGORY, Auth.REFRESH_TOKEN)
+            .withClaim(Auth.MEMBER_ID, username)
+            .withClaim(Auth.ROLE, role)
             .withExpiresAt(Date(System.currentTimeMillis() + refreshExpiredMs))
             .withIssuedAt(Date(System.currentTimeMillis()))
             .sign(Algorithm.HMAC256(secret))
@@ -49,7 +50,7 @@ class JwtFactory(
                 .require(Algorithm.HMAC256(secret))
                 .build()
                 .verify(accessToken)
-                .getClaim(JwtConstant.ROLE)
+                .getClaim(Auth.ROLE)
                 .asString()
         }.onFailure {
             log.warn { "Token verification failed: ${it.message}" }
@@ -61,7 +62,7 @@ class JwtFactory(
                 .require(Algorithm.HMAC256(secret))
                 .build()
                 .verify(accessToken)
-                .getClaim(JwtConstant.MEMBER_ID)
+                .getClaim(Auth.MEMBER_ID)
                 .asString()
         }.onFailure {
             log.warn { "Token verification failed: ${it.message}" }
