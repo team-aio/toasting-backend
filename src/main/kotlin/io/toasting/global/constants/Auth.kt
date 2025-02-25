@@ -6,4 +6,5 @@ object Auth {
     const val CATEGORY = "Category"
     const val MEMBER_ID = "MemberId"
     const val ROLE = "Role"
+    const val JWT_PREFIX = "Bearer "
 }

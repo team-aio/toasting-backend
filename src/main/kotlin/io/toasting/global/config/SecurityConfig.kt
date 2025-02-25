@@ -1,11 +1,14 @@
 package io.toasting.global.config
 
+import io.toasting.global.security.jwt.JwtFactory
+import io.toasting.global.security.jwt.JwtFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -36,29 +39,35 @@ class SecurityConfig {
     }
 
     @Bean
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+    fun securityFilterChain(
+        http: HttpSecurity,
+        jwtFactory: JwtFactory,
+    ): SecurityFilterChain {
         http
             .httpBasic { it.disable() }
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigSource()) }
             .formLogin { it.disable() } // cors 설정 활성화
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-        http.authorizeHttpRequests {
-            it
-                .requestMatchers(
-                    "/",
-                    "/h2-console/**",
-                    "/favicon.ico",
-                    "/error",
-                    "/swagger-ui/**",
-                    "/swagger-resources/**",
-                    "/v3/api-docs/**",
-                    "/api-test/**",
-                    "/v1/**",
-                ).permitAll()
-                .anyRequest()
-                .authenticated()
-        }
+
+        http
+            .authorizeHttpRequests {
+                it
+                    .requestMatchers(
+                        "/",
+                        "/h2-console/**",
+                        "/favicon.ico",
+                        "/error",
+                        "/swagger-ui/**",
+                        "/swagger-resources/**",
+                        "/v3/api-docs/**",
+                        "/api-test/**",
+                        "/v1/member/login/google",
+                    ).permitAll()
+                    .anyRequest()
+                    .authenticated()
+            }.addFilterBefore(JwtFilter(jwtFactory), UsernamePasswordAuthenticationFilter::class.java)
+
         return http.build()
     }
 }

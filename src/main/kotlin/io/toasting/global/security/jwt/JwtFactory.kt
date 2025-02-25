@@ -3,6 +3,8 @@ package io.toasting.global.security.jwt
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.toasting.api.code.status.ErrorStatus
+import io.toasting.global.api.exception.handler.AuthExceptionHandler
 import io.toasting.global.constants.Auth
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -53,7 +55,7 @@ class JwtFactory(
                 .getClaim(Auth.ROLE)
                 .asString()
         }.onFailure {
-            log.warn { "Token verification failed: ${it.message}" }
+            log.error { "Token verification failed: ${it.message}" }
         }.getOrNull()
 
     fun memberId(accessToken: String): String? =
@@ -65,10 +67,34 @@ class JwtFactory(
                 .getClaim(Auth.MEMBER_ID)
                 .asString()
         }.onFailure {
-            log.warn { "Token verification failed: ${it.message}" }
+            log.error { "Token verification failed: ${it.message}" }
         }.getOrNull()
 
-    fun isExpired(accessToken: String): Boolean =
+    fun validateAccessToken(token: String): Result<Unit> {
+        if (isExpired(token)) {
+            log.info { "token is Expired, token = $token" }
+            return Result.failure(AuthExceptionHandler.TokenExpiredException(ErrorStatus.ACCESS_TOKEN_EXPIRED))
+        }
+        if (category(token) != Auth.ACCESS_TOKEN) {
+            log.error { "token is not accessToken, accessToken = $token" }
+            return Result.failure(AuthExceptionHandler.TokenNotFoundException(ErrorStatus.ACCESS_TOKEN_NOT_FOUND))
+        }
+        return Result.success(Unit)
+    }
+
+    private fun category(token: String): String? =
+        runCatching {
+            JWT
+                .require(Algorithm.HMAC256(secret))
+                .build()
+                .verify(token)
+                .getClaim(Auth.CATEGORY)
+                .asString()
+        }.onFailure {
+            log.error { "Token verification failed: ${it.message}" }
+        }.getOrNull()
+
+    private fun isExpired(accessToken: String): Boolean =
         runCatching {
             JWT
                 .require(Algorithm.HMAC256(secret))
