@@ -7,6 +7,7 @@ import io.toasting.api.code.status.SuccessStatus
 import io.toasting.domain.member.application.LoginMemberService
 import io.toasting.domain.member.controller.request.LoginGoogleRequest
 import io.toasting.global.api.ApiResponse
+import io.toasting.global.constants.Auth
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
@@ -42,8 +43,8 @@ class MemberController(
         val loginGoogleOutput = processGoogleLogin(loginGoogleRequest)
 
         if (loginGoogleOutput != null) {
-            response.setHeader("Authorization", loginGoogleOutput.accessToken)
-            response.addCookie(createCookie("RefreshToken", loginGoogleOutput.refreshToken))
+            response.setHeader(Auth.ACCESS_TOKEN, loginGoogleOutput.accessToken)
+            response.addCookie(createCookie(Auth.REFRESH_TOKEN, loginGoogleOutput.refreshToken))
             return ApiResponse.onSuccess()
         }
         return ApiResponse.onSuccess(SuccessStatus.MEMBER_CREATED.status, null)
