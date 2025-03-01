@@ -19,7 +19,7 @@ class SocialLoginCreator {
             SocialLogin(
                 socialType = SocialType.GOOGLE,
                 externalId = externalId,
-                member = MemberCreator.defaultMember("test", "test@test.com"),
+                member = Member.defaultMember("test", "test@test.com"),
             )
         }
     }

@@ -4,9 +4,9 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.toasting.creator.MemberCreator
 import io.toasting.creator.SocialLoginCreator
 import io.toasting.domain.member.application.input.LoginGoogleInput
+import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.SocialLogin
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.member.repository.SocialLoginRepository
@@ -31,7 +31,7 @@ class LoginMemberServiceTest private constructor() : BehaviorSpec() {
     init {
 
         Given("소셜 멤버가 주어졌을 때,") {
-            val member = MemberCreator.defaultMember("test", "test@naver.com")
+            val member = Member.defaultMember("test", "test@naver.com")
             val newSocialMember =
                 SocialLoginCreator.defaultGoogleLogin(
                     externalId = "test1234",
