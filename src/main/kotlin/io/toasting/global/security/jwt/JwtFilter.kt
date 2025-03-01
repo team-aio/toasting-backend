@@ -66,9 +66,21 @@ class JwtFilter(
         request: HttpServletRequest,
         response: HttpServletResponse,
     ) {
-        val memberId = jwtFactory.memberId(accessToken)
-        val role = jwtFactory.role(accessToken)
-        val memberDetails = MemberDetails(role!!, memberId!!.toLong())
+        val memberId =
+            jwtFactory.memberId(accessToken)
+                ?: run {
+                    log.error { "Member id is null" }
+                    return
+                }
+
+        val role =
+            jwtFactory.role(accessToken)
+                ?: run {
+                    log.error { "Role is null" }
+                    return
+                }
+
+        val memberDetails = MemberDetails(role, memberId.toLong())
         val authToken = UsernamePasswordAuthenticationToken(memberDetails, null, memberDetails.authorities)
         SecurityContextHolder.getContext().authentication = authToken
 
