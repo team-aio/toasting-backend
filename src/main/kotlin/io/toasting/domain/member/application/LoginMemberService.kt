@@ -44,7 +44,7 @@ class LoginMemberService(
             socialType = loginGoogleInput.socialType,
             externalId = loginGoogleInput.externalId,
             member =
-                Member(
+                Member.defaultMember(
                     email = loginGoogleInput.email,
                     nickname = loginGoogleInput.username,
                 ),
