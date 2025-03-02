@@ -21,12 +21,16 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/v1/messages")
 class MessageController {
     @GetMapping("/count")
-    fun getMessageCount(): ApiResponse<GetMessageCountResponse> = ApiResponse.onSuccess(GetMessageCountResponse.mock())
+    fun getMessageCount(): ApiResponse<GetMessageCountResponse> {
+        return ApiResponse.onSuccess(GetMessageCountResponse.mock())
+    }
 
     @PostMapping
     fun sendMessage(
         @RequestBody @Valid request: SendMessageRequest,
-    ): ApiResponse<SendMessageResponse> = ApiResponse.onSuccess(SendMessageResponse.mock())
+    ): ApiResponse<SendMessageResponse> {
+        return ApiResponse.onSuccess(SendMessageResponse.mock())
+    }
 
     @GetMapping
     fun getMessages(
@@ -39,5 +43,7 @@ class MessageController {
     @PutMapping("/partner/{partnerId}")
     fun readAllMessage(
         @PathVariable partnerId: Long,
-    ): ApiResponse<Unit> = ApiResponse.onSuccess()
+    ): ApiResponse<Unit> {
+        return ApiResponse.onSuccess()
+    }
 }
