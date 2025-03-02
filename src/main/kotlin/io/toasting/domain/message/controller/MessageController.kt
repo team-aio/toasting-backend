@@ -38,9 +38,14 @@ class MessageController (
 
     @PostMapping
     fun sendMessage(
+        @AuthenticationPrincipal memberDetails: MemberDetails,
         @RequestBody @Valid request: SendMessageRequest,
     ): ApiResponse<SendMessageResponse> {
-        return ApiResponse.onSuccess(SendMessageResponse.mock())
+        return ApiResponse.onSuccess(
+            SendMessageResponse.fromOutput(
+                messageService.sendMessage(memberDetails, request.toInput())
+            )
+        )
     }
 
     @GetMapping
