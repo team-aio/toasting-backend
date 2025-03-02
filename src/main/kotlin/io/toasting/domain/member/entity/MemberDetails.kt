@@ -16,7 +16,7 @@ class MemberDetails(
     companion object {
         fun from(member: Member): MemberDetails =
             MemberDetails(
-                role = "ROLE_USER",
+                role = member.role.name,
                 memberId = member.id ?: throw IllegalArgumentException("Member id must not be null."),
             )
     }

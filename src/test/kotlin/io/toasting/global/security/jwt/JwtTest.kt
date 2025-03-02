@@ -2,6 +2,7 @@ package io.toasting.global.security.jwt
 
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
+import io.toasting.domain.member.vo.RoleType
 
 class JwtTest :
     BehaviorSpec({
@@ -13,7 +14,7 @@ class JwtTest :
             )
         Given("JWT 생성 테스트에서") {
             val username = "howudong"
-            val role = "ROLE_USER"
+            val role = RoleType.ROLE_USER.name
             When("JWT를 생성했을 때") {
                 val token = jwtFactory.createAccessToken(username, role, 60 * 60 * 2)
                 Then("담긴 값들이 모두 추출되어야한다.") {

@@ -44,7 +44,7 @@ class LoginMemberService(
             socialType = loginGoogleInput.socialType,
             externalId = loginGoogleInput.externalId,
             member =
-                Member(
+                Member.defaultMember(
                     email = loginGoogleInput.email,
                     nickname = loginGoogleInput.username,
                 ),
@@ -57,17 +57,20 @@ class LoginMemberService(
         )
 
     private fun createTokens(existMember: SocialLogin): Pair<String, String> {
+        val member = existMember.member
+
         val accessToken =
             jwtFactory.createAccessToken(
-                username = existMember.member.id.toString(),
-                role = "ROLE_USER",
+                username = member.id.toString(),
+                role = member.role.name,
             )
 
         val refreshToken =
             jwtFactory.createRefreshToken(
-                username = existMember.member.id.toString(),
-                role = "ROLE_USER",
+                username = member.id.toString(),
+                role = member.role.name,
             )
+
         return Pair(accessToken, refreshToken)
     }
 }
