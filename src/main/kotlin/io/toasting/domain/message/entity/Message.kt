@@ -14,4 +14,5 @@ class Message(
     val content: String,
     val senderId: Long,
     val receiverId: Long,
+    val isRead: Boolean
 ) : BaseEntity()
