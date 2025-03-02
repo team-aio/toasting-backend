@@ -80,6 +80,23 @@ class MessageServiceTest private constructor() : BehaviorSpec() {
                 }
             }
         }
+
+        Given("id가 2인 상대방이 메세지를 10개 보내고,") {
+            val memberDetails = MemberDetails(RoleType.ROLE_USER.name, 1)
+            val partnerId: Long = 2
+            val messageList: MutableList<Message> = mutableListOf()
+            for (i in 0 until 10) {
+                messageList.add(MessageCreator.defaultMessage("test", partnerId, memberDetails.username.toLong(), false))
+            }
+            When("채팅방에 들어가서 메세지를 모두 읽으면,") {
+                messageService.readAllMessage(memberDetails, partnerId)
+                Then("메세지륾 모두 읽음 처리 한다.") {
+                    val messageList = messageRepository.findBySenderIdAndReceiverIdAndIsRead(partnerId, memberDetails.username.toLong(), false)
+
+                    messageList.size shouldBe 0
+                }
+            }
+        }
     }
 
 }
