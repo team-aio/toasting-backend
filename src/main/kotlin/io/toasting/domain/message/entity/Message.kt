@@ -16,4 +16,8 @@ class Message(
     val receiverId: Long,
     var isRead: Boolean,
     val postId: Long? = null,
-) : BaseEntity()
+) : BaseEntity() {
+    fun read() {
+        isRead = true
+    }
+}

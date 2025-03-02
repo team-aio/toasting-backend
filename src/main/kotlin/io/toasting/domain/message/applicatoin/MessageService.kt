@@ -24,6 +24,7 @@ class MessageService(
 
     @Transactional(readOnly = false)
     fun sendMessage(memberDetails: MemberDetails, input: SendMessageInput): SendMessageOutput {
+        //TODO: 예외 처리
         val sender: Member = memberRepository.findById(memberDetails.username.toLong())
             .orElseThrow()
         val receiver: Member = memberRepository.findById(input.receiverId)
@@ -33,6 +34,17 @@ class MessageService(
         message = messageRepository.save(message)
 
         return SendMessageOutput.fromEntity(message)
+    }
+
+    @Transactional(readOnly = false)
+    fun readAllMessage(memberDetails: MemberDetails, partnerId: Long) {
+        val unreadMessageList: List<Message> = messageRepository.findBySenderIdAndReceiverIdAndIsRead(partnerId, memberDetails.username.toLong(), false)
+
+        for (unreadMessage in unreadMessageList) {
+            unreadMessage.read()
+        }
+
+        messageRepository.saveAll(unreadMessageList)
     }
 
 }

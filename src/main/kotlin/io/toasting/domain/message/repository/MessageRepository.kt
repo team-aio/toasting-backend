@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface MessageRepository : JpaRepository<Message, Long> {
     fun countByReceiverIdAndIsRead(receiverId: Long, isRead: Boolean): Long
+    fun findBySenderIdAndReceiverIdAndIsRead(senderId: Long, receiverId: Long, isRead: Boolean): List<Message>
 }

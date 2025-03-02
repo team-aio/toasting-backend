@@ -58,8 +58,10 @@ class MessageController (
 
     @PutMapping("/partner/{partnerId}")
     fun readAllMessage(
+        @AuthenticationPrincipal memberDetails: MemberDetails,
         @PathVariable partnerId: Long,
     ): ApiResponse<Unit> {
+        messageService.readAllMessage(memberDetails, partnerId)
         return ApiResponse.onSuccess()
     }
 }
