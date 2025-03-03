@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ChatMemberRepository : JpaRepository<ChatMember, Long> {
+    fun findByMemberId(toLong: Long): MutableList<ChatMember>
 }
