@@ -7,6 +7,7 @@ import io.toasting.domain.member.entity.SocialLogin
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.member.repository.SocialLoginRepository
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
 @Service
@@ -17,6 +18,7 @@ class SignUpMemberService(
     /*
      * 소셜 로그인으로 회원가입할 때 (추후 확장성을 고려했습니다.)
      */
+    @Transactional
     fun signUpBySocialLogin(signUpSocialLoginInput: SignUpSocialLoginInput): Long {
         validate(signUpSocialLoginInput)
         return save(signUpSocialLoginInput)
