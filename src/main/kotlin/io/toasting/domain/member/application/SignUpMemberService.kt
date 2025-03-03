@@ -15,7 +15,7 @@ class SignUpMemberService(
     private val socialLoginRepository: SocialLoginRepository,
 ) {
     /*
-     * 구글 소셜 회원 가입일
+     * 소셜 로그인으로 회원가입할 때 (추후 확장성을 고려했습니다.)
      */
     fun signUpBySocialLogin(signUpSocialLoginInput: SignUpSocialLoginInput): Long {
         validate(signUpSocialLoginInput)
