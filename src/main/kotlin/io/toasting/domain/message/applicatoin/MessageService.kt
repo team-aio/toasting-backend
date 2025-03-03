@@ -1,6 +1,5 @@
 package io.toasting.domain.message.applicatoin
 
-import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.message.applicatoin.`in`.SendMessageInput
@@ -24,9 +23,10 @@ class MessageService(
     private val messageRepository: MessageRepository,
 ) {
     fun getUnreadMessageCount(memberDetails: MemberDetails): GetMessageCountOutput {
-        val chatMemberList: MutableList<ChatMember> = chatMemberRepository.findByMemberId(memberDetails.username.toLong())
+        val memberId = memberDetails.username.toLong()
+        val chatMemberList: MutableList<ChatMember> = chatMemberRepository.findByMemberId(memberId)
         val chatRoomList: MutableList<ChatRoom> = chatMemberList.map { it.chatRoom }.toMutableList()
-        val unreadMessageCount: Long = messageRepository.countByChatRoomInAndIsRead(chatRoomList, false)
+        val unreadMessageCount = messageRepository.countByChatRoomInAndSenderIdNotAndIsRead(chatRoomList, memberId, false)
         return GetMessageCountOutput(unreadMessageCount)
     }
 

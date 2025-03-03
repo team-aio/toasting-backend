@@ -41,10 +41,7 @@ class MessageServiceTest private constructor() : BehaviorSpec() {
             memberRepository.deleteAll()
         }
 
-        Given(
-            "member1과 member2의 채팅방, member1과 member3의 채팅방," +
-                    "member2가 메세지 10개, member3이 메시지 5개 보낸 것이 주어지고,"
-        ) {
+        Given("member1과 member2의 채팅방, member1과 member3의 채팅방, member2가 메세지 10개, member3이 메시지 5개 보낸 것이 주어지고,") {
             val member1 = Member.defaultMember("member1", "member1@test.com")
             val member2 = Member.defaultMember("member2", "member2@test.com")
             val member3 = Member.defaultMember("member3", "member3@test.com")
@@ -71,6 +68,10 @@ class MessageServiceTest private constructor() : BehaviorSpec() {
             }
             for (i in 0 until 5) {
                 val message = MessageCreator.unreadMessage("3->1", member3.id!!, chatRoom2)
+                messageList.add(message)
+            }
+            for (i in 0 until 5) {
+                val message = MessageCreator.unreadMessage("1->2", member1.id!!, chatRoom1)
                 messageList.add(message)
             }
             messageRepository.saveAll(messageList)
