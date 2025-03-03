@@ -3,9 +3,9 @@ package io.toasting.creator.member
 import io.toasting.domain.member.application.input.SignUpSocialLoginInput
 import io.toasting.domain.member.vo.SocialType
 
-class SignUpGoogleInputCreator {
+class SignUpSocialLoginInputCreator {
     companion object {
-        fun default(
+        fun googleDefault(
             email: String,
             username: String,
             nickname: String,
