@@ -37,7 +37,7 @@ class SignUpMemberServiceTest : BehaviorSpec() {
                 }
             }
             When("닉네임이 중복된 회원가입을 하려고 하면") {
-                Then("회원가입이 실패하고, MemberNameDuplicationException이 발생해야 한다") {
+                Then("MemberNameDuplicationException 이 발생해야 한다") {
                     shouldThrow<MemberExceptionHandler.MemberNameDuplicationException> {
                         signUpMemberService.signUpBySocialLogin(googleMember2)
                     }
