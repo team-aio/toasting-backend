@@ -7,4 +7,10 @@ sealed class MemberExceptionHandler {
     class MemberNameDuplicationException(
         errorCode: BaseErrorCode,
     ) : GeneralException(errorCode)
+
+    class SocialMemberDuplicationException(
+        errorCode: BaseErrorCode,
+    ) : GeneralException(
+            errorCode,
+        )
 }
