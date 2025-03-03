@@ -8,6 +8,7 @@ import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.message.applicatoin.MessageService
+import io.toasting.domain.message.applicatoin.`in`.SendMessageInput
 import io.toasting.domain.message.entity.ChatMember
 import io.toasting.domain.message.entity.ChatRoom
 import io.toasting.domain.message.entity.Message
@@ -40,8 +41,10 @@ class MessageServiceTest private constructor() : BehaviorSpec() {
             memberRepository.deleteAll()
         }
 
-        Given("member1과 member2의 채팅방, member1과 member3의 채팅방," +
-                    "member2가 메세지 10개, member3이 메시지 5개 보낸 것이 주어지고,") {
+        Given(
+            "member1과 member2의 채팅방, member1과 member3의 채팅방," +
+                    "member2가 메세지 10개, member3이 메시지 5개 보낸 것이 주어지고,"
+        ) {
             val member1 = Member.defaultMember("member1", "member1@test.com")
             val member2 = Member.defaultMember("member2", "member2@test.com")
             val member3 = Member.defaultMember("member3", "member3@test.com")
@@ -78,6 +81,36 @@ class MessageServiceTest private constructor() : BehaviorSpec() {
 
                 Then("15가 반환되어야 한다.") {
                     result.count shouldBe 15
+                }
+            }
+        }
+
+        Given("member1과 member2의 채팅방이 주어지고,") {
+            val member1 = Member.defaultMember("member1", "member1@test.com")
+            val member2 = Member.defaultMember("member2", "member2@test.com")
+            memberRepository.saveAll(mutableListOf(member1, member2))
+
+            val chatRoom = ChatRoom()
+            chatRoomRepository.save(chatRoom)
+
+            val chatMember1 = ChatMember(null, chatRoom, member1.id!!)
+            val chatMember2 = ChatMember(null, chatRoom, member2.id!!)
+            chatMemberRepository.saveAll(mutableListOf(chatMember1, chatMember2))
+
+            When("member2가 member1에게 메세지를 보냈을 때,") {
+                val memberDetails = MemberDetails.from(member2)
+                val input = SendMessageInput("2->1")
+                val result = messageService.sendMessage(memberDetails, chatRoom.id!!, input)
+
+                Then("메세지가 저장되고, 메시지의 정보가 반환된다.") {
+                    val messageList = messageRepository.findAll()
+                    val message = messageList.first()
+
+                    messageList.size shouldBe 1
+                    message.id shouldBe result.id
+                    message.chatRoom.id shouldBe result.chatRoomId
+                    message.senderId shouldBe result.senderId
+                    message.content shouldBe input.content
                 }
             }
         }
