@@ -65,7 +65,7 @@ class MemberController(
         @RequestParam("snsType") snsType: String,
         @Valid @RequestBody signUpSocialLoginRequest: SignUpSocialLoginRequest,
     ): ApiResponse<Unit> {
-        validate(signUpSocialLoginRequest)
+        validate(snsType, signUpSocialLoginRequest)
         signUpMemberService.signUpBySocialLogin(signUpSocialLoginRequest.toInput())
         return ApiResponse.onSuccess()
     }
@@ -85,7 +85,11 @@ class MemberController(
             .toInput()
             .let { loginGoogleInput -> loginMemberService.loginGoogle(loginGoogleInput) }
 
-    private fun validate(signUpSocialLoginRequest: SignUpSocialLoginRequest) {
+    private fun validate(
+        snsType: String,
+        signUpSocialLoginRequest: SignUpSocialLoginRequest,
+    ) {
+        SocialType.from(snsType)
         SocialType.from(signUpSocialLoginRequest.snsType)
     }
 }
