@@ -11,6 +11,7 @@ class Message(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
     val chatRoom: ChatRoom,
+    val senderId: Long,
     val content: String,
     var isRead: Boolean,
 ) : BaseEntity() {

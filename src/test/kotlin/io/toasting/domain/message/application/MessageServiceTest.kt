@@ -59,15 +59,15 @@ class MessageServiceTest private constructor() : BehaviorSpec() {
 
             val messageList: MutableList<Message> = mutableListOf()
             for (i in 0 until 10) {
-                val message = MessageCreator.readMessage("read message", chatRoom1)
+                val message = MessageCreator.readMessage("read message", member2.id!!, chatRoom1)
                 messageList.add(message)
             }
             for (i in 0 until 10) {
-                val message = MessageCreator.unreadMessage("2->1", chatRoom1)
+                val message = MessageCreator.unreadMessage("2->1", member2.id!!, chatRoom1)
                 messageList.add(message)
             }
             for (i in 0 until 5) {
-                val message = MessageCreator.unreadMessage("3->1", chatRoom2)
+                val message = MessageCreator.unreadMessage("3->1", member3.id!!, chatRoom2)
                 messageList.add(message)
             }
             messageRepository.saveAll(messageList)
