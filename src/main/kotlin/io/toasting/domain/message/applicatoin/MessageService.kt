@@ -31,14 +31,16 @@ class MessageService(
     }
 
     @Transactional(readOnly = false)
-    fun sendMessage(memberDetails: MemberDetails, input: SendMessageInput): SendMessageOutput {
-        //TODO: 예외 처리
-        val sender: Member = memberRepository.findById(memberDetails.username.toLong())
+    fun sendMessage(memberDetails: MemberDetails, chatRoomId: Long, input: SendMessageInput): SendMessageOutput {
+        val memberId = memberDetails.username.toLong()
+        val member = memberRepository.findById(memberId) //TODO: NOT_FOUND_MEMBER 예외 처리
             .orElseThrow()
-        val receiver: Member = memberRepository.findById(input.receiverId)
+        val chatRoom = chatRoomRepository.findById(chatRoomId) //TODO: NOT_FOUND_CHAT_ROOM 예외 처리
+            .orElseThrow()
+        val chatMember = chatMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId) //TODO : NOT_BELONGS_TO_CHAT_ROOM 예외 처리
             .orElseThrow()
 
-        var message: Message = input.toEntity(sender)
+        var message: Message = input.toEntity(memberId, chatRoom)
         message = messageRepository.save(message)
 
         return SendMessageOutput.fromEntity(message)

@@ -5,26 +5,17 @@ import java.time.LocalDateTime
 
 class SendMessageResponse(
     val id: Long,
-    val postId: Long?,
-    val receiverId: Long,
+    val chatRoomId: Long,
+    val senderId: Long,
     val content: String,
     val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun mock() =
-            SendMessageResponse(
-                id = 1L,
-                postId = 2L,
-                receiverId = 3L,
-                content = "Hello World",
-                createdAt = LocalDateTime.now(),
-            )
-
         fun fromOutput(output: SendMessageOutput): SendMessageResponse {
             return SendMessageResponse(
                 id = output.id,
-                postId = output.postId,
-                receiverId = output.receiverId,
+                chatRoomId = output.chatRoomId,
+                senderId = output.senderId,
                 content = output.content,
                 createdAt = output.createdAt,
             )

@@ -5,8 +5,8 @@ import java.time.LocalDateTime
 
 class SendMessageOutput(
     val id: Long,
-    val postId: Long?,
-    val receiverId: Long,
+    val chatRoomId: Long,
+    val senderId: Long,
     val content: String,
     val createdAt: LocalDateTime,
 ) {
@@ -14,8 +14,8 @@ class SendMessageOutput(
         fun fromEntity(message: Message): SendMessageOutput {
             return SendMessageOutput(
                 id = message.id!!,
-                postId = message.postId,
-                receiverId = message.receiverId,
+                chatRoomId = message.chatRoom.id!!,
+                senderId = message.senderId,
                 content = message.content,
                 createdAt = message.createdAt,
             )

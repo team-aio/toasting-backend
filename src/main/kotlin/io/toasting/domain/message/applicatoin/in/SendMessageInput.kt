@@ -1,20 +1,17 @@
 package io.toasting.domain.message.applicatoin.`in`
 
-import io.toasting.domain.member.entity.Member
+import io.toasting.domain.message.entity.ChatRoom
 import io.toasting.domain.message.entity.Message
 
 class SendMessageInput(
-    val receiverId: Long,
-    val postId: Long?,
     val content: String,
 ) {
-    fun toEntity(member: Member): Message {
+    fun toEntity(senderId: Long, chatRoom: ChatRoom): Message {
         return Message(
             content = content,
-            senderId = member.id!!,
-            receiverId = receiverId,
+            chatRoom = chatRoom,
+            senderId = senderId,
             isRead = false,
-            postId = postId,
         )
     }
 }

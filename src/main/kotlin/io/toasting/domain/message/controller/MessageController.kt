@@ -36,14 +36,15 @@ class MessageController (
         )
     }
 
-    @PostMapping
+    @PostMapping("/{chatRoomId}/messages")
     fun sendMessage(
         @AuthenticationPrincipal memberDetails: MemberDetails,
+        @PathVariable("chatRoomId") chatRoomId: Long,
         @RequestBody @Valid request: SendMessageRequest,
     ): ApiResponse<SendMessageResponse> {
         return ApiResponse.onSuccess(
             SendMessageResponse.fromOutput(
-                messageService.sendMessage(memberDetails, request.toInput())
+                messageService.sendMessage(memberDetails, chatRoomId, request.toInput())
             )
         )
     }
