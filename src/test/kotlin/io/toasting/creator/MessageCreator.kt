@@ -1,19 +1,26 @@
 package io.toasting.creator
 
+import io.toasting.domain.message.entity.ChatRoom
 import io.toasting.domain.message.entity.Message
 
 class MessageCreator {
     companion object {
-        fun defaultMessage(
+        fun unreadMessage(
             content: String,
-            senderId: Long,
-            receiverId: Long,
-            isRead: Boolean
+            chatRoom: ChatRoom
         ) = Message(
             content = content,
-            senderId = senderId,
-            receiverId = receiverId,
-            isRead = isRead
+            chatRoom = chatRoom,
+            isRead = false
+        )
+
+        fun readMessage(
+            content: String,
+            chatRoom: ChatRoom
+        ) = Message(
+            content = content,
+            chatRoom = chatRoom,
+            isRead = true
         )
     }
 }

@@ -3,16 +3,16 @@ package io.toasting.domain.message.application
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import io.toasting.creator.MessageCreator
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.repository.MemberRepository
-import io.toasting.domain.member.vo.RoleType
 import io.toasting.domain.message.applicatoin.MessageService
-import io.toasting.domain.message.applicatoin.`in`.SendMessageInput
-import io.toasting.domain.message.applicatoin.out.SendMessageOutput
+import io.toasting.domain.message.entity.ChatMember
+import io.toasting.domain.message.entity.ChatRoom
 import io.toasting.domain.message.entity.Message
+import io.toasting.domain.message.repository.ChatMemberRepository
+import io.toasting.domain.message.repository.ChatRoomRepository
 import io.toasting.domain.message.repository.MessageRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -29,6 +29,10 @@ class MessageServiceTest private constructor() : BehaviorSpec() {
     private lateinit var messageRepository: MessageRepository
     @Autowired
     private lateinit var messageService: MessageService
+    @Autowired
+    private lateinit var chatRoomRepository: ChatRoomRepository
+    @Autowired
+    private lateinit var chatMemberRepository: ChatMemberRepository
 
     init {
         afterTest {
@@ -36,64 +40,44 @@ class MessageServiceTest private constructor() : BehaviorSpec() {
             memberRepository.deleteAll()
         }
 
-        Given("member가 읽지 않은 메세지가 10개라면,") {
-            val memberDetails = MemberDetails(RoleType.ROLE_USER.name, 1)
+        Given("member1과 member2의 채팅방, member1과 member3의 채팅방," +
+                    "member2가 메세지 10개, member3이 메시지 5개 보낸 것이 주어지고,") {
+            val member1 = Member.defaultMember("member1", "member1@test.com")
+            val member2 = Member.defaultMember("member2", "member2@test.com")
+            val member3 = Member.defaultMember("member3", "member3@test.com")
+            memberRepository.saveAll(mutableListOf(member1, member2, member3))
+
+            val chatRoom1 = ChatRoom()
+            val chatRoom2 = ChatRoom()
+            chatRoomRepository.saveAll(mutableListOf(chatRoom1, chatRoom2))
+
+            val chatMember1With2 = ChatMember(null, chatRoom1, member1.id!!)
+            val chatMember2 = ChatMember(null, chatRoom1, member2.id!!)
+            val chatMember1With3 = ChatMember(null, chatRoom2, member1.id!!)
+            val chatMember3 = ChatMember(null, chatRoom2, member3.id!!)
+            chatMemberRepository.saveAll(mutableListOf(chatMember1With2, chatMember2, chatMember1With3, chatMember3))
+
             val messageList: MutableList<Message> = mutableListOf()
             for (i in 0 until 10) {
-                messageList.add(MessageCreator.defaultMessage("test", (i + 2).toLong(), memberDetails.username.toLong(), false))
+                val message = MessageCreator.readMessage("read message", chatRoom1)
+                messageList.add(message)
             }
-            for (i in 11 until 20) {
-                messageList.add(MessageCreator.defaultMessage("test", (i + 2).toLong(), memberDetails.username.toLong(), true))
+            for (i in 0 until 10) {
+                val message = MessageCreator.unreadMessage("2->1", chatRoom1)
+                messageList.add(message)
             }
-            messageRepository.saveAllAndFlush(messageList)
+            for (i in 0 until 5) {
+                val message = MessageCreator.unreadMessage("3->1", chatRoom2)
+                messageList.add(message)
+            }
+            messageRepository.saveAll(messageList)
 
-            When("읽지 않은 메세지 개수를 조회했을 때") {
+            When("member1이 읽지 않은 메세지 개수를 조회했을 때") {
+                val memberDetails = MemberDetails.from(member1)
                 val result = messageService.getUnreadMessageCount(memberDetails);
 
-                Then("10이 반환되어야 한다.") {
-                    result.count shouldBe 10
-                }
-            }
-        }
-
-        Given("sender와 receiver가 주어지고,") {
-            val sender = Member.defaultMember("sender", "sender@test.com")
-            val receiver = Member.defaultMember("receiver", "receiver@test.com")
-            memberRepository.saveAll(listOf(sender, receiver))
-
-            val memberDetail = MemberDetails.from(sender)
-            val input = SendMessageInput(2, 3, "test")
-
-            When("sender가 receiver에게 'test'라는 메세지를 보내면,") {
-                val result: SendMessageOutput = messageService.sendMessage(memberDetail, input)
-
-                Then("메세지가 저장되고, 응답으로 메세지 정보가 반환된다.") {
-
-                    val messageList: MutableList<Message> = messageRepository.findAll();
-                    messageList.size shouldBe 1
-
-                    result.id shouldNotBe null
-                    result.receiverId shouldBe 2
-                    result.postId shouldBe 3
-                    result.content shouldBe "test"
-                    result.createdAt shouldNotBe null
-                }
-            }
-        }
-
-        Given("id가 2인 상대방이 메세지를 10개 보내고,") {
-            val memberDetails = MemberDetails(RoleType.ROLE_USER.name, 1)
-            val partnerId: Long = 2
-            val messageList: MutableList<Message> = mutableListOf()
-            for (i in 0 until 10) {
-                messageList.add(MessageCreator.defaultMessage("test", partnerId, memberDetails.username.toLong(), false))
-            }
-            When("채팅방에 들어가서 메세지를 모두 읽으면,") {
-                messageService.readAllMessage(memberDetails, partnerId)
-                Then("메세지륾 모두 읽음 처리 한다.") {
-                    val messageList = messageRepository.findBySenderIdAndReceiverIdAndIsRead(partnerId, memberDetails.username.toLong(), false)
-
-                    messageList.size shouldBe 0
+                Then("15가 반환되어야 한다.") {
+                    result.count shouldBe 15
                 }
             }
         }
