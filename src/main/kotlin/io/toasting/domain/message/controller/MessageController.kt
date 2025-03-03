@@ -57,12 +57,12 @@ class MessageController (
         return ApiResponse.onSuccess(PageResponse.of(content, 10, 100))
     }
 
-    @PutMapping("/partner/{partnerId}")
+    @PutMapping("/{chatRoomId}/messages")
     fun readAllMessage(
         @AuthenticationPrincipal memberDetails: MemberDetails,
-        @PathVariable partnerId: Long,
+        @PathVariable("chatRoomId") chatRoomId: Long,
     ): ApiResponse<Unit> {
-        messageService.readAllMessage(memberDetails, partnerId)
+        messageService.readAllMessage(memberDetails, chatRoomId)
         return ApiResponse.onSuccess()
     }
 }

@@ -47,8 +47,10 @@ class MessageService(
     }
 
     @Transactional(readOnly = false)
-    fun readAllMessage(memberDetails: MemberDetails, partnerId: Long) {
-        val unreadMessageList: List<Message> = messageRepository.findBySenderIdAndReceiverIdAndIsRead(partnerId, memberDetails.username.toLong(), false)
+    fun readAllMessage(memberDetails: MemberDetails, chatRoomId: Long) {
+        val chatRoom = chatRoomRepository.findById(chatRoomId)
+            .orElseThrow()
+        val unreadMessageList: List<Message> = messageRepository.findByChatRoomAndSenderIdNotAndIsRead(chatRoom, memberDetails.username.toLong(), false)
 
         for (unreadMessage in unreadMessageList) {
             unreadMessage.read()
