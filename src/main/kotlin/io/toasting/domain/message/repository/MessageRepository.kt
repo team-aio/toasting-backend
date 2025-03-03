@@ -1,5 +1,6 @@
 package io.toasting.domain.message.repository
 
+import io.toasting.domain.message.entity.ChatRoom
 import io.toasting.domain.message.entity.Message
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
@@ -8,4 +9,5 @@ import org.springframework.stereotype.Repository
 interface MessageRepository : JpaRepository<Message, Long> {
     fun countByReceiverIdAndIsRead(receiverId: Long, isRead: Boolean): Long
     fun findBySenderIdAndReceiverIdAndIsRead(senderId: Long, receiverId: Long, isRead: Boolean): List<Message>
+    fun countByChatRoomInAndIsRead(chatRoomList: List<ChatRoom>, isRead: Boolean): Long
 }

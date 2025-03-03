@@ -6,7 +6,11 @@ import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.message.applicatoin.`in`.SendMessageInput
 import io.toasting.domain.message.applicatoin.out.GetMessageCountOutput
 import io.toasting.domain.message.applicatoin.out.SendMessageOutput
+import io.toasting.domain.message.entity.ChatMember
+import io.toasting.domain.message.entity.ChatRoom
 import io.toasting.domain.message.entity.Message
+import io.toasting.domain.message.repository.ChatMemberRepository
+import io.toasting.domain.message.repository.ChatRoomRepository
 import io.toasting.domain.message.repository.MessageRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -14,11 +18,15 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional(readOnly = true)
 class MessageService(
-    private val messageRepository: MessageRepository,
+    private val chatRoomRepository: ChatRoomRepository,
+    private val chatMemberRepository: ChatMemberRepository,
     private val memberRepository: MemberRepository,
+    private val messageRepository: MessageRepository,
 ) {
     fun getUnreadMessageCount(memberDetails: MemberDetails): GetMessageCountOutput {
-        val unreadMessageCount = messageRepository.countByReceiverIdAndIsRead(memberDetails.username.toLong(), false)
+        val chatMemberList: MutableList<ChatMember> = chatMemberRepository.findByMemberId(memberDetails.username.toLong())
+        val chatRoomList: MutableList<ChatRoom> = chatMemberList.map { it.chatRoom }.toMutableList()
+        val unreadMessageCount: Long = messageRepository.countByChatRoomInAndIsRead(chatRoomList, false)
         return GetMessageCountOutput(unreadMessageCount)
     }
 

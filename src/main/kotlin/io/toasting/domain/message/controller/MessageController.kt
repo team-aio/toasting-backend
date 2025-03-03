@@ -21,11 +21,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/v1/messages")
+@RequestMapping("/v1/chat-rooms")
 class MessageController (
     private val messageService : MessageService,
 ){
-    @GetMapping("/count")
+    @GetMapping("/messages/count")
     fun getUnreadMessageCount(
         @AuthenticationPrincipal memberDetails: MemberDetails,
     ): ApiResponse<GetMessageCountResponse> {
