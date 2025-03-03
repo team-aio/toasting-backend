@@ -25,15 +25,16 @@ class SignUpMemberService(
     }
 
     private fun validate(signUpSocialLoginInput: SignUpSocialLoginInput) {
-        if (memberRepository.existsByNickname(signUpSocialLoginInput.nickname)) {
-            throw MemberExceptionHandler.MemberNameDuplicationException(ErrorStatus.MEMBER_NAME_DUPLICATION)
-        }
         if (socialLoginRepository.existsBySocialTypeAndExternalId(
                 signUpSocialLoginInput.socialType,
                 signUpSocialLoginInput.externalId,
             )
         ) {
-            throw MemberExceptionHandler.SocialMemberDuplicationException(ErrorStatus.ALERADY_SIGN_UP_MEMBER)
+            throw MemberExceptionHandler.SocialMemberAlreadySignUpException(ErrorStatus.ALERADY_SIGN_UP_MEMBER)
+        }
+
+        if (memberRepository.existsByNickname(signUpSocialLoginInput.nickname)) {
+            throw MemberExceptionHandler.MemberNameDuplicationException(ErrorStatus.MEMBER_NAME_DUPLICATION)
         }
     }
 

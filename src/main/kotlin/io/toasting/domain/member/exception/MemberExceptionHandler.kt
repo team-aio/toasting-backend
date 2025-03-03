@@ -8,7 +8,7 @@ sealed class MemberExceptionHandler {
         errorCode: BaseErrorCode,
     ) : GeneralException(errorCode)
 
-    class SocialMemberDuplicationException(
+    class SocialMemberAlreadySignUpException(
         errorCode: BaseErrorCode,
     ) : GeneralException(
             errorCode,

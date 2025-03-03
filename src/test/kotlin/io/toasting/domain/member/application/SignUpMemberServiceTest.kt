@@ -28,6 +28,9 @@ class SignUpMemberServiceTest : BehaviorSpec() {
                 SignUpSocialLoginInputCreator.googleDefault("tjdvy963@naver.com", "tjdvy963", "tjdvy963", "123456")
             val googleMember2 =
                 SignUpSocialLoginInputCreator.googleDefault("howudong@naver.com", "tjdvy963", "tjdvy963", "12345612")
+            val googleMember3 =
+                SignUpSocialLoginInputCreator.googleDefault("tjdvy963@naver.com", "tjdvy963", "howudong", "123456")
+
             When("회원 가입을 시도하면") {
                 val savedMember1 = signUpMemberService.signUpBySocialLogin(googleMember1)
                 Then("회원이 저장되어야 한다") {
@@ -40,6 +43,13 @@ class SignUpMemberServiceTest : BehaviorSpec() {
                 Then("MemberNameDuplicationException 이 발생해야 한다") {
                     shouldThrow<MemberExceptionHandler.MemberNameDuplicationException> {
                         signUpMemberService.signUpBySocialLogin(googleMember2)
+                    }
+                }
+            }
+            When("이미 가입된 회원이 회원가입을 시도하면") {
+                Then("SocialMemberDuplicationException 이 발생해야 한다") {
+                    shouldThrow<MemberExceptionHandler.SocialMemberAlreadySignUpException> {
+                        signUpMemberService.signUpBySocialLogin(googleMember3)
                     }
                 }
             }
