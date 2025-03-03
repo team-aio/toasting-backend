@@ -4,7 +4,7 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.toasting.creator.SocialLoginCreator
+import io.toasting.creator.member.SocialLoginCreator
 import io.toasting.domain.member.application.input.LoginGoogleInput
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.SocialLogin

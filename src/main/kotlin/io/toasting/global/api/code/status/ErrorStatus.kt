@@ -19,6 +19,8 @@ enum class ErrorStatus(
     ACCESS_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "COMMON4012", "액세스 토큰을 찾을 수 없습니다."),
     TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "COMMON4013", "토큰 에러"),
 
+    MEMBER_NAME_DUPLICATION(HttpStatus.BAD_REQUEST, "MEMBER_NAME_DUPLICATION", "닉네임이 중복되었습니다."),
+
     EXAMPLE_NOT_FOUND(HttpStatus.NOT_FOUND, "EXAMPLE_NOT_FOUND,", "example 엔티티를 찾을 수 없습니다."),
     ;
 
