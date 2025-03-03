@@ -114,6 +114,37 @@ class MessageServiceTest private constructor() : BehaviorSpec() {
                 }
             }
         }
+
+        Given("member2와 member1의 채팅방과 member1이 읽지 않은 메세지가 10개 주어졌고,") {
+            val member1 = Member.defaultMember("member1", "member1@test.com")
+            val member2 = Member.defaultMember("member2", "member2@test.com")
+            memberRepository.saveAll(mutableListOf(member1, member2))
+
+            val chatRoom = ChatRoom()
+            chatRoomRepository.save(chatRoom)
+
+            val chatMember1 = ChatMember(null, chatRoom, member1.id!!)
+            val chatMember2 = ChatMember(null, chatRoom, member2.id!!)
+            chatMemberRepository.saveAll(mutableListOf(chatMember1, chatMember2))
+
+            val messageList: MutableList<Message> = mutableListOf()
+            for (i in 0 until 10) {
+                val message = MessageCreator.unreadMessage("unread message", member2.id!!, chatRoom)
+                messageList.add(message)
+            }
+            messageRepository.saveAll(messageList)
+
+            When("member1이 해당 채팅방의 메세지를 모두 읽을 때,") {
+                val memberDetails = MemberDetails.from(member1)
+                val chatRoomId = chatRoom.id!!
+                messageService.readAllMessage(memberDetails, chatRoomId)
+                Then("읽지 않은 메세지의 개수가 0이 된다.") {
+                    val messageList = messageRepository.findByChatRoomAndSenderIdNotAndIsRead(chatRoom, member1.id!!, false)
+
+                    messageList.size shouldBe 0
+                }
+            }
+        }
     }
 
 }
