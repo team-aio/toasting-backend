@@ -48,9 +48,10 @@ class MessageService(
 
     @Transactional(readOnly = false)
     fun readAllMessage(memberDetails: MemberDetails, chatRoomId: Long) {
-        val chatRoom = chatRoomRepository.findById(chatRoomId)
-            .orElseThrow()
-        val unreadMessageList: List<Message> = messageRepository.findByChatRoomAndSenderIdNotAndIsRead(chatRoom, memberDetails.username.toLong(), false)
+        val memberId = memberDetails.username.toLong()
+        val chatMember = chatMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId)
+            .orElseThrow() //TODO: NOT_BELONGS_TO_CHAT_ROOM 예외 처리
+        val unreadMessageList: List<Message> = messageRepository.findByChatRoomAndSenderIdNotAndIsRead(chatMember.chatRoom, memberId, false)
 
         for (unreadMessage in unreadMessageList) {
             unreadMessage.read()
