@@ -11,11 +11,9 @@ class Message(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
+    val chatRoomId: Long,
     val content: String,
-    val senderId: Long,
-    val receiverId: Long,
     var isRead: Boolean,
-    val postId: Long? = null,
 ) : BaseEntity() {
     fun read() {
         isRead = true
