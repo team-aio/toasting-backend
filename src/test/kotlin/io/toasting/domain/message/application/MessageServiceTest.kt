@@ -2,6 +2,8 @@ package io.toasting.domain.message.application
 
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
+import io.kotest.matchers.collections.shouldBeIn
+import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.toasting.creator.MessageCreator
 import io.toasting.domain.member.entity.Member
@@ -17,6 +19,8 @@ import io.toasting.domain.message.repository.ChatRoomRepository
 import io.toasting.domain.message.repository.MessageRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
@@ -36,10 +40,6 @@ class MessageServiceTest private constructor() : BehaviorSpec() {
     private lateinit var chatMemberRepository: ChatMemberRepository
 
     init {
-        afterTest {
-            messageRepository.deleteAll()
-            memberRepository.deleteAll()
-        }
 
         Given("member1과 member2의 채팅방, member1과 member3의 채팅방, member2가 메세지 10개, member3이 메시지 5개 보낸 것이 주어지고,") {
             val member1 = Member.defaultMember("member1", "member1@test.com")
@@ -143,6 +143,22 @@ class MessageServiceTest private constructor() : BehaviorSpec() {
                     val messageList = messageRepository.findByChatRoomAndSenderIdNotAndIsRead(chatRoom, member1.id!!, false)
 
                     messageList.size shouldBe 0
+                }
+            }
+
+            When("member1이 해당 채팅방의 메세지 리스트롤 4개씩 0번 페이지를 조회하면,") {
+                val memberDetails = MemberDetails.from(member1)
+                val chatRoomId = chatRoom.id!!
+                val page = PageRequest.of(0, 4, Sort.by(Sort.Direction.DESC, "id"))
+                val result = messageService.getChatRoomMessages(memberDetails, chatRoomId, page)
+
+                Then("데이터의 개수는 4, 페이지 개수는 3, 총 개수는 10이 된다.") {
+                    result.content.size shouldBe 4
+                    result.content.first().chatRoomId shouldBe chatRoomId
+                    result.content.first().senderId shouldBe member2.id
+                    result.content.get(0).id shouldBeGreaterThan result.content.get(1).id
+                    result.totalPages shouldBe 3
+                    result.totalElements shouldBe 10
                 }
             }
         }
