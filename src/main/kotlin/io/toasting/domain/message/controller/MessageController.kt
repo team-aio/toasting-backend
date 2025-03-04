@@ -1,15 +1,17 @@
 package io.toasting.domain.message.controller
 
-import GetMessagesResponse
+import GetChatRoomListResponse
 import io.toasting.api.PageResponse
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.message.applicatoin.MessageService
 import io.toasting.domain.message.controller.request.SendMessageRequest
+import io.toasting.domain.message.controller.response.GetChatRoomMessagesResponse
 import io.toasting.domain.message.controller.response.GetMessageCountResponse
 import io.toasting.domain.message.controller.response.SendMessageResponse
 import io.toasting.global.api.ApiResponse
 import jakarta.validation.Valid
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
@@ -49,12 +51,17 @@ class MessageController (
         )
     }
 
-    @GetMapping
-    fun getMessages(
-        @PageableDefault(page = 0, size = 10) pageable: Pageable,
-    ): ApiResponse<PageResponse<GetMessagesResponse>> {
-        val content = List(10) { GetMessagesResponse.mock() }
-        return ApiResponse.onSuccess(PageResponse.of(content, 10, 100))
+    @GetMapping("/{chatRoomId}/messages")
+    fun getChatRoomMessages(
+        @AuthenticationPrincipal memberDetails: MemberDetails,
+        @PathVariable("chatRoomId") chatRoomId: Long,
+        @PageableDefault(size = 10, sort = ["id"], direction = Sort.Direction.DESC) pageable: Pageable,
+    ): ApiResponse<PageResponse<GetChatRoomMessagesResponse>> {
+        val output = messageService.getChatRoomMessages(memberDetails, chatRoomId, pageable)
+        val responseList = output.content.map {GetChatRoomMessagesResponse.fromOutput(it) }
+        return ApiResponse.onSuccess(
+            PageResponse.of(responseList, output.totalElements, output.totalPages)
+        )
     }
 
     @PutMapping("/{chatRoomId}/messages")

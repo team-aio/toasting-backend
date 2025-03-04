@@ -1,8 +1,10 @@
 package io.toasting.domain.message.applicatoin
 
+import io.toasting.api.PageResponse
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.message.applicatoin.`in`.SendMessageInput
+import io.toasting.domain.message.applicatoin.out.GetChatRoomMessagesOutput
 import io.toasting.domain.message.applicatoin.out.GetMessageCountOutput
 import io.toasting.domain.message.applicatoin.out.SendMessageOutput
 import io.toasting.domain.message.entity.ChatMember
@@ -11,6 +13,7 @@ import io.toasting.domain.message.entity.Message
 import io.toasting.domain.message.repository.ChatMemberRepository
 import io.toasting.domain.message.repository.ChatRoomRepository
 import io.toasting.domain.message.repository.MessageRepository
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -58,6 +61,20 @@ class MessageService(
         }
 
         messageRepository.saveAll(unreadMessageList)
+    }
+
+    fun getChatRoomMessages(memberDetails: MemberDetails, chatRoomId: Long, pageable: Pageable): PageResponse<GetChatRoomMessagesOutput> {
+        val memberId = memberDetails.username.toLong()
+        val chatMember = chatMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId)
+            .orElseThrow() //TODO: NOT_BELONGS_TO_CHAT_ROOM 예외 처리
+
+        val chatRoom = chatRoomRepository.findById(chatRoomId)
+            .orElseThrow() //TODO: NOT_FOUND_CHAT_ROOM 예외 처리
+        val messagePage = messageRepository.findByChatRoom(chatRoom, pageable)
+
+        val outputList = messagePage.content.map { GetChatRoomMessagesOutput.fromEntity(it) }
+
+        return PageResponse.of(outputList, messagePage.totalElements, messagePage.totalPages)
     }
 
 }
