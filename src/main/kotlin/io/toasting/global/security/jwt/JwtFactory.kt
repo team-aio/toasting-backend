@@ -82,6 +82,18 @@ class JwtFactory(
         return Result.success(Unit)
     }
 
+    fun validateRefreshToken(token: String): Result<Unit> {
+        if (isExpired(token)) {
+            log.info { "token is Expired, token = $token" }
+            return Result.failure(AuthExceptionHandler.TokenExpiredException(ErrorStatus.REFRESH_TOKEN_EXPIRED))
+        }
+        if (category(token) != Auth.REFRESH_TOKEN) {
+            log.error { "token is not accessToken, accessToken = $token" }
+            return Result.failure(AuthExceptionHandler.TokenNotFoundException(ErrorStatus.REFRESH_TOKEN_NOT_FOUND))
+        }
+        return Result.success(Unit)
+    }
+
     private fun category(token: String): String? =
         runCatching {
             JWT
