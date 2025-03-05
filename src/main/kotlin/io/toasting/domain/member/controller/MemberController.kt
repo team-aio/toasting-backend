@@ -11,7 +11,8 @@ import io.toasting.domain.member.controller.request.SignUpSocialLoginRequest
 import io.toasting.domain.member.vo.SocialType
 import io.toasting.global.api.ApiResponse
 import io.toasting.global.constants.Auth
-import jakarta.servlet.http.Cookie
+import io.toasting.global.extension.CookieExtension
+import io.toasting.global.extension.createCookie
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Value
@@ -49,7 +50,13 @@ class MemberController(
 
         if (loginGoogleOutput != null) {
             response.setHeader(Auth.ACCESS_TOKEN, loginGoogleOutput.accessToken)
-            response.addCookie(createCookie(Auth.REFRESH_TOKEN, loginGoogleOutput.refreshToken))
+            response.addCookie(
+                CookieExtension.createCookie(
+                    Auth.REFRESH_TOKEN,
+                    loginGoogleOutput.refreshToken,
+                    (refreshTokenExpiredMs / 1000).toInt(),
+                ),
+            )
             return ApiResponse.onSuccess()
         }
         return ApiResponse.onSuccess(SuccessStatus.MEMBER_CREATED.status, null)
@@ -69,16 +76,6 @@ class MemberController(
         signUpMemberService.signUpBySocialLogin(signUpSocialLoginRequest.toInput())
         return ApiResponse.onSuccess()
     }
-
-    private fun createCookie(
-        key: String,
-        value: String,
-    ): Cookie =
-        Cookie(key, value).apply {
-            isHttpOnly = true
-            maxAge = (refreshTokenExpiredMs / 1000).toInt()
-            path = "/"
-        }
 
     private fun processGoogleLogin(loginGoogleRequest: LoginGoogleRequest) =
         loginGoogleRequest
