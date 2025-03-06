@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface MessageRepository : JpaRepository<Message, Long> {
     fun countByChatRoomInAndSenderIdNotAndIsRead(chatRoomList: List<ChatRoom>, senderId: Long, isRead: Boolean): Long
+    fun countByChatRoomAndSenderIdNotAndIsRead(chatRoom: ChatRoom, senderId: Long, isRead: Boolean): Long
     fun findByChatRoomAndSenderIdNotAndIsRead(chatRoom: ChatRoom, senderId: Long, isRead: Boolean): MutableList<Message>
     fun findByChatRoom(chatRoom: ChatRoom, pageable: Pageable): Page<Message>
 }

@@ -72,4 +72,20 @@ class MessageController (
         messageService.readAllMessage(memberDetails, chatRoomId)
         return ApiResponse.onSuccess()
     }
+
+    @GetMapping("/messages")
+    fun getChatRooms(
+        @AuthenticationPrincipal memberDetails: MemberDetails,
+        @PageableDefault(size = 10) pageable: Pageable,
+    ): ApiResponse<PageResponse<GetChatRoomListResponse>> {
+        val output = messageService.getChatRooms(memberDetails, pageable)
+        val response = output.content.map { GetChatRoomListResponse.from(it) }
+        return ApiResponse.onSuccess(
+            PageResponse.of(
+                response,
+                output.totalElements,
+                output.totalPages
+            )
+        )
+    }
 }

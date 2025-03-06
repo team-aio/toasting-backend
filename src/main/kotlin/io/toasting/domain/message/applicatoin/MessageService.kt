@@ -4,6 +4,7 @@ import io.toasting.api.PageResponse
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.message.applicatoin.`in`.SendMessageInput
+import io.toasting.domain.message.applicatoin.out.GetChatRoomListOutput
 import io.toasting.domain.message.applicatoin.out.GetChatRoomMessagesOutput
 import io.toasting.domain.message.applicatoin.out.GetMessageCountOutput
 import io.toasting.domain.message.applicatoin.out.SendMessageOutput
@@ -38,13 +39,16 @@ class MessageService(
         val memberId = memberDetails.username.toLong()
         val member = memberRepository.findById(memberId) //TODO: NOT_FOUND_MEMBER 예외 처리
             .orElseThrow()
-        val chatRoom = chatRoomRepository.findById(chatRoomId) //TODO: NOT_FOUND_CHAT_ROOM 예외 처리
+        var chatRoom = chatRoomRepository.findById(chatRoomId) //TODO: NOT_FOUND_CHAT_ROOM 예외 처리
             .orElseThrow()
         val chatMember = chatMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId) //TODO : NOT_BELONGS_TO_CHAT_ROOM 예외 처리
             .orElseThrow()
 
-        var message: Message = input.toEntity(memberId, chatRoom)
+        var message: Message = input.toMessageEntity(memberId, chatRoom)
         message = messageRepository.save(message)
+
+        chatRoom = input.toChatRoomEntity(memberId, chatRoom)
+        chatRoom = chatRoomRepository.save(chatRoom)
 
         return SendMessageOutput.fromEntity(message)
     }
@@ -75,6 +79,47 @@ class MessageService(
         val outputList = messagePage.content.map { GetChatRoomMessagesOutput.fromEntity(it) }
 
         return PageResponse.of(outputList, messagePage.totalElements, messagePage.totalPages)
+    }
+
+    fun getChatRooms(memberDetails: MemberDetails, pageable: Pageable): PageResponse<GetChatRoomListOutput> {
+        val memberId = memberDetails.username.toLong()
+        val chatRoomPage = chatRoomRepository.findByMemberId(memberId, pageable)
+
+        val outputList = mutableListOf<GetChatRoomListOutput>()
+        for (chatRoom in chatRoomPage.content) {
+            if (chatRoom.isActivated()) {
+                val partnerId = getPartnerId(memberId, chatRoom)
+                val partner = memberRepository.findById(partnerId)
+                    .orElseThrow()
+
+                val unreadMessageCount = messageRepository.countByChatRoomAndSenderIdNotAndIsRead(chatRoom, memberId, false)
+                val output = GetChatRoomListOutput(
+                    memberId = partnerId,
+                    profilePicture = partner.profilePicture,
+                    recentMessageContent = chatRoom.recentMessageContent!!,
+                    recentSendAt = chatRoom.recentSendAt!!,
+                    unreadMessageCount.toInt()
+                )
+                outputList.add(output)
+            }
+        }
+
+        return PageResponse.of(
+            outputList,
+            chatRoomPage.totalElements,
+            chatRoomPage.totalPages
+        )
+    }
+
+    private fun getPartnerId(memberId:Long, chatRoom: ChatRoom): Long {
+        val chatMemberList = chatMemberRepository.findByChatRoom(chatRoom)
+        for (member in chatMemberList) {
+            if (member.memberId != memberId) {
+                return member.memberId
+            }
+        }
+
+        return -1
     }
 
 }
