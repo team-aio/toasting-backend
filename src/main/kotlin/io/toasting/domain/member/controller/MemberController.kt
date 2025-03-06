@@ -68,6 +68,21 @@ class MemberController(
         return ApiResponse.onSuccess(SuccessStatus.MEMBER_CREATED.status, null)
     }
 
+    @PostMapping("/signup")
+    @Operation(summary = "소셜 로그인을 통한 회원가입", description = "소셜 로그인을 통한 회원가입을 시도합니다.")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "200",
+        description = "회원가입 성공",
+    )
+    fun signUpBySocialLogin(
+        @RequestParam("snsType") snsType: String,
+        @Valid @RequestBody signUpSocialLoginRequest: SignUpSocialLoginRequest,
+    ): ApiResponse<Unit> {
+        validate(snsType, signUpSocialLoginRequest)
+        signUpMemberService.signUpBySocialLogin(signUpSocialLoginRequest.toInput())
+        return ApiResponse.onSuccess()
+    }
+
     @PostMapping("/logout")
     @Operation(summary = "로그아웃 ", description = "로그아웃을 하여 리프레시 토큰을 삭제 및 만료시킵니디.")
     fun logout(
@@ -83,21 +98,6 @@ class MemberController(
         }
         response.addCookie(expiredRefreshToken)
         refreshTokenRepository.deleteByToken(refreshToken)
-    }
-
-    @PostMapping("/signup")
-    @Operation(summary = "소셜 로그인을 통한 회원가입", description = "소셜 로그인을 통한 회원가입을 시도합니다.")
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "200",
-        description = "회원가입 성공",
-    )
-    fun signUpBySocialLogin(
-        @RequestParam("snsType") snsType: String,
-        @Valid @RequestBody signUpSocialLoginRequest: SignUpSocialLoginRequest,
-    ): ApiResponse<Unit> {
-        validate(snsType, signUpSocialLoginRequest)
-        signUpMemberService.signUpBySocialLogin(signUpSocialLoginRequest.toInput())
-        return ApiResponse.onSuccess()
     }
 
     private fun processGoogleLogin(loginGoogleRequest: LoginGoogleRequest) =
