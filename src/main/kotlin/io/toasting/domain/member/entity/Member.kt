@@ -17,8 +17,8 @@ class Member(
     @Enumerated(EnumType.STRING)
     val role: RoleType,
     val profilePicture: String? = null,
-    val velogId: Long? = null,
-    val tistoryId: Long? = null,
+    val velogId: String? = null,
+    val tistoryId: String? = null,
     val nickname: String,
     val email: String,
 ) : BaseEntity() {
