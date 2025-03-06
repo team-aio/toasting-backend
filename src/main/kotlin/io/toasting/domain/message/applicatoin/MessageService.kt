@@ -120,7 +120,7 @@ class MessageService(
             }
         }
 
-        return -1
+        throw MessageExceptionHandler.PartnerNotFoundException(ErrorStatus.PARTNER_NOT_FOUND)
     }
 
 }

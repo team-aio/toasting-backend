@@ -15,4 +15,8 @@ sealed class MessageExceptionHandler {
     class ChatMemberNotFoundException(
         errorCode: BaseErrorCode,
     ) : GeneralException(errorCode)
+
+    class PartnerNotFoundException(
+        errorCode: BaseErrorCode,
+    ) : GeneralException(errorCode)
 }

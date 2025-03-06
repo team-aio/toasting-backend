@@ -24,7 +24,7 @@ enum class ErrorStatus(
 
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_ROOM_NOT_FOUND", "chatRoom을 찾을 수 없습니다."),
     NOT_BELONG_TO_CHAT_ROOM(HttpStatus.BAD_REQUEST, "NOT_BELONGS_TO_CHAT_ROOM", "참여 중인 채팅방이 아닙니다."),
-    CHAT_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_MEMBER_NOT_FOUND", "chatMember를 찾을 수 없습니다."),
+    PARTNER_NOT_FOUND(HttpStatus.BAD_REQUEST, "PARTNER_NOT_FOUND", "상대방을 찾을 수 없습니다."),
     ;
 
     override fun getReason() =
