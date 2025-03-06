@@ -4,15 +4,21 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.toasting.domain.member.application.input.LoginGoogleInput
 import io.toasting.domain.member.application.output.LoginGoogleOutput
 import io.toasting.domain.member.entity.Member
+import io.toasting.domain.member.entity.RefreshToken
 import io.toasting.domain.member.entity.SocialLogin
+import io.toasting.domain.member.repository.RefreshTokenRepository
 import io.toasting.domain.member.repository.SocialLoginRepository
 import io.toasting.global.security.jwt.JwtFactory
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.util.Date
 
 @Service
 class LoginMemberService(
     private val socialLoginRepository: SocialLoginRepository,
+    private val refreshTokenRepository: RefreshTokenRepository,
     private val jwtFactory: JwtFactory,
 ) {
     private val log = KotlinLogging.logger {}
@@ -33,6 +39,9 @@ class LoginMemberService(
         log.info { "exist Member: $existSocialMember" }
 
         val (accessToken, refreshToken) = createTokens(existSocialMember)
+
+        saveRefreshToken(refreshToken)
+
         return LoginGoogleOutput(
             accessToken = accessToken,
             refreshToken = refreshToken,
@@ -72,5 +81,19 @@ class LoginMemberService(
             )
 
         return Pair(accessToken, refreshToken)
+    }
+
+    private fun saveRefreshToken(token: String) {
+        val memberId = jwtFactory.memberId(token) ?: throw IllegalArgumentException("memberId is null")
+        val date = Date(System.currentTimeMillis() + jwtFactory.refreshExpiredMs())
+
+        val refreshToken =
+            RefreshToken(
+                memberId = memberId.toLong(),
+                token = token,
+                expiredAt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()),
+            )
+
+        refreshTokenRepository.save(refreshToken)
     }
 }

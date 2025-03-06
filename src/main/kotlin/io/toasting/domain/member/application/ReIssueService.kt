@@ -26,7 +26,7 @@ class ReIssueService(
         return output ?: throw IllegalStateException("Unexpected error occurred")
     }
 
-    private fun findException(exception: Throwable): Nothing {
+    private fun findException(exception: Throwable) {
         when (exception) {
             is AuthExceptionHandler.TokenNotFoundException -> {
                 throw AuthExceptionHandler.TokenNotFoundException(ErrorStatus.REFRESH_TOKEN_NOT_FOUND)

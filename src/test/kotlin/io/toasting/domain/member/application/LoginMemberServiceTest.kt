@@ -9,6 +9,7 @@ import io.toasting.domain.member.application.input.LoginGoogleInput
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.SocialLogin
 import io.toasting.domain.member.repository.MemberRepository
+import io.toasting.domain.member.repository.RefreshTokenRepository
 import io.toasting.domain.member.repository.SocialLoginRepository
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,8 +29,10 @@ class LoginMemberServiceTest private constructor() : BehaviorSpec() {
     @Autowired
     private lateinit var memberRepository: MemberRepository
 
-    init {
+    @Autowired
+    private lateinit var refreshTokenRepository: RefreshTokenRepository
 
+    init {
         Given("소셜 멤버가 주어졌을 때,") {
             val member = Member.defaultMember("test", "test@naver.com")
             val newSocialMember =
@@ -56,6 +59,9 @@ class LoginMemberServiceTest private constructor() : BehaviorSpec() {
                 val result = loginMemberService.loginGoogle(newSocialMember.toInput())
                 Then("결과는 accessToken과 refreshToken이 반환되어야 한다") {
                     result shouldNotBe null
+                }
+                Then("리프레시 토큰이 저장되어야 한다") {
+                    refreshTokenRepository.findAll().size shouldBe 1
                 }
             }
         }

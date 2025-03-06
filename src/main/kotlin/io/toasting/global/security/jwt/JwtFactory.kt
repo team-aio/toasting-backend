@@ -94,6 +94,8 @@ class JwtFactory(
         return Result.success(Unit)
     }
 
+    fun refreshExpiredMs(): Long = refreshExpiredMs
+
     private fun category(token: String): String? =
         runCatching {
             JWT
