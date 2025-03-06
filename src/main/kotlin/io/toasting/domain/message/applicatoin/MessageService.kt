@@ -40,8 +40,6 @@ class MessageService(
     @Transactional(readOnly = false)
     fun sendMessage(memberDetails: MemberDetails, chatRoomId: Long, input: SendMessageInput): SendMessageOutput {
         val memberId = memberDetails.username.toLong()
-        val member = memberRepository.findById(memberId)
-            .orElseThrow{ MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
         var chatRoom = chatRoomRepository.findById(chatRoomId)
             .orElseThrow{ MessageExceptionHandler.ChatRoomNotFoundException(ErrorStatus.CHAT_ROOM_NOT_FOUND) }
         val chatMember = chatMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId)
