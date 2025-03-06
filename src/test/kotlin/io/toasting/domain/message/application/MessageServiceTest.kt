@@ -1,10 +1,12 @@
 package io.toasting.domain.message.application
 
 import io.kotest.core.spec.style.BehaviorSpec
-import io.kotest.extensions.spring.SpringExtension
-import io.kotest.matchers.collections.shouldBeIn
+import io.kotest.extensions.spring.SpringTestExtension
+import io.kotest.extensions.spring.SpringTestLifecycleMode
+import io.kotest.matchers.date.shouldBeAfter
 import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
+import io.toasting.creator.ChatRoomCreator
 import io.toasting.creator.MessageCreator
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.MemberDetails
@@ -22,22 +24,24 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @SpringBootTest
 @Transactional
-class MessageServiceTest private constructor() : BehaviorSpec() {
-    override fun extensions() = listOf(SpringExtension)
+class MessageServiceTest : BehaviorSpec({
+}) {
+    override fun extensions() = listOf(SpringTestExtension(SpringTestLifecycleMode.Root))
 
     @Autowired
     private lateinit var memberRepository: MemberRepository
     @Autowired
     private lateinit var messageRepository: MessageRepository
     @Autowired
-    private lateinit var messageService: MessageService
-    @Autowired
     private lateinit var chatRoomRepository: ChatRoomRepository
     @Autowired
     private lateinit var chatMemberRepository: ChatMemberRepository
+    @Autowired
+    private lateinit var messageService: MessageService
 
     init {
 
@@ -103,7 +107,7 @@ class MessageServiceTest private constructor() : BehaviorSpec() {
                 val input = SendMessageInput("2->1")
                 val result = messageService.sendMessage(memberDetails, chatRoom.id!!, input)
 
-                Then("메세지가 저장되고, 메시지의 정보가 반환된다.") {
+                Then("메세지가 저장, 채팅방의 recent 값들이 바뀌고, 메시지의 정보가 반환된다.") {
                     val messageList = messageRepository.findAll()
                     val message = messageList.first()
 
@@ -112,6 +116,10 @@ class MessageServiceTest private constructor() : BehaviorSpec() {
                     message.chatRoom.id shouldBe result.chatRoomId
                     message.senderId shouldBe result.senderId
                     message.content shouldBe input.content
+
+                    val chatRoom = chatRoomRepository.findAll().first()
+                    chatRoom.recentMessageContent shouldBe input.content
+                    chatRoom.recentSenderId shouldBe member2.id
                 }
             }
         }
@@ -159,6 +167,61 @@ class MessageServiceTest private constructor() : BehaviorSpec() {
                     result.content.get(0).id shouldBeGreaterThan result.content.get(1).id
                     result.totalPages shouldBe 3
                     result.totalElements shouldBe 10
+                }
+            }
+        }
+
+        Given("member1과 member2의 채팅방, member1과 member3의 채팅방, member1과 member4의 채팅방이 주어졌고,") {
+            val member1 = Member.defaultMember("member1", "member1@test.com")
+            val member2 = Member.defaultMember("member2", "member2@test.com")
+            val member3 = Member.defaultMember("member3", "member3@test.com")
+            val member4 = Member.defaultMember("member4", "member4@test.com")
+            memberRepository.saveAll(mutableListOf(member1, member2, member3, member4))
+
+            val chatRoom1With2 = ChatRoomCreator.defaultChatRoom(member2.id!!, "chatRoom1", LocalDateTime.of(2025, 1, 1, 0,1, 10))
+            val chatRoom1With3 = ChatRoomCreator.defaultChatRoom(member3.id!!, "chatRoom2", LocalDateTime.of(2025, 1, 1, 0,1, 9))
+            val chatRoom1With4 = ChatRoomCreator.defaultChatRoom(member4.id!!, "chatRoom3", LocalDateTime.of(2025, 1, 1, 0,1, 8))
+            chatRoomRepository.saveAll(mutableListOf(chatRoom1With2, chatRoom1With3, chatRoom1With4))
+
+            val chatMember1 = ChatMember(null, chatRoom1With2, member1.id!!)
+            val chatMember2 = ChatMember(null, chatRoom1With2, member2.id!!)
+            val chatMember3 = ChatMember(null, chatRoom1With3, member1.id!!)
+            val chatMember4 = ChatMember(null, chatRoom1With3, member3.id!!)
+            val chatMember5 = ChatMember(null, chatRoom1With4, member1.id!!)
+            val chatMember6 = ChatMember(null, chatRoom1With4, member4.id!!)
+            chatMemberRepository.saveAll(mutableListOf(chatMember1, chatMember2, chatMember3, chatMember4, chatMember5, chatMember6))
+
+            val messageList: MutableList<Message> = mutableListOf()
+            for (i in 0 until 5) {
+                val message1 = MessageCreator.unreadMessage("message1", member2.id!!, chatRoom1With2)
+                val message2 = MessageCreator.unreadMessage("message2", member3.id!!, chatRoom1With3)
+                messageList.addAll(mutableListOf(message1, message2))
+            }
+            for (i in 0 until 3) {
+                val message1 = MessageCreator.unreadMessage("message1", member2.id!!, chatRoom1With2)
+                messageList.add(message1)
+            }
+            messageRepository.saveAll(messageList)
+
+            When("member1이 채팅방 리스트를 조회했을 때") {
+                val memberDetails = MemberDetails.from(member1)
+                val pageRequest = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "recentSendAt"))
+                val chatRoomPage = messageService.getChatRooms(memberDetails, pageRequest)
+
+                val firstChatRoom = chatRoomPage.content.get(0)
+                val secondChatRoom = chatRoomPage.content.get(1)
+                Then("가장 최근에 메세지가 보내진 순서대로 채팅방 리스트가 조회된다.") {
+                    firstChatRoom.recentSendAt shouldBeAfter secondChatRoom.recentSendAt
+                }
+
+                Then("chatRoom1의 recentMessageContent는 chatRoom1이고, 읽지 않은 메세지 개수는 8개다.") {
+                    firstChatRoom.recentMessageContent shouldBe "chatRoom1"
+                    firstChatRoom.unreadMessageCount shouldBe 8
+                }
+
+                Then("chatRoom2의 recentMessageContent는 chatRoom2이고, 읽지 않은 메세지 개수는 5개다.") {
+                    secondChatRoom.recentMessageContent shouldBe "chatRoom2"
+                    secondChatRoom.unreadMessageCount shouldBe 5
                 }
             }
         }
