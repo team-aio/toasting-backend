@@ -1,7 +1,9 @@
 package io.toasting.domain.message.applicatoin
 
 import io.toasting.api.PageResponse
+import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.member.entity.MemberDetails
+import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.message.applicatoin.`in`.SendMessageInput
 import io.toasting.domain.message.applicatoin.out.GetChatRoomListOutput
@@ -11,6 +13,7 @@ import io.toasting.domain.message.applicatoin.out.SendMessageOutput
 import io.toasting.domain.message.entity.ChatMember
 import io.toasting.domain.message.entity.ChatRoom
 import io.toasting.domain.message.entity.Message
+import io.toasting.domain.message.exception.MessageExceptionHandler
 import io.toasting.domain.message.repository.ChatMemberRepository
 import io.toasting.domain.message.repository.ChatRoomRepository
 import io.toasting.domain.message.repository.MessageRepository
@@ -37,12 +40,12 @@ class MessageService(
     @Transactional(readOnly = false)
     fun sendMessage(memberDetails: MemberDetails, chatRoomId: Long, input: SendMessageInput): SendMessageOutput {
         val memberId = memberDetails.username.toLong()
-        val member = memberRepository.findById(memberId) //TODO: NOT_FOUND_MEMBER 예외 처리
-            .orElseThrow()
-        var chatRoom = chatRoomRepository.findById(chatRoomId) //TODO: NOT_FOUND_CHAT_ROOM 예외 처리
-            .orElseThrow()
-        val chatMember = chatMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId) //TODO : NOT_BELONGS_TO_CHAT_ROOM 예외 처리
-            .orElseThrow()
+        val member = memberRepository.findById(memberId)
+            .orElseThrow{ MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
+        var chatRoom = chatRoomRepository.findById(chatRoomId)
+            .orElseThrow{ MessageExceptionHandler.ChatRoomNotFoundException(ErrorStatus.CHAT_ROOM_NOT_FOUND) }
+        val chatMember = chatMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId)
+            .orElseThrow{ MessageExceptionHandler.ChatMemberNotFoundException(ErrorStatus.NOT_BELONG_TO_CHAT_ROOM) }
 
         var message: Message = input.toMessageEntity(memberId, chatRoom)
         message = messageRepository.save(message)
@@ -57,7 +60,7 @@ class MessageService(
     fun readAllMessage(memberDetails: MemberDetails, chatRoomId: Long) {
         val memberId = memberDetails.username.toLong()
         val chatMember = chatMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId)
-            .orElseThrow() //TODO: NOT_BELONGS_TO_CHAT_ROOM 예외 처리
+            .orElseThrow{ MessageExceptionHandler.ChatMemberNotFoundException(ErrorStatus.NOT_BELONG_TO_CHAT_ROOM) }
         val unreadMessageList: List<Message> = messageRepository.findByChatRoomAndSenderIdNotAndIsRead(chatMember.chatRoom, memberId, false)
 
         for (unreadMessage in unreadMessageList) {
@@ -70,10 +73,10 @@ class MessageService(
     fun getChatRoomMessages(memberDetails: MemberDetails, chatRoomId: Long, pageable: Pageable): PageResponse<GetChatRoomMessagesOutput> {
         val memberId = memberDetails.username.toLong()
         val chatMember = chatMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId)
-            .orElseThrow() //TODO: NOT_BELONGS_TO_CHAT_ROOM 예외 처리
+            .orElseThrow{ MessageExceptionHandler.ChatMemberNotFoundException(ErrorStatus.NOT_BELONG_TO_CHAT_ROOM) }
 
         val chatRoom = chatRoomRepository.findById(chatRoomId)
-            .orElseThrow() //TODO: NOT_FOUND_CHAT_ROOM 예외 처리
+            .orElseThrow{ MessageExceptionHandler.ChatRoomNotFoundException(ErrorStatus.NOT_BELONG_TO_CHAT_ROOM) }
         val messagePage = messageRepository.findByChatRoom(chatRoom, pageable)
 
         val outputList = messagePage.content.map { GetChatRoomMessagesOutput.fromEntity(it) }

@@ -19,7 +19,12 @@ enum class ErrorStatus(
     ACCESS_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "COMMON4012", "액세스 토큰을 찾을 수 없습니다."),
     TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "COMMON4013", "토큰 에러"),
 
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_NOT_FOUND", "member를 찾을 수 없습니다."),
     EXAMPLE_NOT_FOUND(HttpStatus.NOT_FOUND, "EXAMPLE_NOT_FOUND,", "example 엔티티를 찾을 수 없습니다."),
+
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_ROOM_NOT_FOUND", "chatRoom을 찾을 수 없습니다."),
+    NOT_BELONG_TO_CHAT_ROOM(HttpStatus.BAD_REQUEST, "NOT_BELONGS_TO_CHAT_ROOM", "참여 중인 채팅방이 아닙니다."),
+    CHAT_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_MEMBER_NOT_FOUND", "chatMember를 찾을 수 없습니다."),
     ;
 
     override fun getReason() =
