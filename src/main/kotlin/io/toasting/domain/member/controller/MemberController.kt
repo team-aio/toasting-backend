@@ -3,16 +3,21 @@ package io.toasting.domain.member.controller
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.toasting.api.code.status.ErrorStatus
 import io.toasting.api.code.status.SuccessStatus
 import io.toasting.domain.member.application.LoginMemberService
 import io.toasting.domain.member.application.SignUpMemberService
 import io.toasting.domain.member.controller.request.LoginGoogleRequest
+import io.toasting.domain.member.repository.RefreshTokenRepository
 import io.toasting.domain.member.controller.request.SignUpSocialLoginRequest
 import io.toasting.domain.member.vo.SocialType
 import io.toasting.global.api.ApiResponse
+import io.toasting.global.api.exception.handler.AuthExceptionHandler
 import io.toasting.global.constants.Auth
 import io.toasting.global.extension.CookieExtension
 import io.toasting.global.extension.createCookie
+import io.toasting.global.extension.findRefreshTokenOrNull
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Value
@@ -29,6 +34,7 @@ class MemberController(
     @Value("\${spring.jwt.refresh-token-expired-ms}") private val refreshTokenExpiredMs: Long,
     private val loginMemberService: LoginMemberService,
     private val signUpMemberService: SignUpMemberService,
+    private val refreshTokenRepository: RefreshTokenRepository, // TODO : 의존성 방향만 맞춤, 바로 Repository를 호출하면 아면 추후 리팩토링
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -60,6 +66,23 @@ class MemberController(
             return ApiResponse.onSuccess()
         }
         return ApiResponse.onSuccess(SuccessStatus.MEMBER_CREATED.status, null)
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃 ", description = "로그아웃을 하여 리프레시 토큰을 삭제 및 만료시킵니디.")
+    fun logout(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+    ) {
+        val refreshToken = request.cookies.findRefreshTokenOrNull()
+        val expiredRefreshToken = refreshToken?.let { CookieExtension.createCookie(Auth.REFRESH_TOKEN, it, 0) }
+
+        if (refreshToken == null) {
+            log.info { "RefreshToken is not found" }
+            throw AuthExceptionHandler.TokenNotFoundException(ErrorStatus.REFRESH_TOKEN_NOT_FOUND)
+        }
+        response.addCookie(expiredRefreshToken)
+        refreshTokenRepository.deleteByToken(refreshToken)
     }
 
     @PostMapping("/signup")
