@@ -1,4 +1,4 @@
-package io.toasting.creator
+package io.toasting.creator.member
 
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.SocialLogin

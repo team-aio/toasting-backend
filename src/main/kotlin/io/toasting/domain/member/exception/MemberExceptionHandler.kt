@@ -7,4 +7,12 @@ sealed class MemberExceptionHandler {
     class MemberNotFoundException(
         errorCode: BaseErrorCode,
     ) : GeneralException(errorCode)
+    
+    class MemberNameDuplicationException(
+        errorCode: BaseErrorCode,
+    ) : GeneralException(errorCode)
+
+    class SocialMemberAlreadySignUpException(
+        errorCode: BaseErrorCode,
+    ) : GeneralException(errorCode)
 }

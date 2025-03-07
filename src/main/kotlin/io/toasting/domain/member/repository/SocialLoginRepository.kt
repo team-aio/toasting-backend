@@ -11,4 +11,9 @@ interface SocialLoginRepository : JpaRepository<SocialLogin, Long> {
         socialType: SocialType,
         externalId: String,
     ): SocialLogin?
+
+    fun existsBySocialTypeAndExternalId(
+        socialType: SocialType,
+        externalId: String,
+    ): Boolean
 }

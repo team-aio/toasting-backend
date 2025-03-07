@@ -31,6 +31,7 @@ class JwtFilter(
                 "/v3/api-docs/**",
                 "/api-test/**",
                 "/v1/member/login/google",
+                "/v1/member/signup",
             )
     }
 
