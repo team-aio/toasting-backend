@@ -29,7 +29,7 @@ class FollowController(
 
     @PostMapping("/{memberId}")
     @Operation(summary = "팔로우 추가", description = "해당 사용자를 팔로우합니다.")
-    fun following(
+    fun addFollow(
         @PathVariable memberId: Long,
         @AuthenticationPrincipal memberDetails: MemberDetails,
     ): ApiResponse<Unit> {
