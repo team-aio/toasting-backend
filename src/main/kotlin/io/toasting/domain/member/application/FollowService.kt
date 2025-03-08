@@ -17,6 +17,8 @@ class FollowService(
 ) {
     @Transactional
     fun addFollow(addFollowInput: AddFollowInput) {
+        // TODO: fromMemberId와 toMemberId가 같은 경우 예외처리
+        // TODO: 이미 팔로우한 경우 예외처리
         val fromMember = findMemberByIdOrThrow(addFollowInput.fromMemberId)
         val toMember = findMemberByIdOrThrow(addFollowInput.toMemberId)
 
