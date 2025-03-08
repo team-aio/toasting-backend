@@ -20,9 +20,15 @@ enum class ErrorStatus(
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "COMMON4013", "리프레시 토큰을 찾을 수 없습니다."),
     REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "COMMON4014", "리프레시 토큰 유효기간이 지났습니다."),
     TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "COMMON4013", "토큰 에러"),
+  
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_NOT_FOUND", "member를 찾을 수 없습니다."),
     MEMBER_NAME_DUPLICATION(HttpStatus.BAD_REQUEST, "MEMBER_NAME_DUPLICATION", "닉네임이 중복되었습니다."),
     ALERADY_SIGN_UP_MEMBER(HttpStatus.BAD_REQUEST, "", "이미 가입한 멤버입니다."),
     EXAMPLE_NOT_FOUND(HttpStatus.NOT_FOUND, "EXAMPLE_NOT_FOUND,", "example 엔티티를 찾을 수 없습니다."),
+
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_ROOM_NOT_FOUND", "chatRoom을 찾을 수 없습니다."),
+    NOT_BELONG_TO_CHAT_ROOM(HttpStatus.BAD_REQUEST, "NOT_BELONGS_TO_CHAT_ROOM", "참여 중인 채팅방이 아닙니다."),
+    PARTNER_NOT_FOUND(HttpStatus.BAD_REQUEST, "PARTNER_NOT_FOUND", "상대방을 찾을 수 없습니다."),
     ;
 
     override fun getReason() =

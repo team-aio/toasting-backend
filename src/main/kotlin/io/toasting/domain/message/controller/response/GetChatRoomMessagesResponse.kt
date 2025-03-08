@@ -1,9 +1,9 @@
 package io.toasting.domain.message.controller.response
 
-import io.toasting.domain.message.applicatoin.out.SendMessageOutput
+import io.toasting.domain.message.applicatoin.out.GetChatRoomMessagesOutput
 import java.time.LocalDateTime
 
-class SendMessageResponse(
+class GetChatRoomMessagesResponse(
     val id: Long,
     val chatRoomId: Long,
     val senderId: Long,
@@ -11,8 +11,8 @@ class SendMessageResponse(
     val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun fromOutput(output: SendMessageOutput): SendMessageResponse {
-            return SendMessageResponse(
+        fun fromOutput(output: GetChatRoomMessagesOutput): GetChatRoomMessagesResponse {
+            return GetChatRoomMessagesResponse(
                 id = output.id,
                 chatRoomId = output.chatRoomId,
                 senderId = output.senderId,
