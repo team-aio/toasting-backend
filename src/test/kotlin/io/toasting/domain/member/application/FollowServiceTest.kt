@@ -5,6 +5,7 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import io.toasting.domain.member.application.input.AddFollowInput
+import io.toasting.domain.member.application.input.CancelFollowInput
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.repository.FollowRepository
 import io.toasting.domain.member.repository.MemberRepository
@@ -36,6 +37,13 @@ class FollowServiceTest : BehaviorSpec() {
                     val follow = followRepository.findById(1L).get()
                     follow.fromMember.nickname shouldBe m1.nickname
                     follow.toMember.nickname shouldBe m2.nickname
+                }
+            }
+            When("팔로우를 취소하면") {
+                followService.cancelFollow(CancelFollowInput(1L, 2L))
+                Then("저장된 정보가 없어야 한다") {
+                    val follow = followRepository.findAll()
+                    follow.isEmpty() shouldBe true
                 }
             }
         }

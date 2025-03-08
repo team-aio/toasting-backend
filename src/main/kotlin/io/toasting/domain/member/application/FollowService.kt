@@ -2,6 +2,7 @@ package io.toasting.domain.member.application
 
 import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.member.application.input.AddFollowInput
+import io.toasting.domain.member.application.input.CancelFollowInput
 import io.toasting.domain.member.entity.Follow
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.exception.MemberExceptionHandler.MemberNotFoundException
@@ -24,6 +25,14 @@ class FollowService(
 
         val newFollow = Follow(fromMember, toMember)
         followRepository.save(newFollow)
+    }
+
+    @Transactional
+    fun cancelFollow(cancelFollowInput: CancelFollowInput) {
+        val fromMember = findMemberByIdOrThrow(cancelFollowInput.fromMemberId)
+        val toMember = findMemberByIdOrThrow(cancelFollowInput.toMemberId)
+
+        followRepository.deleteByFromMemberAndToMember(fromMember, toMember)
     }
 
     private fun findMemberByIdOrThrow(memberId: Long): Member =
