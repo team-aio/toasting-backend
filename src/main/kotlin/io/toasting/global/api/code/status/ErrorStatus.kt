@@ -17,8 +17,9 @@ enum class ErrorStatus(
     VALIDATION_FAIL(HttpStatus.BAD_REQUEST, "COMMON4031", "데이터베이스 유효성 에러"),
     ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "COMMON4011", "액세스 토큰 유효기간이 지났습니다."),
     ACCESS_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "COMMON4012", "액세스 토큰을 찾을 수 없습니다."),
+    REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "COMMON4013", "리프레시 토큰을 찾을 수 없습니다."),
+    REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "COMMON4014", "리프레시 토큰 유효기간이 지났습니다."),
     TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "COMMON4013", "토큰 에러"),
-
     MEMBER_NAME_DUPLICATION(HttpStatus.BAD_REQUEST, "MEMBER_NAME_DUPLICATION", "닉네임이 중복되었습니다."),
     ALERADY_SIGN_UP_MEMBER(HttpStatus.BAD_REQUEST, "", "이미 가입한 멤버입니다."),
     EXAMPLE_NOT_FOUND(HttpStatus.NOT_FOUND, "EXAMPLE_NOT_FOUND,", "example 엔티티를 찾을 수 없습니다."),
