@@ -3,15 +3,17 @@ package io.toasting.domain.member.application
 import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.member.application.input.AddFollowInput
 import io.toasting.domain.member.application.input.CancelFollowInput
+import io.toasting.domain.member.application.input.CheckFollowInput
 import io.toasting.domain.member.entity.Follow
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.exception.MemberExceptionHandler.MemberNotFoundException
 import io.toasting.domain.member.repository.FollowRepository
 import io.toasting.domain.member.repository.MemberRepository
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional(readOnly = true)
 class FollowService(
     private val followRepository: FollowRepository,
     private val memberRepository: MemberRepository,
@@ -33,6 +35,13 @@ class FollowService(
         val toMember = findMemberByIdOrThrow(cancelFollowInput.toMemberId)
 
         followRepository.deleteByFromMemberAndToMember(fromMember, toMember)
+    }
+
+    fun checkAlreadyFollow(checkFollowInput: CheckFollowInput): Boolean {
+        val fromMember = findMemberByIdOrThrow(checkFollowInput.fromMemberId)
+        val toMember = findMemberByIdOrThrow(checkFollowInput.toMemberId)
+
+        return followRepository.existsByFromMemberAndToMember(fromMember, toMember)
     }
 
     private fun findMemberByIdOrThrow(memberId: Long): Member =

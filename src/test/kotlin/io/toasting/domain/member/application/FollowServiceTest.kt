@@ -6,13 +6,16 @@ import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import io.toasting.domain.member.application.input.AddFollowInput
 import io.toasting.domain.member.application.input.CancelFollowInput
+import io.toasting.domain.member.application.input.CheckFollowInput
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.repository.FollowRepository
 import io.toasting.domain.member.repository.MemberRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
+@Transactional
 class FollowServiceTest : BehaviorSpec() {
     override fun extensions(): List<Extension> = listOf(SpringExtension)
 
@@ -39,11 +42,24 @@ class FollowServiceTest : BehaviorSpec() {
                     follow.toMember.nickname shouldBe m2.nickname
                 }
             }
+            When(" 이미 팔로우 했는지 확인했을 때") {
+                val result = followService.checkAlreadyFollow(CheckFollowInput(1L, 2L))
+                Then("팔로우를 했으므로 true를 반환해야 한다") {
+                    result shouldBe true
+                }
+            }
             When("팔로우를 취소하면") {
                 followService.cancelFollow(CancelFollowInput(1L, 2L))
                 Then("저장된 정보가 없어야 한다") {
                     val follow = followRepository.findAll()
                     follow.isEmpty() shouldBe true
+                }
+            }
+            When("팔로우를 취소하고 이미 팔로우 했는지 확인했을 때") {
+                followService.cancelFollow(CancelFollowInput(1L, 2L))
+                val result = followService.checkAlreadyFollow(CheckFollowInput(1L, 2L))
+                Then("팔로우를 취소했으므로 false를 반환해야 한다") {
+                    result shouldBe false
                 }
             }
         }
