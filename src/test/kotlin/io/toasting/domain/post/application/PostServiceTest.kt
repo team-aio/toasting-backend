@@ -1,16 +1,21 @@
 package io.toasting.domain.post.application
 
+import com.ninjasquad.springmockk.MockkBean
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringTestExtension
 import io.kotest.extensions.spring.SpringTestLifecycleMode
+import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
+import io.mockk.every
 import io.toasting.creator.member.PostCreator
 import io.toasting.domain.member.entity.Member
+import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
-import io.toasting.domain.post.entity.Post
 import io.toasting.domain.post.repository.PostRepository
+import io.toasting.global.external.crawler.PostCrawler
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageRequest
@@ -29,6 +34,8 @@ class PostServiceTest : BehaviorSpec(){
     private lateinit var postRepository: PostRepository
     @Autowired
     private lateinit var memberRepository: MemberRepository
+    @MockkBean
+    private lateinit var postCrawler: PostCrawler
 
     private lateinit var member1: Member
     private lateinit var member2: Member
@@ -79,6 +86,30 @@ class PostServiceTest : BehaviorSpec(){
                     shouldThrow<MemberExceptionHandler.MemberNotFoundException> {
                         postService.searchPost(keyword, pageable)
                     }
+                }
+            }
+        }
+
+        Given("member가 있고,") {
+            every { postCrawler.crawlPost(any(), any()) } returns PostCreator.crawledPostList()
+
+            When("tistory 블로그를 연동했을 때") {
+                val memberDetails = MemberDetails.from(member1)
+                postService.linkBlog(memberDetails, "test", "tistory")
+
+                val postList = postRepository.findAll()
+                Then("tistory 게시글 10개가 저장된다.") {
+                    postList.size shouldBe 10
+                }
+                Then("크롤링된 게시글과 저장된 게시글 정보가 일치한다.") {
+                    val firstPost = postList.first()
+
+                    firstPost.memberId shouldBe member1.id
+                    firstPost.content!!.length shouldBeGreaterThan firstPost.shortContent!!.length
+                    firstPost.shortContent!!.length shouldBeLessThanOrEqual 100
+                    firstPost.postedAt!!.year shouldBe 2023
+                    firstPost.postedAt!!.monthValue shouldBe 8
+                    firstPost.postedAt!!.dayOfMonth shouldBe 15
                 }
             }
         }
