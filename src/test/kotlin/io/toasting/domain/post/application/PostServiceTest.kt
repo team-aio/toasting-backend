@@ -8,6 +8,7 @@ import io.kotest.extensions.spring.SpringTestLifecycleMode
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.mockk.every
 import io.toasting.creator.member.PostCreator
 import io.toasting.domain.member.entity.Member
@@ -110,6 +111,26 @@ class PostServiceTest : BehaviorSpec(){
                     firstPost.postedAt!!.year shouldBe 2023
                     firstPost.postedAt!!.monthValue shouldBe 8
                     firstPost.postedAt!!.dayOfMonth shouldBe 15
+                }
+            }
+        }
+
+        Given("member1이 작성한 게시글1이 있고,") {
+            val post = PostCreator.defaultPost("title", "content", "short content", member1.id!!, LocalDateTime.of(2025, 1, 1,12,0, 0))
+            postRepository.save(post)
+            When("게시글1을 조회하면") {
+                val output = postService.getPostDetail(post.id!!)
+                Then("게시글1의 정보와 member1의 정보가 반환된다.") {
+                    output.id shouldNotBe null
+                    output.sourceType shouldBe post.sourceType
+                    output.url shouldBe post.url
+                    output.postedAt shouldBe post.postedAt
+                    output.content shouldBe post.content
+                    output.title shouldBe post.title
+                    output.likeCount shouldBe post.likeCount
+                    output.memberId shouldBe post.memberId
+                    output.nickname shouldBe member1.nickname
+                    output.profilePicture shouldBe member1.profilePicture
                 }
             }
         }

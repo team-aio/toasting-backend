@@ -16,6 +16,7 @@ class PostCreator {
             return Post(
                 title = title,
                 content = content,
+                url = "url",
                 shortContent = shortContent,
                 sourceType = "TISTORY",
                 postedAt = postedAt,
