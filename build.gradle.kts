@@ -50,12 +50,20 @@ dependencies {
     implementation("jakarta.persistence:jakarta.persistence-api")
     implementation("jakarta.annotation:jakarta.annotation-api")
 
+    // web flux
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    // html parsing
+    implementation("org.jsoup:jsoup:1.15.3")
+
     kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("io.mockk:mockk:1.13.3")
+    testImplementation("com.ninja-squad:springmockk:3.1.1")
     testImplementation("io.kotest:kotest-runner-junit5:5.6.2") // Kotest Runner
     testImplementation("io.kotest:kotest-assertions-core:5.6.2") // Kotest Assertions
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.2") // Kotest Spring dependency available
