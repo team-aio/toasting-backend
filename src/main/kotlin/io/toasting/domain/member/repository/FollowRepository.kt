@@ -11,4 +11,9 @@ interface FollowRepository : JpaRepository<Follow, Long> {
         fromMember: Member,
         toMember: Member,
     )
+
+    fun existsByFromMemberAndToMember(
+        fromMember: Member,
+        toMember: Member,
+    ): Boolean
 }
