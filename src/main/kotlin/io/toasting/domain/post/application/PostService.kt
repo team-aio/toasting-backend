@@ -5,8 +5,10 @@ import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
+import io.toasting.domain.post.application.out.GetPostDetailOutput
 import io.toasting.domain.post.application.out.SearchPostsOutput
 import io.toasting.domain.post.entity.Post
+import io.toasting.domain.post.exception.PostExceptionHandler
 import io.toasting.domain.post.repository.PostRepository
 import io.toasting.global.external.crawler.PostCrawler
 import org.jsoup.Jsoup
@@ -14,7 +16,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Service
@@ -76,5 +77,14 @@ class PostService(
             postList.add(post)
         }
         postRepository.saveAll(postList)
+    }
+
+    fun getPostDetail(postId: Long): GetPostDetailOutput {
+        val post = postRepository.findById(postId)
+            .orElseThrow{ PostExceptionHandler.PostNotFoundException(ErrorStatus.POST_NOT_FOUND) }
+        val member = memberRepository.findById(post.memberId)
+            .orElseThrow { MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
+
+        return GetPostDetailOutput.of(post, member)
     }
 }
