@@ -3,7 +3,7 @@ package io.toasting.domain.member.application
 import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.member.application.input.AddFollowInput
 import io.toasting.domain.member.application.input.CancelFollowInput
-import io.toasting.domain.member.application.input.CheckFollowInput
+import io.toasting.domain.member.application.input.ExistsFollowInput
 import io.toasting.domain.member.entity.Follow
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.exception.MemberExceptionHandler.MemberNotFoundException
@@ -37,9 +37,9 @@ class FollowService(
         followRepository.deleteByFromMemberAndToMember(fromMember, toMember)
     }
 
-    fun checkAlreadyFollow(checkFollowInput: CheckFollowInput): Boolean {
-        val fromMember = findMemberByIdOrThrow(checkFollowInput.fromMemberId)
-        val toMember = findMemberByIdOrThrow(checkFollowInput.toMemberId)
+    fun existsFollow(existsFollowInput: ExistsFollowInput): Boolean {
+        val fromMember = findMemberByIdOrThrow(existsFollowInput.fromMemberId)
+        val toMember = findMemberByIdOrThrow(existsFollowInput.toMemberId)
 
         return followRepository.existsByFromMemberAndToMember(fromMember, toMember)
     }
