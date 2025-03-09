@@ -16,4 +16,14 @@ interface FollowRepository : JpaRepository<Follow, Long> {
         fromMember: Member,
         toMember: Member,
     ): Boolean
+
+    /*
+     * 내가 팔로잉 한 사람의 수 (팔로잉 수)
+     */
+    fun countByFromMember(fromMember: Member): Long
+
+    /*
+     * 나를 팔로잉 한 사람의 수 (팔로워 수)
+     */
+    fun countByToMember(toMember: Member): Long
 }
