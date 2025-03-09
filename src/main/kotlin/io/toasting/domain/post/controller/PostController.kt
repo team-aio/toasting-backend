@@ -1,17 +1,15 @@
 package io.toasting.domain.post.controller
 
 import io.toasting.api.PageResponse
+import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.post.application.PostService
 import io.toasting.domain.post.controller.response.SearchPostsResponse
 import io.toasting.global.api.ApiResponse
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RequestPart
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/v1/posts")
@@ -36,5 +34,15 @@ internal class PostController(
                 output.totalPages
             )
         )
+    }
+
+    @PostMapping("/blog/{sourceType}/{id}")
+    fun linkBlog(
+        @AuthenticationPrincipal memberDetails: MemberDetails,
+        @PathVariable sourceType: String,
+        @PathVariable id: String,
+    ) : ApiResponse<Unit> {
+        postService.linkBlog(memberDetails, id, sourceType)
+        return ApiResponse.onSuccess()
     }
 }

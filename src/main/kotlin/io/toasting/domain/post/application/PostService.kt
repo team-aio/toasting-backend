@@ -2,17 +2,26 @@ package io.toasting.domain.post.application
 
 import io.toasting.api.PageResponse
 import io.toasting.api.code.status.ErrorStatus
+import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.post.application.out.SearchPostsOutput
+import io.toasting.domain.post.entity.Post
 import io.toasting.domain.post.repository.PostRepository
+import io.toasting.global.external.crawler.PostCrawler
+import org.jsoup.Jsoup
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Service
 class PostService(
     private val postRepository: PostRepository,
     private val memberRepository: MemberRepository,
+    private val postCrawler: PostCrawler,
 ) {
     fun searchPost(keyword: String, pageable: Pageable): PageResponse<SearchPostsOutput> {
         val postPage = postRepository.searchByKeyword(keyword, pageable)
@@ -38,5 +47,33 @@ class PostService(
             postPage.totalElements,
             postPage.totalPages
         )
+    }
+
+    @Transactional(readOnly = false)
+    fun linkBlog(memberDetails: MemberDetails, id: String, sourceType: String) {
+        val memberId = memberDetails.username.toLong()
+        val member = memberRepository.findById(memberId).orElseThrow{ MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
+
+        val crawledPostList = postCrawler.crawlPost(id, sourceType)
+
+        val formatter = DateTimeFormatter.ofPattern("yyyy-M-d")
+        val postList = mutableListOf<Post>()
+        for (crawledPost in crawledPostList) {
+            val html = crawledPost.content
+            val text = Jsoup.parse(html).text()
+            val shortContent = text.take(100)
+            val postedAt = LocalDate.parse(crawledPost.posted_at, formatter).atStartOfDay()
+
+            val post = Post(
+                sourceType = sourceType,
+                postedAt = postedAt,
+                shortContent = shortContent,
+                content = text,
+                title = crawledPost.title,
+                memberId = memberId
+            )
+            postList.add(post)
+        }
+        postRepository.saveAll(postList)
     }
 }
