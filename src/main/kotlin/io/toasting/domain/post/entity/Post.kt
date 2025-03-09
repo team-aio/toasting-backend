@@ -10,6 +10,7 @@ class Post(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
     val sourceType: String,
+    val url: String,
     val postedAt: LocalDateTime? = null,
     val shortContent: String? = null,
     @Column(columnDefinition = "text")
