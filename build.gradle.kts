@@ -50,6 +50,12 @@ dependencies {
     implementation("jakarta.persistence:jakarta.persistence-api")
     implementation("jakarta.annotation:jakarta.annotation-api")
 
+    // web flux
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    // html parsing
+    implementation("org.jsoup:jsoup:1.15.3")
+
     kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
