@@ -1,5 +1,7 @@
 package io.toasting.domain.member.entity
 
+import io.toasting.api.code.status.ErrorStatus
+import io.toasting.domain.member.exception.FollowExceptionHandler
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
@@ -19,4 +21,14 @@ class Follow(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-)
+) {
+    init {
+        validate()
+    }
+
+    private fun validate() {
+        if (fromMember == toMember) {
+            throw FollowExceptionHandler.SelfFollowException(ErrorStatus.SELF_FOLLOW_BANNED)
+        }
+    }
+}

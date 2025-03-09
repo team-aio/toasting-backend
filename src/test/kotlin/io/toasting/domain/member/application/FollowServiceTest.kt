@@ -1,5 +1,6 @@
 package io.toasting.domain.member.application
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.extensions.Extension
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
@@ -8,6 +9,7 @@ import io.toasting.domain.member.application.input.AddFollowInput
 import io.toasting.domain.member.application.input.CancelFollowInput
 import io.toasting.domain.member.application.input.ExistsFollowInput
 import io.toasting.domain.member.entity.Member
+import io.toasting.domain.member.exception.FollowExceptionHandler
 import io.toasting.domain.member.repository.FollowRepository
 import io.toasting.domain.member.repository.MemberRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -60,6 +62,13 @@ class FollowServiceTest : BehaviorSpec() {
                 val result = followService.existsFollow(ExistsFollowInput(1L, 2L))
                 Then("팔로우를 취소했으므로 false를 반환해야 한다") {
                     result shouldBe false
+                }
+            }
+            When("내 자신을 팔로우 하려고 하면") {
+                Then("예외가 발생해야 한다") {
+                    shouldThrow<FollowExceptionHandler.SelfFollowException> {
+                        followService.addFollow(AddFollowInput(1L, 1L))
+                    }
                 }
             }
         }
