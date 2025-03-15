@@ -27,17 +27,7 @@ class LoginMemberService(
     fun loginGoogle(loginGoogleInput: LoginGoogleInput): LoginGoogleOutput? {
         log.info { "process loginGoogleInput: $loginGoogleInput" }
 
-        val existSocialMember = tryFindSocialMember(loginGoogleInput)
-
-        if (existSocialMember == null) {
-            log.info { "create New Member" }
-            val newSocialMember = createNewSocialMember(loginGoogleInput)
-            socialLoginRepository.save(newSocialMember)
-            return null
-        }
-
-        log.info { "exist Member: $existSocialMember" }
-
+        val existSocialMember = findSocialMemberOrNull(loginGoogleInput) ?: return null
         val (accessToken, refreshToken) = createTokens(existSocialMember)
 
         saveRefreshToken(refreshToken)
@@ -59,7 +49,7 @@ class LoginMemberService(
                 ),
         )
 
-    private fun tryFindSocialMember(loginGoogleInput: LoginGoogleInput) =
+    private fun findSocialMemberOrNull(loginGoogleInput: LoginGoogleInput) =
         socialLoginRepository.findBySocialTypeAndExternalId(
             socialType = loginGoogleInput.socialType,
             externalId = loginGoogleInput.externalId,

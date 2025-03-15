@@ -41,11 +41,11 @@ class MemberController(
     @PostMapping("/login/google")
     @Operation(summary = "구글 로그인", description = "구글 소셜 로그인을 통해 로그인을 시도합니다.")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "200",
+        responseCode = "COMMON200",
         description = "로그인 성공, 기존에 가입했던 유저",
     )
     @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "201",
+        responseCode = "MEMBER_CREATE",
         description = "로그인 성공, 신규 유저",
     )
     fun loginGoogle(
