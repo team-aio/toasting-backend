@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -54,6 +55,13 @@ class SecurityConfig {
             .authorizeHttpRequests {
                 it
                     .requestMatchers(
+                        RequestMatcher { request ->
+                            request.requestURI == "/v1/member/exist" &&
+                                request.getParameter("nickname")?.isNotEmpty() ?: false
+                        },
+                    ).permitAll()
+                it
+                    .requestMatchers(
                         "/",
                         "/h2-console/**",
                         "/favicon.ico",
@@ -64,6 +72,7 @@ class SecurityConfig {
                         "/api-test/**",
                         "/v1/member/login/google",
                         "/v1/member/signup",
+                        "/v1/member/exist?nickname=**",
                     ).permitAll()
                     .anyRequest()
                     .authenticated()
