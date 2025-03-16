@@ -12,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.security.web.util.matcher.OrRequestMatcher
+import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.filter.OncePerRequestFilter
 
 private const val EMPTY = ""
@@ -20,6 +21,11 @@ class JwtFilter(
     private val jwtFactory: JwtFactory,
 ) : OncePerRequestFilter() {
     companion object {
+        private val EXIST_MEMBER_NICKNAME_API =
+            RequestMatcher { request ->
+                request.requestURI == "/v1/member/exist" &&
+                    request.getParameter("nickname")?.isNotEmpty() ?: false
+            }
         private val EXCLUDE_PATHS =
             listOf(
                 "/",
@@ -38,9 +44,9 @@ class JwtFilter(
     private val log = KotlinLogging.logger {}
 
     override fun shouldNotFilter(request: HttpServletRequest): Boolean =
-        EXCLUDE_PATHS
-            .map { AntPathRequestMatcher(it) }
-            .let { OrRequestMatcher(it).matches(request) }
+        OrRequestMatcher(
+            EXCLUDE_PATHS.map { AntPathRequestMatcher(it) } + listOf(EXIST_MEMBER_NICKNAME_API),
+        ).matches(request)
 
     override fun doFilterInternal(
         request: HttpServletRequest,
