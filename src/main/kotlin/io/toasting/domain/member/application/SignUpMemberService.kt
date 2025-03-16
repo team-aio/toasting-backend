@@ -5,14 +5,12 @@ import io.toasting.domain.member.application.input.SignUpSocialLoginInput
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.SocialLogin
 import io.toasting.domain.member.exception.MemberExceptionHandler
-import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.member.repository.SocialLoginRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
 @Service
 class SignUpMemberService(
-    private val memberRepository: MemberRepository,
     private val socialLoginRepository: SocialLoginRepository,
 ) {
     /*
@@ -32,10 +30,6 @@ class SignUpMemberService(
             )
         ) {
             throw MemberExceptionHandler.SocialMemberAlreadySignUpException(ErrorStatus.ALERADY_SIGN_UP_MEMBER)
-        }
-
-        if (memberRepository.existsByNickname(signUpSocialLoginInput.nickname)) {
-            throw MemberExceptionHandler.MemberNameDuplicationException(ErrorStatus.MEMBER_NAME_DUPLICATION)
         }
     }
 
