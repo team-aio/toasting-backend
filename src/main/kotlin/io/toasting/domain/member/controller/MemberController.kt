@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.toasting.api.code.status.ErrorStatus
 import io.toasting.api.code.status.SuccessStatus
+import io.toasting.domain.member.application.CheckMemberService
 import io.toasting.domain.member.application.LoginMemberService
 import io.toasting.domain.member.application.SignUpMemberService
 import io.toasting.domain.member.controller.request.LoginGoogleRequest
@@ -21,6 +22,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -34,6 +36,7 @@ class MemberController(
     @Value("\${spring.jwt.refresh-token-expired-ms}") private val refreshTokenExpiredMs: Long,
     private val loginMemberService: LoginMemberService,
     private val signUpMemberService: SignUpMemberService,
+    private val checkMemberService: CheckMemberService,
     private val refreshTokenRepository: RefreshTokenRepository, // TODO : 의존성 방향만 맞춤, 바로 Repository를 호출하면 아면 추후 리팩토링
 ) {
     private val log = KotlinLogging.logger {}
@@ -66,6 +69,15 @@ class MemberController(
             return ApiResponse.onSuccess()
         }
         return ApiResponse.onSuccess(SuccessStatus.MEMBER_CREATED.status, null)
+    }
+
+    @GetMapping("/exist")
+    @Operation(summary = "닉네임 중복 확인", description = "닉네임 중복을 확인합니다.")
+    fun isExistNickname(
+        @RequestParam("nickname", required = true) nickname: String,
+    ): ApiResponse<Unit> {
+        checkMemberService.checkMemberNicknameIsDuplicated(nickname)
+        return ApiResponse.onSuccess()
     }
 
     @PostMapping("/signup")
