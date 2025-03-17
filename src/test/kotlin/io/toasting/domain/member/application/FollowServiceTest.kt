@@ -5,10 +5,10 @@ import io.kotest.core.extensions.Extension
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
+import io.toasting.creator.member.MemberCreator
 import io.toasting.domain.member.application.input.AddFollowInput
 import io.toasting.domain.member.application.input.CancelFollowInput
 import io.toasting.domain.member.application.input.ExistsFollowInput
-import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.exception.FollowExceptionHandler
 import io.toasting.domain.member.repository.FollowRepository
 import io.toasting.domain.member.repository.MemberRepository
@@ -32,8 +32,8 @@ class FollowServiceTest : BehaviorSpec() {
 
     init {
         given("저장된 유저 정보가 주어졌을 때") {
-            val m1 = Member.defaultMember("test1", "test1@naver.com")
-            val m2 = Member.defaultMember("test2", "test2@naver.com")
+            val m1 = MemberCreator.defaultMember(1L, "test1", "test1@naver.com")
+            val m2 = MemberCreator.defaultMember(2L, "test2", "test2@naver.com")
 
             memberRepository.saveAll(listOf(m1, m2))
             When("팔로우를 추가하면") {

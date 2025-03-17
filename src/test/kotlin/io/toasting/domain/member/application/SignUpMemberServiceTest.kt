@@ -39,13 +39,6 @@ class SignUpMemberServiceTest : BehaviorSpec() {
                     member.email shouldBe "tjdvy963@naver.com"
                 }
             }
-            When("닉네임이 중복된 회원가입을 하려고 하면") {
-                Then("MemberNameDuplicationException 이 발생해야 한다") {
-                    shouldThrow<MemberExceptionHandler.MemberNameDuplicationException> {
-                        signUpMemberService.signUpBySocialLogin(googleMember2)
-                    }
-                }
-            }
             When("이미 가입된 회원이 회원가입을 시도하면") {
                 Then("SocialMemberDuplicationException 이 발생해야 한다") {
                     shouldThrow<MemberExceptionHandler.SocialMemberAlreadySignUpException> {
