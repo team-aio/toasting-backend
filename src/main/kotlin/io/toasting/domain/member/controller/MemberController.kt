@@ -12,6 +12,7 @@ import io.toasting.domain.member.application.SignUpMemberService
 import io.toasting.domain.member.controller.request.LoginGoogleRequest
 import io.toasting.domain.member.controller.request.SignUpSocialLoginRequest
 import io.toasting.domain.member.controller.response.GetMyProfileResponse
+import io.toasting.domain.member.controller.response.GetProfileResponse
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.repository.RefreshTokenRepository
 import io.toasting.domain.member.vo.SocialType
@@ -129,6 +130,16 @@ class MemberController(
             .let { GetMyProfileResponse.from(it) }
             .let { response -> ApiResponse.onSuccess(response) }
     }
+
+    @GetMapping("/profile")
+    @Operation(summary = "특정 대상의 프로필 조회", description = "특정 대상의 프로필을 조회합니다. 로그인이 필요 없습니다.")
+    fun getProfile(
+        @RequestParam memberId: Long,
+    ): ApiResponse<GetProfileResponse> =
+        getProfileService
+            .getProfile(memberId)
+            .let { GetProfileResponse.from(it) }
+            .let { response -> ApiResponse.onSuccess(response) }
 
     private fun processGoogleLogin(loginGoogleRequest: LoginGoogleRequest) =
         loginGoogleRequest
