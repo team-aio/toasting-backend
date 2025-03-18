@@ -1,7 +1,6 @@
 package io.toasting.domain.member.controller.response
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import io.toasting.domain.member.application.output.GetMyProfileOutput
 
 @JsonInclude(JsonInclude.Include.NON_NULL) // NULL인 값은 포함시키지 않기 위함
 data class GetMyProfileResponse(
@@ -13,7 +12,7 @@ data class GetMyProfileResponse(
     val tistoryId: String?,
 ) {
     companion object {
-        fun from(getMyProfileOutput: GetMyProfileOutput) =
+        fun from(getMyProfileOutput: GetProfileOutput) =
             GetMyProfileResponse(
                 nickname = getMyProfileOutput.nickname,
                 followerCount = getMyProfileOutput.followerCount,

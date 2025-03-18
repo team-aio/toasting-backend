@@ -1,6 +1,6 @@
 package io.toasting.domain.member.application.output
 
-data class GetMyProfileOutput(
+data class GetProfileOutput(
     val nickname: String,
     val followingCount: Long,
     val followerCount: Long,

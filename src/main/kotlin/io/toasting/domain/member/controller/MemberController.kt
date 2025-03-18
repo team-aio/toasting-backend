@@ -125,7 +125,7 @@ class MemberController(
         val memberId = memberDetails.username.toLong()
 
         return getProfileService
-            .getMyProfile(memberId)
+            .getProfile(memberId)
             .let { GetMyProfileResponse.from(it) }
             .let { response -> ApiResponse.onSuccess(response) }
     }

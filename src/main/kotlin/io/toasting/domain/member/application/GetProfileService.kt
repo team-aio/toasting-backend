@@ -1,7 +1,7 @@
 package io.toasting.domain.member.application
 
 import io.toasting.api.code.status.ErrorStatus
-import io.toasting.domain.member.application.output.GetMyProfileOutput
+import io.toasting.domain.member.application.output.GetProfileOutput
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.FollowRepository
@@ -15,12 +15,12 @@ class GetProfileService(
     private val postRepository: PostRepository,
     private val memberRepository: MemberRepository,
 ) {
-    fun getMyProfile(memberId: Long): GetMyProfileOutput {
+    fun getProfile(memberId: Long): GetProfileOutput {
         val member = findMemberOrThrow(memberId)
         val (followingCount, followerCount) = getFollowCounts(member)
         val postCount = postRepository.countByMemberId(memberId)
 
-        return GetMyProfileOutput(
+        return GetProfileOutput(
             nickname = member.nickname,
             followingCount = followingCount,
             followerCount = followerCount,
