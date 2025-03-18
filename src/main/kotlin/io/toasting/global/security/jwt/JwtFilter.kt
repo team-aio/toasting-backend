@@ -26,6 +26,11 @@ class JwtFilter(
                 request.requestURI == "/v1/member/exist" &&
                     request.getParameter("nickname")?.isNotEmpty() ?: false
             }
+        private val GET_PROFILE_API =
+            RequestMatcher { request ->
+                request.requestURI == "/v1/member/profile" &&
+                    request.getParameter("memberId")?.isNotEmpty() ?: false
+            }
         private val EXCLUDE_PATHS =
             listOf(
                 "/",
@@ -45,7 +50,8 @@ class JwtFilter(
 
     override fun shouldNotFilter(request: HttpServletRequest): Boolean =
         OrRequestMatcher(
-            EXCLUDE_PATHS.map { AntPathRequestMatcher(it) } + listOf(EXIST_MEMBER_NICKNAME_API),
+            EXCLUDE_PATHS.map { AntPathRequestMatcher(it) } +
+                listOf(EXIST_MEMBER_NICKNAME_API, GET_PROFILE_API),
         ).matches(request)
 
     override fun doFilterInternal(
