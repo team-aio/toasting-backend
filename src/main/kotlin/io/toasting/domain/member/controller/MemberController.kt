@@ -6,10 +6,14 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import io.toasting.api.code.status.ErrorStatus
 import io.toasting.api.code.status.SuccessStatus
 import io.toasting.domain.member.application.CheckMemberService
+import io.toasting.domain.member.application.GetProfileService
 import io.toasting.domain.member.application.LoginMemberService
 import io.toasting.domain.member.application.SignUpMemberService
 import io.toasting.domain.member.controller.request.LoginGoogleRequest
 import io.toasting.domain.member.controller.request.SignUpSocialLoginRequest
+import io.toasting.domain.member.controller.response.GetMyProfileResponse
+import io.toasting.domain.member.controller.response.GetProfileResponse
+import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.repository.RefreshTokenRepository
 import io.toasting.domain.member.vo.SocialType
 import io.toasting.global.api.ApiResponse
@@ -22,6 +26,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -37,6 +42,7 @@ class MemberController(
     private val loginMemberService: LoginMemberService,
     private val signUpMemberService: SignUpMemberService,
     private val checkMemberService: CheckMemberService,
+    private val getProfileService: GetProfileService,
     private val refreshTokenRepository: RefreshTokenRepository, // TODO : 의존성 방향만 맞춤, 바로 Repository를 호출하면 아면 추후 리팩토링
 ) {
     private val log = KotlinLogging.logger {}
@@ -111,6 +117,29 @@ class MemberController(
         response.addCookie(expiredRefreshToken)
         refreshTokenRepository.deleteByToken(refreshToken)
     }
+
+    @GetMapping("/my-profile")
+    @Operation(summary = "내 프로필 조회", description = "액세스 토큰을 통해 내 프로필을 조회합니다.")
+    fun getMyProfile(
+        @AuthenticationPrincipal memberDetails: MemberDetails,
+    ): ApiResponse<GetMyProfileResponse> {
+        val memberId = memberDetails.username.toLong()
+
+        return getProfileService
+            .getProfile(memberId)
+            .let { GetMyProfileResponse.from(it) }
+            .let { response -> ApiResponse.onSuccess(response) }
+    }
+
+    @GetMapping("/profile")
+    @Operation(summary = "특정 대상의 프로필 조회", description = "특정 대상의 프로필을 조회합니다. 로그인이 필요 없습니다.")
+    fun getProfile(
+        @RequestParam memberId: Long,
+    ): ApiResponse<GetProfileResponse> =
+        getProfileService
+            .getProfile(memberId)
+            .let { GetProfileResponse.from(it) }
+            .let { response -> ApiResponse.onSuccess(response) }
 
     private fun processGoogleLogin(loginGoogleRequest: LoginGoogleRequest) =
         loginGoogleRequest
