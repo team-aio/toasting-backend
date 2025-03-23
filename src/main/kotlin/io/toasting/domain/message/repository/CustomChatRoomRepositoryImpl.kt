@@ -44,13 +44,12 @@ class CustomChatRoomRepositoryImpl(
     }
 
     private fun sort(query: JPAQuery<ChatRoom>, pageable: Pageable) {
-        for (o in pageable.sort) {
+        pageable.sort.forEach {
             val pathBuilder = PathBuilder(chatRoom.type, chatRoom.metadata)
-
             query.orderBy(
                 OrderSpecifier(
-                    if (o.isAscending) Order.ASC else Order.DESC,
-                    pathBuilder.get(o.property) as Expression<out Comparable<ChatRoom>>
+                    if (it.isAscending) Order.ASC else Order.DESC,
+                    pathBuilder.getString(it.property)
                 )
             )
         }

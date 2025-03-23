@@ -67,7 +67,7 @@ class ReIssueService(
 
             else -> {
                 log.error { "Unknown exception: ${exception.message}" }
-                return throw exception
+                throw exception
             }
         }
     }
