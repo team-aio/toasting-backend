@@ -7,6 +7,7 @@ import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.PathBuilder
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
+import io.toasting.domain.message.entity.ChatRoom
 import io.toasting.domain.post.entity.Post
 import io.toasting.domain.post.entity.QPost
 import org.springframework.data.domain.Page
@@ -53,13 +54,12 @@ class CustomPostRepositoryImpl(
     }
 
     private fun sort(query: JPAQuery<Post>, pageable: Pageable) {
-        for (o in pageable.sort) {
+        pageable.sort.forEach {
             val pathBuilder = PathBuilder(post.type, post.metadata)
-
             query.orderBy(
                 OrderSpecifier(
-                    if (o.isAscending) Order.ASC else Order.DESC,
-                    pathBuilder.get(o.property) as Expression<out Comparable<Post>>
+                    if (it.isAscending) Order.ASC else Order.DESC,
+                    pathBuilder.getString(it.property)
                 )
             )
         }

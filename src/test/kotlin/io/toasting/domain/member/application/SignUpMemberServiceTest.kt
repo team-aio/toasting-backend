@@ -26,8 +26,6 @@ class SignUpMemberServiceTest : BehaviorSpec() {
         Given("회원 가입 정보가 주어졌을 때,") {
             val googleMember1 =
                 SignUpSocialLoginInputCreator.googleDefault("tjdvy963@naver.com", "tjdvy963", "tjdvy963", "123456")
-            val googleMember2 =
-                SignUpSocialLoginInputCreator.googleDefault("howudong@naver.com", "tjdvy963", "tjdvy963", "12345612")
             val googleMember3 =
                 SignUpSocialLoginInputCreator.googleDefault("tjdvy963@naver.com", "tjdvy963", "howudong", "123456")
 
