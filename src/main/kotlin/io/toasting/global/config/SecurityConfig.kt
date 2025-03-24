@@ -29,6 +29,8 @@ class SecurityConfig {
                     "http://toasting.io",
                     "http://api.toasting.io",
                     "https://api.toasting.io",
+                    "http://www.toasting.io",
+                    "https://www.toasting.io",
                 )
             exposedHeaders = listOf("*")
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
