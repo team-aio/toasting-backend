@@ -24,7 +24,8 @@ class SecurityConfig {
             allowedHeaders = listOf("*")
             allowedOrigins =
                 listOf(
-                    "http://localhost:3000",
+                    "http://locahost",
+                    "https://localhost",
                     "https://toasting.io",
                     "http://toasting.io",
                     "http://api.toasting.io",
