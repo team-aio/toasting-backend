@@ -11,4 +11,5 @@ interface ChatMemberRepository : JpaRepository<ChatMember, Long> {
     fun findByMemberId(toLong: Long): MutableList<ChatMember>
     fun findByMemberIdAndChatRoomId(memberId: Long, chatRoomId: Long): Optional<ChatMember>
     fun findByChatRoom(chatRoom: ChatRoom):MutableList<ChatMember>
+    fun findByChatRoomIdInAndMemberIdNot(chatRoomIdList: List<Long?>, myId: Long): List<ChatMember>
 }

@@ -1,4 +1,4 @@
-import io.toasting.domain.message.applicatoin.out.GetChatRoomListOutput
+import io.toasting.domain.message.applicatoin.output.GetChatRoomListOutput
 import java.time.LocalDateTime
 import kotlin.random.Random
 

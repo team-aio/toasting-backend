@@ -1,6 +1,6 @@
 package io.toasting.domain.message.controller.response
 
-import io.toasting.domain.message.applicatoin.out.GetChatRoomMessagesOutput
+import io.toasting.domain.message.applicatoin.output.GetChatRoomMessagesOutput
 import java.time.LocalDateTime
 
 class GetChatRoomMessagesResponse(

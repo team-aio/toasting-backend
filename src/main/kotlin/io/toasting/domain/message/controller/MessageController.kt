@@ -1,10 +1,13 @@
 package io.toasting.domain.message.controller
 
 import GetChatRoomListResponse
+import io.swagger.v3.oas.annotations.Operation
 import io.toasting.api.PageResponse
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.message.applicatoin.MessageService
+import io.toasting.domain.message.controller.request.CreateChatRoomRequest
 import io.toasting.domain.message.controller.request.SendMessageRequest
+import io.toasting.domain.message.controller.response.CreateChatRoomResponse
 import io.toasting.domain.message.controller.response.GetChatRoomMessagesResponse
 import io.toasting.domain.message.controller.response.GetMessageCountResponse
 import io.toasting.domain.message.controller.response.SendMessageResponse
@@ -86,6 +89,20 @@ class MessageController (
                 output.totalElements,
                 output.totalPages
             )
+        )
+    }
+
+    @PostMapping("")
+    @Operation(summary = "채팅방 생성", description = "나와 상대방의 채팅방을 생성합니다.")
+    fun createChatRoom(
+        @AuthenticationPrincipal memberDetails: MemberDetails,
+        @RequestBody @Valid request: CreateChatRoomRequest,
+    ): ApiResponse<CreateChatRoomResponse> {
+        val output = messageService.createChatRoom(memberDetails, request.toInput())
+        val response = CreateChatRoomResponse.from(output)
+
+        return ApiResponse.onSuccess(
+            response
         )
     }
 }

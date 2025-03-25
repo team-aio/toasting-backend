@@ -1,9 +1,9 @@
-package io.toasting.domain.message.applicatoin.out
+package io.toasting.domain.message.applicatoin.output
 
 import io.toasting.domain.message.entity.Message
 import java.time.LocalDateTime
 
-class SendMessageOutput(
+class GetChatRoomMessagesOutput(
     val id: Long,
     val chatRoomId: Long,
     val senderId: Long,
@@ -11,13 +11,13 @@ class SendMessageOutput(
     val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun fromEntity(message: Message): SendMessageOutput {
-            return SendMessageOutput(
+        fun fromEntity(message: Message): GetChatRoomMessagesOutput {
+            return GetChatRoomMessagesOutput(
                 id = message.id!!,
                 chatRoomId = message.chatRoom.id!!,
                 senderId = message.senderId,
                 content = message.content,
-                createdAt = message.createdAt,
+                createdAt = message.createdAt
             )
         }
     }
