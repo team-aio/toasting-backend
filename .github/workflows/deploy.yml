@@ -22,6 +22,10 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      # Gradle 권한 변경
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
       # Gradle 캐싱
       - name: Gradle Caching
         uses: actions/cache@v3
@@ -32,12 +36,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
       - name: Build JAR
         run: ./gradlew clean build --no-daemon
-
-      # Gradle 권한 변경
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -71,7 +72,9 @@ jobs:
           last_ssh: |
             cd /home/toasting
             export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
-            echo "${{ secrets.DC_PASS }}" | sudo -S killall containerd-shim
+            if pgrep containerd-shim > /dev/null; then
+              echo "${{ secrets.DC_PASS }}" | sudo -S killall containerd-shim
+            fi
             docker-compose down
             docker-compose pull
             docker image prune -a -f
