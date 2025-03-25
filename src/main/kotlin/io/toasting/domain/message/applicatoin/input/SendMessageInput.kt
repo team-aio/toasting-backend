@@ -1,4 +1,4 @@
-package io.toasting.domain.message.applicatoin.`in`
+package io.toasting.domain.message.applicatoin.input
 
 import io.toasting.domain.message.entity.ChatRoom
 import io.toasting.domain.message.entity.Message

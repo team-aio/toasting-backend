@@ -1,6 +1,6 @@
 package io.toasting.domain.message.controller.request
 
-import io.toasting.domain.message.applicatoin.`in`.CreateChatRoomInput
+import io.toasting.domain.message.applicatoin.input.CreateChatRoomInput
 import jakarta.validation.constraints.NotNull
 
 class CreateChatRoomRequest(

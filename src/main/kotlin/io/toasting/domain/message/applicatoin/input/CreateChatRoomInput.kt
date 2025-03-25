@@ -1,4 +1,4 @@
-package io.toasting.domain.message.applicatoin.`in`
+package io.toasting.domain.message.applicatoin.input
 
 class CreateChatRoomInput(
     val partnerId: Long

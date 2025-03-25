@@ -5,9 +5,9 @@ import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
-import io.toasting.domain.message.applicatoin.`in`.CreateChatRoomInput
-import io.toasting.domain.message.applicatoin.`in`.SendMessageInput
-import io.toasting.domain.message.applicatoin.out.*
+import io.toasting.domain.message.applicatoin.input.CreateChatRoomInput
+import io.toasting.domain.message.applicatoin.input.SendMessageInput
+import io.toasting.domain.message.applicatoin.output.*
 import io.toasting.domain.message.entity.ChatMember
 import io.toasting.domain.message.entity.ChatRoom
 import io.toasting.domain.message.entity.Message
