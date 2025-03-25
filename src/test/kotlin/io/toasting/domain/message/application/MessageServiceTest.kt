@@ -23,23 +23,30 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @SpringBootTest
 @Transactional
-class MessageServiceTest : BehaviorSpec({
-}) {
+@ActiveProfiles("test")
+class MessageServiceTest :
+    BehaviorSpec({
+    }) {
     override fun extensions() = listOf(SpringTestExtension(SpringTestLifecycleMode.Root))
 
     @Autowired
     private lateinit var memberRepository: MemberRepository
+
     @Autowired
     private lateinit var messageRepository: MessageRepository
+
     @Autowired
     private lateinit var chatRoomRepository: ChatRoomRepository
+
     @Autowired
     private lateinit var chatMemberRepository: ChatMemberRepository
+
     @Autowired
     private lateinit var messageService: MessageService
 
@@ -82,7 +89,7 @@ class MessageServiceTest : BehaviorSpec({
 
             When("member1이 읽지 않은 메세지 개수를 조회했을 때") {
                 val memberDetails = MemberDetails.from(member1)
-                val result = messageService.getUnreadMessageCount(memberDetails);
+                val result = messageService.getUnreadMessageCount(memberDetails)
 
                 Then("15가 반환되어야 한다.") {
                     result.count shouldBe 15
@@ -148,7 +155,8 @@ class MessageServiceTest : BehaviorSpec({
                 val chatRoomId = chatRoom.id!!
                 messageService.readAllMessage(memberDetails, chatRoomId)
                 Then("읽지 않은 메세지의 개수가 0이 된다.") {
-                    val messageList = messageRepository.findByChatRoomAndSenderIdNotAndIsRead(chatRoom, member1.id!!, false)
+                    val messageList =
+                        messageRepository.findByChatRoomAndSenderIdNotAndIsRead(chatRoom, member1.id!!, false)
 
                     messageList.size shouldBe 0
                 }
@@ -178,9 +186,12 @@ class MessageServiceTest : BehaviorSpec({
             val member4 = Member.defaultMember("member4", "member4@test.com")
             memberRepository.saveAll(mutableListOf(member1, member2, member3, member4))
 
-            val chatRoom1With2 = ChatRoomCreator.defaultChatRoom(member2.id!!, "chatRoom1", LocalDateTime.of(2025, 1, 1, 0,1, 10))
-            val chatRoom1With3 = ChatRoomCreator.defaultChatRoom(member3.id!!, "chatRoom2", LocalDateTime.of(2025, 1, 1, 0,1, 9))
-            val chatRoom1With4 = ChatRoomCreator.defaultChatRoom(member4.id!!, "chatRoom3", LocalDateTime.of(2025, 1, 1, 0,1, 8))
+            val chatRoom1With2 =
+                ChatRoomCreator.defaultChatRoom(member2.id!!, "chatRoom1", LocalDateTime.of(2025, 1, 1, 0, 1, 10))
+            val chatRoom1With3 =
+                ChatRoomCreator.defaultChatRoom(member3.id!!, "chatRoom2", LocalDateTime.of(2025, 1, 1, 0, 1, 9))
+            val chatRoom1With4 =
+                ChatRoomCreator.defaultChatRoom(member4.id!!, "chatRoom3", LocalDateTime.of(2025, 1, 1, 0, 1, 8))
             chatRoomRepository.saveAll(mutableListOf(chatRoom1With2, chatRoom1With3, chatRoom1With4))
 
             val chatMember1 = ChatMember(null, chatRoom1With2, member1.id!!)
@@ -189,7 +200,16 @@ class MessageServiceTest : BehaviorSpec({
             val chatMember4 = ChatMember(null, chatRoom1With3, member3.id!!)
             val chatMember5 = ChatMember(null, chatRoom1With4, member1.id!!)
             val chatMember6 = ChatMember(null, chatRoom1With4, member4.id!!)
-            chatMemberRepository.saveAll(mutableListOf(chatMember1, chatMember2, chatMember3, chatMember4, chatMember5, chatMember6))
+            chatMemberRepository.saveAll(
+                mutableListOf(
+                    chatMember1,
+                    chatMember2,
+                    chatMember3,
+                    chatMember4,
+                    chatMember5,
+                    chatMember6,
+                ),
+            )
 
             val messageList: MutableList<Message> = mutableListOf()
             for (i in 0 until 5) {
@@ -226,5 +246,4 @@ class MessageServiceTest : BehaviorSpec({
             }
         }
     }
-
 }
