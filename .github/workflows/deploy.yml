@@ -71,7 +71,7 @@ jobs:
           last_ssh: |
             cd /home/toasting
             export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
-            sudo killall containerd-shim
+            echo "${{ secrets.DC_PASS }}" | sudo -S killall containerd-shim
             docker-compose down
             docker-compose pull
             docker image prune -a -f
