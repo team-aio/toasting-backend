@@ -1,6 +1,5 @@
-package io.toasting.domain.message.applicatoin.out
+package io.toasting.domain.message.applicatoin.output
 
-import io.toasting.domain.message.entity.ChatRoom
 import java.time.LocalDateTime
 
 class GetChatRoomListOutput(

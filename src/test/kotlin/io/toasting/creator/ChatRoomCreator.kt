@@ -5,12 +5,16 @@ import java.time.LocalDateTime
 
 class ChatRoomCreator {
     companion object {
-        fun defaultChatRoom(recentSenderId: Long, recentMessage: String, recentSendAt: LocalDateTime): ChatRoom {
+        fun activatedChatRoom(recentSenderId: Long, recentMessage: String, recentSendAt: LocalDateTime): ChatRoom {
             return ChatRoom(
                 recentSenderId = recentSenderId,
                 recentMessageContent = recentMessage,
                 recentSendAt = recentSendAt,
             )
+        }
+
+        fun notActivatedChatRoom(): ChatRoom {
+            return ChatRoom()
         }
     }
 }

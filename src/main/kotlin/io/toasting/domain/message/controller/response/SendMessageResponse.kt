@@ -1,6 +1,6 @@
 package io.toasting.domain.message.controller.response
 
-import io.toasting.domain.message.applicatoin.out.SendMessageOutput
+import io.toasting.domain.message.applicatoin.output.SendMessageOutput
 import java.time.LocalDateTime
 
 class SendMessageResponse(

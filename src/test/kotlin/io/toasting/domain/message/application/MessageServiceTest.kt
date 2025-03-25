@@ -1,21 +1,26 @@
 package io.toasting.domain.message.application
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringTestExtension
 import io.kotest.extensions.spring.SpringTestLifecycleMode
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.date.shouldBeAfter
 import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.toasting.creator.ChatRoomCreator
 import io.toasting.creator.MessageCreator
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.message.applicatoin.MessageService
-import io.toasting.domain.message.applicatoin.`in`.SendMessageInput
+import io.toasting.domain.message.applicatoin.input.CreateChatRoomInput
+import io.toasting.domain.message.applicatoin.input.SendMessageInput
 import io.toasting.domain.message.entity.ChatMember
 import io.toasting.domain.message.entity.ChatRoom
 import io.toasting.domain.message.entity.Message
+import io.toasting.domain.message.exception.MessageExceptionHandler
 import io.toasting.domain.message.repository.ChatMemberRepository
 import io.toasting.domain.message.repository.ChatRoomRepository
 import io.toasting.domain.message.repository.MessageRepository
@@ -178,9 +183,9 @@ class MessageServiceTest : BehaviorSpec({
             val member4 = Member.defaultMember("member4", "member4@test.com")
             memberRepository.saveAll(mutableListOf(member1, member2, member3, member4))
 
-            val chatRoom1With2 = ChatRoomCreator.defaultChatRoom(member2.id!!, "chatRoom1", LocalDateTime.of(2025, 1, 1, 0,1, 10))
-            val chatRoom1With3 = ChatRoomCreator.defaultChatRoom(member3.id!!, "chatRoom2", LocalDateTime.of(2025, 1, 1, 0,1, 9))
-            val chatRoom1With4 = ChatRoomCreator.defaultChatRoom(member4.id!!, "chatRoom3", LocalDateTime.of(2025, 1, 1, 0,1, 8))
+            val chatRoom1With2 = ChatRoomCreator.activatedChatRoom(member2.id!!, "chatRoom1", LocalDateTime.of(2025, 1, 1, 0,1, 10))
+            val chatRoom1With3 = ChatRoomCreator.activatedChatRoom(member3.id!!, "chatRoom2", LocalDateTime.of(2025, 1, 1, 0,1, 9))
+            val chatRoom1With4 = ChatRoomCreator.activatedChatRoom(member4.id!!, "chatRoom3", LocalDateTime.of(2025, 1, 1, 0,1, 8))
             chatRoomRepository.saveAll(mutableListOf(chatRoom1With2, chatRoom1With3, chatRoom1With4))
 
             val chatMember1 = ChatMember(null, chatRoom1With2, member1.id!!)
@@ -225,6 +230,63 @@ class MessageServiceTest : BehaviorSpec({
                 }
             }
         }
+
+        Given("member1, member2, member3과 member2과 member3의 채팅방이 있고,") {
+            val member1 = Member.defaultMember("member1", "member1@test.com")
+            val member2 = Member.defaultMember("member2", "member2@test.com")
+            val member3 = Member.defaultMember("member3", "member3@test.com")
+            memberRepository.saveAll(mutableListOf(member1, member2, member3))
+
+            var notActivatedChatRoom = ChatRoomCreator.notActivatedChatRoom()
+            notActivatedChatRoom = chatRoomRepository.save(notActivatedChatRoom)
+            val chatMember2With3 = ChatMember(chatRoom = notActivatedChatRoom, memberId = member2.id!!)
+            val chatMember3With2 = ChatMember(chatRoom = notActivatedChatRoom, memberId = member3.id!!)
+            chatMemberRepository.saveAll(mutableListOf(chatMember2With3, chatMember3With2))
+
+            var activatedChatRoom = ChatRoomCreator.activatedChatRoom(recentSenderId = member1.id!!, recentMessage = "recentMessage", recentSendAt = LocalDateTime.now())
+            activatedChatRoom = chatRoomRepository.save(activatedChatRoom)
+            val chatMember1With3 = ChatMember(chatRoom = activatedChatRoom, memberId = member1.id!!)
+            val chatMember3With1 = ChatMember(chatRoom = activatedChatRoom, memberId = member3.id!!)
+            chatMemberRepository.saveAll(mutableListOf(chatMember1With3, chatMember3With1))
+
+            When("member1이 member2와의 채팅방을 생성하면") {
+                val memberDetails = MemberDetails.from(member1)
+                val input = CreateChatRoomInput(member2.id!!)
+
+                val output = messageService.createChatRoom(memberDetails, input)
+                Then("새로운 채팅방이 생성되고, 그 채팅방의 chatMemeber는 member1과 member2이다.") {
+                    val outputChatRoom = chatRoomRepository.findById(output.chatRoomId)
+                        .orElse(null)
+                    outputChatRoom shouldNotBe null
+
+                    val chatMemberList = chatMemberRepository.findByChatRoom(outputChatRoom)
+                    val memberIdList = chatMemberList.map { it.memberId }
+                    memberIdList shouldContain member1.id
+                    memberIdList shouldContain member2.id
+                }
+            }
+
+            When ("member2가 member3과의 채팅방을 생성하면") {
+                val memberDetails = MemberDetails.from(member2)
+                val input = CreateChatRoomInput(member3.id!!)
+
+                val output = messageService.createChatRoom(memberDetails, input)
+                Then("기존에 생성되어 있던 활성화되지 않은 채팅방이 응답된다.") {
+                    notActivatedChatRoom.id shouldBe output.chatRoomId
+                }
+            }
+
+            When("member1이 member3과의 채팅방을 생성하면") {
+                val memberDetails = MemberDetails.from(member1)
+                val input = CreateChatRoomInput(member3.id!!)
+                Then("ChatRoomAlreadyExistsException을 던진다.") {
+                    shouldThrow<MessageExceptionHandler.ChatRoomAlreadyExistsException> {
+                        messageService.createChatRoom(memberDetails, input)
+                    }
+                }
+            }
+        }
+
     }
 
 }

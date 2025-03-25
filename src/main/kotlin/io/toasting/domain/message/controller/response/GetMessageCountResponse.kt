@@ -1,6 +1,6 @@
 package io.toasting.domain.message.controller.response
 
-import io.toasting.domain.message.applicatoin.out.GetMessageCountOutput
+import io.toasting.domain.message.applicatoin.output.GetMessageCountOutput
 
 class GetMessageCountResponse(
     val count: Long,
