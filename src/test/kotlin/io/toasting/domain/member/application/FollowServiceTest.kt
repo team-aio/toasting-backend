@@ -14,10 +14,12 @@ import io.toasting.domain.member.repository.FollowRepository
 import io.toasting.domain.member.repository.MemberRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 class FollowServiceTest : BehaviorSpec() {
     override fun extensions(): List<Extension> = listOf(SpringExtension)
 
