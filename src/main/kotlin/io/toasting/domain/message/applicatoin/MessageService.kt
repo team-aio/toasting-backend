@@ -40,16 +40,15 @@ class MessageService(
     @Transactional(readOnly = false)
     fun sendMessage(memberDetails: MemberDetails, chatRoomId: Long, input: SendMessageInput): SendMessageOutput {
         val memberId = memberDetails.username.toLong()
-        var chatRoom = chatRoomRepository.findById(chatRoomId)
-            .orElseThrow{ MessageExceptionHandler.ChatRoomNotFoundException(ErrorStatus.CHAT_ROOM_NOT_FOUND) }
-        val chatMember = chatMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId)
-            .orElseThrow{ MessageExceptionHandler.ChatMemberNotFoundException(ErrorStatus.NOT_BELONG_TO_CHAT_ROOM) }
+        val chatRoom = chatRoomRepository.findById(chatRoomId)
+            .orElseThrow { MessageExceptionHandler.ChatRoomNotFoundException(ErrorStatus.CHAT_ROOM_NOT_FOUND) }
+        chatMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId)
+            .orElseThrow { MessageExceptionHandler.ChatMemberNotFoundException(ErrorStatus.NOT_BELONG_TO_CHAT_ROOM) }
 
         var message: Message = input.toMessageEntity(memberId, chatRoom)
         message = messageRepository.save(message)
 
-        chatRoom = input.toChatRoomEntity(memberId, chatRoom)
-        chatRoom = chatRoomRepository.save(chatRoom)
+        chatRoomRepository.save(input.toChatRoomEntity(memberId, chatRoom))
 
         return SendMessageOutput.fromEntity(message)
     }
@@ -70,7 +69,7 @@ class MessageService(
 
     fun getChatRoomMessages(memberDetails: MemberDetails, chatRoomId: Long, pageable: Pageable): PageResponse<GetChatRoomMessagesOutput> {
         val memberId = memberDetails.username.toLong()
-        val chatMember = chatMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId)
+        chatMemberRepository.findByMemberIdAndChatRoomId(memberId, chatRoomId)
             .orElseThrow{ MessageExceptionHandler.ChatMemberNotFoundException(ErrorStatus.NOT_BELONG_TO_CHAT_ROOM) }
 
         val chatRoom = chatRoomRepository.findById(chatRoomId)

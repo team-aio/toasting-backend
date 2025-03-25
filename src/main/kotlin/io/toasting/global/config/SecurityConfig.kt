@@ -59,12 +59,11 @@ class SecurityConfig {
         http
             .authorizeHttpRequests {
                 it
-                    .requestMatchers(
-                        RequestMatcher { request ->
-                            request.requestURI == "/v1/member/exist" &&
-                                request.getParameter("nickname")?.isNotEmpty() ?: false
-                        },
-                    ).permitAll()
+                    .requestMatchers(existMemberMatcher())
+                    .permitAll()
+                it
+                    .requestMatchers(getProfileMatcher())
+                    .permitAll()
                 it
                     .requestMatchers(
                         "/",
@@ -85,4 +84,16 @@ class SecurityConfig {
 
         return http.build()
     }
+
+    private fun existMemberMatcher() =
+        RequestMatcher { request ->
+            request.requestURI == "/v1/member/exist" &&
+                request.getParameter("nickname")?.isNotEmpty() ?: false
+        }
+
+    private fun getProfileMatcher() =
+        RequestMatcher { request ->
+            request.requestURI == "/v1/member/profile" &&
+                request.getParameter("memberId")?.isNotEmpty() ?: false
+        }
 }
