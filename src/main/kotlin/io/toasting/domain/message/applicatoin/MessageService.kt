@@ -5,11 +5,9 @@ import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
+import io.toasting.domain.message.applicatoin.`in`.CreateChatRoomInput
 import io.toasting.domain.message.applicatoin.`in`.SendMessageInput
-import io.toasting.domain.message.applicatoin.out.GetChatRoomListOutput
-import io.toasting.domain.message.applicatoin.out.GetChatRoomMessagesOutput
-import io.toasting.domain.message.applicatoin.out.GetMessageCountOutput
-import io.toasting.domain.message.applicatoin.out.SendMessageOutput
+import io.toasting.domain.message.applicatoin.out.*
 import io.toasting.domain.message.entity.ChatMember
 import io.toasting.domain.message.entity.ChatRoom
 import io.toasting.domain.message.entity.Message
@@ -122,4 +120,47 @@ class MessageService(
         throw MessageExceptionHandler.PartnerNotFoundException(ErrorStatus.PARTNER_NOT_FOUND)
     }
 
+    @Transactional(readOnly = false)
+    fun createChatRoom(memberDetails: MemberDetails, request: CreateChatRoomInput): CreateChatRoomOutput {
+        val myId = memberDetails.username.toLong()
+        memberRepository.findById(memberDetails.username.toLong())
+            .orElseThrow{ MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
+        val partnerId = request.partnerId
+        memberRepository.findById(partnerId)
+            .orElseThrow{ MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
+
+        val chatMemberList = chatMemberRepository.findByMemberId(myId)
+        val chatRoomIdList = chatMemberList.map { it.chatRoom.id }
+        val partnerChatMemberList = chatMemberRepository.findByChatRoomIdInAndMemberIdNot(chatRoomIdList, myId)
+        val partnerChatRoom = getPartnerChatMember(partnerId, partnerChatMemberList)
+        if (partnerChatRoom != null) {
+            if (partnerChatRoom.isActivated()) {
+                throw MessageExceptionHandler.ChatRoomAlreadyExistsException(ErrorStatus.CHAT_ROOM_ALREADY_EXISTS)
+            }
+            return CreateChatRoomOutput.from(partnerChatRoom)
+        }
+
+        val newChatRoom = createNewChatRoom(myId, partnerId)
+        return CreateChatRoomOutput.from(newChatRoom)
+    }
+
+    private fun getPartnerChatMember(partnerId:Long, chatMemberList: List<ChatMember>): ChatRoom? {
+        for (chatMember in chatMemberList) {
+            if (chatMember.memberId == partnerId) {
+                return chatMember.chatRoom
+            }
+        }
+        return null
+    }
+
+
+    private fun createNewChatRoom(myId: Long, partnerId: Long): ChatRoom {
+        val chatRoom = chatRoomRepository.save(ChatRoom())
+        val members = listOf(
+            ChatMember(chatRoom = chatRoom, memberId = myId),
+            ChatMember(chatRoom = chatRoom, memberId = partnerId)
+        )
+        chatMemberRepository.saveAll(members)
+        return chatRoom
+    }
 }
