@@ -132,7 +132,7 @@ class MessageService(
         val chatMemberList = chatMemberRepository.findByMemberId(myId)
         val chatRoomIdList = chatMemberList.map { it.chatRoom.id }
         val partnerChatMemberList = chatMemberRepository.findByChatRoomIdInAndMemberIdNot(chatRoomIdList, myId)
-        val partnerChatRoom = partnerChatMemberList.find { it.chatRoom.id == partnerId }?.chatRoom
+        val partnerChatRoom = partnerChatMemberList.find { it.memberId == partnerId }?.chatRoom
         if (partnerChatRoom != null) {
             if (partnerChatRoom.isActivated()) {
                 throw MessageExceptionHandler.ChatRoomAlreadyExistsException(ErrorStatus.CHAT_ROOM_ALREADY_EXISTS)
