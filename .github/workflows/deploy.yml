@@ -53,25 +53,25 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/toasting-spring:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/toasting-spring:buildcache,mode=max
 
-#  build-and-deploy:
-#    needs: upload-images
-#    runs-on: self-hosted
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#
-#      - name: Copy docker-compose via scp action
-#        uses: cross-the-world/ssh-scp-ssh-pipelines@latest
-#        with:
-#          host: ${{ secrets.DC_HOST }}
-#          user: ${{ secrets.DC_USER }}
-#          pass: ${{ secrets.DC_PASS }}
-#          scp: |
-#            './docker-compose.yml' => /home/toasting/
-#          last_ssh: |
-#            cd /home/toasting
-#            export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
-#            docker-compose down
-#            docker-compose pull
-#            docker image prune -a -f
-#            docker-compose -f docker-compose.yml up --build -d
+  build-and-deploy:
+    needs: upload-images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Copy docker-compose via scp action
+        uses: cross-the-world/ssh-scp-ssh-pipelines@latest
+        with:
+          host: ${{ secrets.DC_HOST }}
+          user: ${{ secrets.DC_USER }}
+          pass: ${{ secrets.DC_PASS }}
+          scp: |
+            './docker-compose.yml' => /home/toasting/
+          last_ssh: |
+            cd /home/toasting
+            export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
+            docker-compose down
+            docker-compose pull
+            docker image prune -a -f
+            docker-compose -f docker-compose.yml up --build -d
