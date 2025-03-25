@@ -20,13 +20,11 @@ class GetProfileService(
         val (followingCount, followerCount) = getFollowCounts(member)
         val postCount = postRepository.countByMemberId(memberId)
 
-        return GetProfileOutput(
-            nickname = member.nickname,
+        return GetProfileOutput.of(
+            member = member,
             followingCount = followingCount,
             followerCount = followerCount,
             postCount = postCount,
-            velogId = member.velogId,
-            tistoryId = member.tistoryId,
         )
     }
 
