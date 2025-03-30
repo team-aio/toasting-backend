@@ -129,6 +129,7 @@ class MessageService(
                     GetChatRoomListOutput(
                         chatRoomId = chatRoom.id ?: throw ChatRoomNotFoundException(ErrorStatus.CHAT_ROOM_NOT_FOUND),
                         memberId = partnerId,
+                        nickname = partner.nickname,
                         profilePicture = partner.profilePicture,
                         recentMessageContent = chatRoom.recentMessageContent!!,
                         recentSendAt = chatRoom.recentSendAt!!,
