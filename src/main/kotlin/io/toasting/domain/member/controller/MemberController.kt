@@ -13,6 +13,7 @@ import io.toasting.domain.member.controller.request.LoginGoogleRequest
 import io.toasting.domain.member.controller.request.SignUpSocialLoginRequest
 import io.toasting.domain.member.controller.response.GetMyProfileResponse
 import io.toasting.domain.member.controller.response.GetProfileResponse
+import io.toasting.domain.member.controller.response.LoginGoogleResponse
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.repository.RefreshTokenRepository
 import io.toasting.domain.member.vo.SocialType
@@ -60,7 +61,7 @@ class MemberController(
     fun loginGoogle(
         @Valid @RequestBody loginGoogleRequest: LoginGoogleRequest,
         response: HttpServletResponse,
-    ): ApiResponse<Unit> {
+    ): ApiResponse<LoginGoogleResponse> {
         val loginGoogleOutput = processGoogleLogin(loginGoogleRequest)
 
         if (loginGoogleOutput != null) {
@@ -72,7 +73,7 @@ class MemberController(
                     (refreshTokenExpiredMs / 1000).toInt(),
                 ),
             )
-            return ApiResponse.onSuccess()
+            return ApiResponse.onSuccess(LoginGoogleResponse(loginGoogleOutput.memberId))
         }
         return ApiResponse.onSuccess(SuccessStatus.MEMBER_CREATED.status, null)
     }

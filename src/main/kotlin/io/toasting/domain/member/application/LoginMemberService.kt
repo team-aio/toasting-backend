@@ -1,11 +1,13 @@
 package io.toasting.domain.member.application
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.member.application.input.LoginGoogleInput
 import io.toasting.domain.member.application.output.LoginGoogleOutput
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.RefreshToken
 import io.toasting.domain.member.entity.SocialLogin
+import io.toasting.domain.member.exception.MemberExceptionHandler.*
 import io.toasting.domain.member.repository.RefreshTokenRepository
 import io.toasting.domain.member.repository.SocialLoginRepository
 import io.toasting.global.security.jwt.JwtFactory
@@ -33,6 +35,7 @@ class LoginMemberService(
         saveRefreshToken(refreshToken)
 
         return LoginGoogleOutput(
+            memberId = existSocialMember.member.id ?: throw MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND),
             accessToken = accessToken,
             refreshToken = refreshToken,
         )
