@@ -191,9 +191,12 @@ class MessageServiceTest :
             val member4 = Member.defaultMember("member4", "member4@test.com")
             memberRepository.saveAll(mutableListOf(member1, member2, member3, member4))
 
-            val chatRoom1With2 = ChatRoomCreator.activatedChatRoom(member2.id!!, "chatRoom1", LocalDateTime.of(2025, 1, 1, 0,1, 10))
-            val chatRoom1With3 = ChatRoomCreator.activatedChatRoom(member3.id!!, "chatRoom2", LocalDateTime.of(2025, 1, 1, 0,1, 9))
-            val chatRoom1With4 = ChatRoomCreator.activatedChatRoom(member4.id!!, "chatRoom3", LocalDateTime.of(2025, 1, 1, 0,1, 8))
+            val chatRoom1With2 =
+                ChatRoomCreator.activatedChatRoom(member2.id!!, "chatRoom1", LocalDateTime.of(2025, 1, 1, 0, 1, 10))
+            val chatRoom1With3 =
+                ChatRoomCreator.activatedChatRoom(member3.id!!, "chatRoom2", LocalDateTime.of(2025, 1, 1, 0, 1, 9))
+            val chatRoom1With4 =
+                ChatRoomCreator.activatedChatRoom(member4.id!!, "chatRoom3", LocalDateTime.of(2025, 1, 1, 0, 1, 8))
             chatRoomRepository.saveAll(mutableListOf(chatRoom1With2, chatRoom1With3, chatRoom1With4))
 
             val chatMember1 = ChatMember(null, chatRoom1With2, member1.id!!)
@@ -260,7 +263,12 @@ class MessageServiceTest :
             val chatMember3With2 = ChatMember(chatRoom = notActivatedChatRoom, memberId = member3.id!!)
             chatMemberRepository.saveAll(mutableListOf(chatMember2With3, chatMember3With2))
 
-            var activatedChatRoom = ChatRoomCreator.activatedChatRoom(recentSenderId = member1.id!!, recentMessage = "recentMessage", recentSendAt = LocalDateTime.now())
+            var activatedChatRoom =
+                ChatRoomCreator.activatedChatRoom(
+                    recentSenderId = member1.id!!,
+                    recentMessage = "recentMessage",
+                    recentSendAt = LocalDateTime.now(),
+                )
             activatedChatRoom = chatRoomRepository.save(activatedChatRoom)
             val chatMember1With3 = ChatMember(chatRoom = activatedChatRoom, memberId = member1.id!!)
             val chatMember3With1 = ChatMember(chatRoom = activatedChatRoom, memberId = member3.id!!)
@@ -272,8 +280,10 @@ class MessageServiceTest :
 
                 val output = messageService.createChatRoom(memberDetails, input)
                 Then("새로운 채팅방이 생성되고, 그 채팅방의 chatMemeber는 member1과 member2이다.") {
-                    val outputChatRoom = chatRoomRepository.findById(output.chatRoomId)
-                        .orElse(null)
+                    val outputChatRoom =
+                        chatRoomRepository
+                            .findById(output.chatRoomId)
+                            .orElse(null)
                     outputChatRoom shouldNotBe null
 
                     val chatMemberList = chatMemberRepository.findByChatRoom(outputChatRoom)
@@ -283,7 +293,7 @@ class MessageServiceTest :
                 }
             }
 
-            When ("member2가 member3과의 채팅방을 생성하면") {
+            When("member2가 member3과의 채팅방을 생성하면") {
                 val memberDetails = MemberDetails.from(member2)
                 val input = CreateChatRoomInput(member3.id!!)
 
@@ -303,6 +313,5 @@ class MessageServiceTest :
                 }
             }
         }
-
     }
 }
