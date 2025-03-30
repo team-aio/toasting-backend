@@ -3,6 +3,7 @@ import java.time.LocalDateTime
 import kotlin.random.Random
 
 class GetChatRoomListResponse(
+    val chatRoomId: Long,
     val memberId: Long,
     val profilePicture: String? = null,
     val recentMessageContent: String,
@@ -12,6 +13,7 @@ class GetChatRoomListResponse(
     companion object {
         fun mock() =
             GetChatRoomListResponse(
+                chatRoomId = Random.nextLong(1, 10),
                 Random.nextLong(1, 10),
                 "st",
                 "last message content",
@@ -19,12 +21,14 @@ class GetChatRoomListResponse(
                 Random.nextInt(1, 10),
             )
 
-        fun from(output: GetChatRoomListOutput) = GetChatRoomListResponse(
-            memberId = output.memberId,
-            profilePicture = output.profilePicture,
-            recentMessageContent = output.recentMessageContent,
-            recentSendAt = output.recentSendAt,
-            unreadMessageCount = output.unreadMessageCount,
-        )
+        fun from(output: GetChatRoomListOutput) =
+            GetChatRoomListResponse(
+                chatRoomId = output.chatRoomId,
+                memberId = output.memberId,
+                profilePicture = output.profilePicture,
+                recentMessageContent = output.recentMessageContent,
+                recentSendAt = output.recentSendAt,
+                unreadMessageCount = output.unreadMessageCount,
+            )
     }
 }
