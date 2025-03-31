@@ -47,6 +47,6 @@ server:
   address: 0.0.0.0
 
 crawler:
-  base-url: localhost:3000/blog/
+  base-url: http://blog-crawler:3000/blog/
   tistory-uri: tistory/
   velog-uri: velog/
