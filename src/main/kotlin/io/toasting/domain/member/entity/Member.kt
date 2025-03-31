@@ -17,8 +17,8 @@ class Member(
     @Enumerated(EnumType.STRING)
     val role: RoleType,
     val profilePicture: String? = null,
-    val velogId: String? = null,
-    val tistoryId: String? = null,
+    var velogId: String? = null,
+    var tistoryId: String? = null,
     val nickname: String,
     val email: String,
 ) : BaseEntity() {
@@ -46,4 +46,12 @@ class Member(
             nickname = nickname,
             email = email,
         )
+
+    fun registerBlog(sourceType: String, id: String) {
+        if (sourceType.equals("tistory")) {
+            this.tistoryId = id
+        } else {
+            this.velogId = id
+        }
+    }
 }
