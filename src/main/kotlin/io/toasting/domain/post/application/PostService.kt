@@ -67,7 +67,7 @@ class PostService(
 
             val post = Post(
                 sourceType = sourceType,
-                url = crawledPost.url,
+                url = crawledPost.link,
                 postedAt = postedAt,
                 shortContent = shortContent,
                 content = text,
