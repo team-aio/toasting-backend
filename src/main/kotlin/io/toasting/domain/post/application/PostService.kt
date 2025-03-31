@@ -54,7 +54,9 @@ class PostService(
     @Transactional(readOnly = false)
     fun linkBlog(memberDetails: MemberDetails, id: String, sourceType: String) {
         val memberId = memberDetails.username.toLong()
-        memberRepository.findById(memberId).orElseThrow{ MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
+        var member = memberRepository.findById(memberId).orElseThrow{ MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
+        member.registerBlog(sourceType, id)
+        memberRepository.save(member)
 
         val crawledPostList = postCrawler.crawlPost(id, sourceType)
 

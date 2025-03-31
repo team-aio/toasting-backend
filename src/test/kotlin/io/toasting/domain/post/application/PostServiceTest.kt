@@ -135,7 +135,7 @@ class PostServiceTest : BehaviorSpec() {
 
             When("tistory 블로그를 연동했을 때") {
                 val memberDetails = MemberDetails.from(member1)
-                postService.linkBlog(memberDetails, "test", "tistory")
+                postService.linkBlog(memberDetails, "test", "velog")
 
                 val postList = postRepository.findAll()
                 Then("tistory 게시글 10개가 저장된다.") {
@@ -150,6 +150,11 @@ class PostServiceTest : BehaviorSpec() {
                     firstPost.postedAt!!.year shouldBe 2024
                     firstPost.postedAt!!.monthValue shouldBe 5
                     firstPost.postedAt!!.dayOfMonth shouldBe 2
+                }
+                Then("블로그 id가 저장된다") {
+                    val member = memberRepository.findById(member1.id!!).get()
+
+                    member.velogId shouldBe "test"
                 }
             }
         }
