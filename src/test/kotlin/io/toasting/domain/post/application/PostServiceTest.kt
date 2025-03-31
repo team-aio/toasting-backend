@@ -147,9 +147,9 @@ class PostServiceTest : BehaviorSpec() {
                     firstPost.memberId shouldBe member1.id
                     firstPost.content!!.length shouldBeGreaterThan firstPost.shortContent!!.length
                     firstPost.shortContent!!.length shouldBeLessThanOrEqual 100
-                    firstPost.postedAt!!.year shouldBe 2023
-                    firstPost.postedAt!!.monthValue shouldBe 8
-                    firstPost.postedAt!!.dayOfMonth shouldBe 15
+                    firstPost.postedAt!!.year shouldBe 2024
+                    firstPost.postedAt!!.monthValue shouldBe 5
+                    firstPost.postedAt!!.dayOfMonth shouldBe 2
                 }
             }
         }

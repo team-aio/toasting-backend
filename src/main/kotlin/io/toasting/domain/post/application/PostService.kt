@@ -15,8 +15,9 @@ import org.jsoup.Jsoup
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.time.*
+import java.util.*
 
 @Service
 class PostService(
@@ -57,13 +58,12 @@ class PostService(
 
         val crawledPostList = postCrawler.crawlPost(id, sourceType)
 
-        val formatter = DateTimeFormatter.ofPattern("yyyy-M-d")
         val postList = mutableListOf<Post>()
         for (crawledPost in crawledPostList) {
             val html = crawledPost.content
             val text = Jsoup.parse(html).text()
             val shortContent = text.take(100)
-            val postedAt = LocalDate.parse(crawledPost.posted_at, formatter).atStartOfDay()
+            val postedAt = parseDateToLocalDateTime(crawledPost.posted_at)
 
             val post = Post(
                 sourceType = sourceType,
@@ -86,5 +86,14 @@ class PostService(
             .orElseThrow { MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
 
         return GetPostDetailOutput.of(post, member)
+    }
+
+    fun parseDateToLocalDateTime(dateStr: String): LocalDateTime {
+        val format = SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH)
+        val date = format.parse(dateStr)
+
+        return date.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime()
     }
 }
