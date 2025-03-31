@@ -6,3 +6,9 @@ services:
     container_name: toasting-spring
     ports:
       - "8000:8000"
+    networks:
+      - toasting
+
+networks:
+  toasting:
+    external: true
