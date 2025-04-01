@@ -88,15 +88,7 @@ class PostServiceTest : BehaviorSpec() {
                     member2.id!!,
                     LocalDateTime.of(2025, 1, 1, 12, 0, 0),
                 )
-            val post5 =
-                PostCreator.defaultPost(
-                    "exception",
-                    "exception, exception, exception, exception, ",
-                    "exception",
-                    0L,
-                    LocalDateTime.of(2025, 1, 1, 12, 0, 0),
-                )
-            postRepository.saveAll(listOf(post1, post2, post3, post4, post5))
+            postRepository.saveAll(listOf(post1, post2, post3, post4))
 
             When("content라는 글이 포함된 게시글을 검색했을 떄,") {
                 val pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "postedAt"))
@@ -119,7 +111,27 @@ class PostServiceTest : BehaviorSpec() {
                 }
             }
 
+            When("keyword를 보내지 않았을 때") {
+                val pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "postedAt"))
+                val keyword = null
+                val output = postService.searchPost(keyword, pageable)
+                val postList = output.content
+
+                Then("모든 게시글 4개가 조회된다.") {
+                    postList.size shouldBe 4
+                }
+            }
+
             When("게시글 작성자를 찾을 수 없을 때") {
+                val exceptionPost =
+                    PostCreator.defaultPost(
+                        "exception",
+                        "exception, exception, exception, exception, ",
+                        "exception",
+                        0L,
+                        LocalDateTime.of(2025, 1, 1, 12, 0, 0),
+                    )
+                postRepository.save(exceptionPost)
                 val pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "postedAt"))
                 val keyword = "exception"
                 Then("MemberNotFoundException을 던진다.") {

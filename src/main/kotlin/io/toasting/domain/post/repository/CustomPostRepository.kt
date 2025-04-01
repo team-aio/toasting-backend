@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface CustomPostRepository {
-    fun searchByKeyword(keyword: String, pageable: Pageable): Page<Post>
+    fun searchByKeyword(keyword: String?, pageable: Pageable): Page<Post>
 }

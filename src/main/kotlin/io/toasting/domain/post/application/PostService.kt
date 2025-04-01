@@ -25,7 +25,7 @@ class PostService(
     private val memberRepository: MemberRepository,
     private val postCrawler: PostCrawler,
 ) {
-    fun searchPost(keyword: String, pageable: Pageable): PageResponse<SearchPostsOutput> {
+    fun searchPost(keyword: String?, pageable: Pageable): PageResponse<SearchPostsOutput> {
         val postPage = postRepository.searchByKeyword(keyword, pageable)
         val postList = postPage.content
 
