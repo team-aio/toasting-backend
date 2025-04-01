@@ -22,7 +22,7 @@ class CustomPostRepositoryImpl(
 
     private val post = QPost.post
 
-    override fun searchByKeyword(keyword: String, pageable: Pageable): Page<Post> {
+    override fun searchByKeyword(keyword: String?, pageable: Pageable): Page<Post> {
         val regexp = toRegexp(keyword)
         val query = queryFactory
             .selectDistinct(post)
@@ -42,14 +42,19 @@ class CustomPostRepositoryImpl(
         return PageImpl(postList, pageable, totalCount)
     }
 
-    private fun toRegexp(keyword: String): String {
+    private fun toRegexp(keyword: String?): String? {
+        if (keyword.isNullOrBlank()) {
+            return null
+        }
         return "%" + keyword + "%"
     }
 
-    private fun searchPostCondition(keyword: String): BooleanBuilder {
+    private fun searchPostCondition(keyword: String?): BooleanBuilder {
         val booleanBuilder = BooleanBuilder()
-        booleanBuilder.or(post.content.like(keyword))
-        booleanBuilder.or(post.title.like(keyword))
+        if (!keyword.isNullOrBlank()) {
+            booleanBuilder.or(post.content.like(keyword))
+            booleanBuilder.or(post.title.like(keyword))
+        }
         return booleanBuilder
     }
 
