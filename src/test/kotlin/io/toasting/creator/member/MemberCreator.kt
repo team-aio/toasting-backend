@@ -13,5 +13,6 @@ object MemberCreator {
         nickname = nickname,
         role = RoleType.ROLE_USER,
         email = email,
+        memberIdHash = "hash",
     )
 }

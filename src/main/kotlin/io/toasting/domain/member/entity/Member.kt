@@ -2,14 +2,18 @@ package io.toasting.domain.member.entity
 
 import io.toasting.domain.member.vo.RoleType
 import io.toasting.domain.model.BaseEntity
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Index
+import jakarta.persistence.Table
 
 @Entity
+@Table(name = "member", indexes = [Index(name = "idx_member_id_hash", columnList = "member_id_hash")])
 class Member(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +25,8 @@ class Member(
     var tistoryId: String? = null,
     val nickname: String,
     val email: String,
+    @Column(name = "member_id_hash")
+    val memberIdHash: String,
 ) : BaseEntity() {
     companion object {
         fun defaultMember(
@@ -30,24 +36,14 @@ class Member(
             role = RoleType.ROLE_USER,
             nickname = nickname,
             email = email,
+            memberIdHash = "hash",
         )
     }
 
-    fun updateWith(
-        nickname: String,
-        email: String,
-    ): Member =
-        Member(
-            id = id,
-            role = role,
-            profilePicture = profilePicture,
-            velogId = velogId,
-            tistoryId = tistoryId,
-            nickname = nickname,
-            email = email,
-        )
-
-    fun registerBlog(sourceType: String, id: String) {
+    fun registerBlog(
+        sourceType: String,
+        id: String,
+    ) {
         if (sourceType.equals("tistory")) {
             this.tistoryId = id
         } else {
