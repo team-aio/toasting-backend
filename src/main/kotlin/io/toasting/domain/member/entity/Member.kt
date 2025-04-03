@@ -25,8 +25,8 @@ class Member(
     var tistoryId: String? = null,
     val nickname: String,
     val email: String,
-    @Column(name = "member_id_hash")
-    val memberIdHash: String,
+    @Column(name = "member_id_hash", nullable = true)
+    val memberIdHash: String? = null,
 ) : BaseEntity() {
     companion object {
         fun defaultMember(
@@ -36,9 +36,20 @@ class Member(
             role = RoleType.ROLE_USER,
             nickname = nickname,
             email = email,
-            memberIdHash = "hash",
         )
     }
+
+    fun updateMemberIdHash(memberIdHash: String) =
+        Member(
+            id = this.id,
+            role = this.role,
+            profilePicture = this.profilePicture,
+            velogId = this.velogId,
+            tistoryId = this.tistoryId,
+            nickname = this.nickname,
+            email = this.email,
+            memberIdHash = memberIdHash,
+        )
 
     fun registerBlog(
         sourceType: String,
