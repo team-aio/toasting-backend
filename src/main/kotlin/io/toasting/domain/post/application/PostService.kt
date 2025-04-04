@@ -2,6 +2,7 @@ package io.toasting.domain.post.application
 
 import io.toasting.api.PageResponse
 import io.toasting.api.code.status.ErrorStatus
+import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
@@ -73,7 +74,7 @@ class PostService(
                 url = crawledPost.link,
                 postedAt = postedAt,
                 shortContent = shortContent,
-                content = text,
+                content = crawledPost.content,
                 title = crawledPost.title,
                 memberId = memberId
             )
