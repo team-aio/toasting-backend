@@ -9,12 +9,14 @@ import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldContain
 import io.mockk.every
 import io.toasting.creator.member.PostCreator
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
+import io.toasting.domain.post.exception.PostExceptionHandler
 import io.toasting.domain.post.repository.PostRepository
 import io.toasting.global.external.crawler.PostCrawler
 import org.springframework.beans.factory.annotation.Autowired
@@ -144,7 +146,6 @@ class PostServiceTest : BehaviorSpec() {
 
         Given("member가 있고,") {
             every { postCrawler.crawlPost(any(), any()) } returns PostCreator.crawledPostList()
-
             When("tistory 블로그를 연동했을 때") {
                 val memberDetails = MemberDetails.from(member1)
                 postService.linkBlog(memberDetails, "test", "velog")
@@ -162,6 +163,7 @@ class PostServiceTest : BehaviorSpec() {
                     firstPost.postedAt!!.year shouldBe 2024
                     firstPost.postedAt!!.monthValue shouldBe 5
                     firstPost.postedAt!!.dayOfMonth shouldBe 2
+                    firstPost.content shouldContain "<hr"
                 }
                 Then("블로그 id가 저장된다") {
                     val member = memberRepository.findById(member1.id!!).get()
@@ -169,6 +171,18 @@ class PostServiceTest : BehaviorSpec() {
                     member.velogId shouldBe "test"
                 }
             }
+
+            When("tistory 블로그를 연동하면") {
+                val memberDetails = MemberDetails.from(member2)
+                member2.registerBlog("tistory", "test")
+                memberRepository.save(member2)
+                Then("ALREADY_LINKED_BLOG 예외를 던진다.") {
+                    shouldThrow<PostExceptionHandler.AlreadyLinkedBlog> {
+                        postService.linkBlog(memberDetails, "test", "tistory")
+                    }
+                }
+            }
+
         }
 
         Given("member1이 작성한 게시글1이 있고,") {
