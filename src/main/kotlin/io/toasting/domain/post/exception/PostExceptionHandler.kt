@@ -7,4 +7,8 @@ sealed class PostExceptionHandler {
     class PostNotFoundException(
         errorCode: BaseErrorCode
     ) : GeneralException(errorCode)
+
+    class AlreadyLinkedBlog(
+        errorCode: BaseErrorCode
+    ) : GeneralException(errorCode)
 }

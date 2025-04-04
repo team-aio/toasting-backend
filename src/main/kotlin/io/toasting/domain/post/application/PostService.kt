@@ -55,6 +55,7 @@ class PostService(
     fun linkBlog(memberDetails: MemberDetails, id: String, sourceType: String) {
         val memberId = memberDetails.username.toLong()
         var member = memberRepository.findById(memberId).orElseThrow{ MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
+        validateAlreadyLinkedBlog(member, sourceType)
         member.registerBlog(sourceType, id)
         memberRepository.save(member)
 
@@ -79,6 +80,13 @@ class PostService(
             postList.add(post)
         }
         postRepository.saveAll(postList)
+    }
+
+    fun validateAlreadyLinkedBlog(member: Member, sourceType: String) {
+        if ((sourceType.equals("tistory") && !member.tistoryId.isNullOrBlank()) ||
+            (sourceType.equals("velog") && !member.velogId.isNullOrBlank())) {
+            throw PostExceptionHandler.AlreadyLinkedBlog(ErrorStatus.ALREADY_LINKED_BLOG)
+        }
     }
 
     fun getPostDetail(postId: Long): GetPostDetailOutput {
