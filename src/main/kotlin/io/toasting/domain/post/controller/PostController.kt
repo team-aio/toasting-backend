@@ -25,7 +25,7 @@ internal class PostController(
             sort = arrayOf("postedAt"),
             direction = Sort.Direction.DESC,
         ) pageable: Pageable,
-        @RequestParam("keyword", required = false) keyword: String,
+        @RequestParam("keyword", required = false) keyword: String?,
     ): ApiResponse<PageResponse<SearchPostsResponse>> {
         val output = postService.searchPost(keyword, pageable)
         val response = output.content.map { SearchPostsResponse.from(it) }

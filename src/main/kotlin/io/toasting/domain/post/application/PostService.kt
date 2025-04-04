@@ -2,6 +2,7 @@ package io.toasting.domain.post.application
 
 import io.toasting.api.PageResponse
 import io.toasting.api.code.status.ErrorStatus
+import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
@@ -55,6 +56,7 @@ class PostService(
     fun linkBlog(memberDetails: MemberDetails, id: String, sourceType: String) {
         val memberId = memberDetails.username.toLong()
         var member = memberRepository.findById(memberId).orElseThrow{ MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
+        validateAlreadyLinkedBlog(member, sourceType)
         member.registerBlog(sourceType, id)
         memberRepository.save(member)
 
@@ -72,13 +74,20 @@ class PostService(
                 url = crawledPost.link,
                 postedAt = postedAt,
                 shortContent = shortContent,
-                content = text,
+                content = crawledPost.content,
                 title = crawledPost.title,
                 memberId = memberId
             )
             postList.add(post)
         }
         postRepository.saveAll(postList)
+    }
+
+    fun validateAlreadyLinkedBlog(member: Member, sourceType: String) {
+        if ((sourceType.equals("tistory") && !member.tistoryId.isNullOrBlank()) ||
+            (sourceType.equals("velog") && !member.velogId.isNullOrBlank())) {
+            throw PostExceptionHandler.AlreadyLinkedBlog(ErrorStatus.ALREADY_LINKED_BLOG)
+        }
     }
 
     fun getPostDetail(postId: Long): GetPostDetailOutput {

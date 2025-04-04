@@ -31,7 +31,9 @@ enum class ErrorStatus(
     PARTNER_NOT_FOUND(HttpStatus.BAD_REQUEST, "PARTNER_NOT_FOUND", "상대방을 찾을 수 없습니다."),
     CHAT_ROOM_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "CHAT_ROOM_ALREADY_EXISTS", "이미 채팅방이 존재합니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_NOT_FOUND", "게시글을 찾을 수 없습니다."),
-    SELF_FOLLOW_BANNED(HttpStatus.BAD_REQUEST, "SELF_FOLLOW_BANNED", "자신을 팔로우 할 수 없습니다.");
+    SELF_FOLLOW_BANNED(HttpStatus.BAD_REQUEST, "SELF_FOLLOW_BANNED", "자신을 팔로우 할 수 없습니다."),
+    ALREADY_LINKED_BLOG(HttpStatus.BAD_REQUEST, "ALREADY_LINKED_BLOG", "이미 블로그를 연동했습니다."),
+    ;
 
     override fun getReason() =
         ErrorReasonDTO(
