@@ -1,5 +1,6 @@
 package io.toasting.domain.post.controller
 
+import io.swagger.v3.oas.annotations.Operation
 import io.toasting.api.PageResponse
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.post.application.PostService
@@ -18,6 +19,7 @@ internal class PostController(
     private val postService: PostService
 ) {
     @GetMapping("/search")
+    @Operation(summary = "로그인했을 때 게시글 검색")
     fun searchPosts(
         @AuthenticationPrincipal memberDetails: MemberDetails,
         @PageableDefault(
