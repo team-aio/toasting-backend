@@ -1,5 +1,6 @@
 package io.toasting.global.security.jwt
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.member.entity.MemberDetails
@@ -70,7 +71,7 @@ class JwtFilter(
         jwtFactory
             .validateAccessToken(trimmedAccessToken)
             .onSuccess { sendAuthToken(trimmedAccessToken, filterChain, request, response) }
-            .onFailure { exception -> response.status = findTokenException(exception) }
+            .onFailure { exception -> sendErrorResponse(exception, response) }
     }
 
     private fun sendAuthToken(
@@ -100,12 +101,26 @@ class JwtFilter(
         filterChain.doFilter(request, response)
     }
 
+    private fun sendErrorResponse(
+        exception: Throwable,
+        response: HttpServletResponse,
+    ) {
+        val errorStatus = findTokenException(exception)
+        response.status = errorStatus.getReason().httpStatus.value()
+        response.contentType = "application/json"
+        response.characterEncoding = "UTF-8"
+
+        jacksonObjectMapper()
+            .writeValueAsString(errorStatus.getReason())
+            .let { error -> response.writer.write(error) }
+    }
+
     private fun findTokenException(exception: Throwable) =
         when (exception) {
-            is AuthExceptionHandler.TokenExpiredException -> ErrorStatus.ACCESS_TOKEN_EXPIRED.httpStatus.value()
+            is AuthExceptionHandler.TokenExpiredException -> ErrorStatus.ACCESS_TOKEN_EXPIRED
 
-            is AuthExceptionHandler.TokenNotFoundException -> ErrorStatus.UNAUTHORIZED.httpStatus.value()
+            is AuthExceptionHandler.TokenNotFoundException -> ErrorStatus.UNAUTHORIZED
 
-            else -> ErrorStatus.TOKEN_ERROR.httpStatus.value()
+            else -> ErrorStatus.TOKEN_ERROR
         }
 }
