@@ -12,7 +12,8 @@ class SearchPostsResponse(
     val likeCount: Int,
     val memberId: Long,
     val nickname: String,
-    val profilePicture: String? = null
+    val profilePicture: String? = null,
+    val isBookmarked: Boolean,
 ) {
     companion object {
         fun from(output: SearchPostsOutput): SearchPostsResponse {
@@ -25,7 +26,8 @@ class SearchPostsResponse(
                 likeCount = output.likeCount,
                 memberId = output.memberId,
                 nickname = output.nickname,
-                profilePicture = output.profilePicture
+                profilePicture = output.profilePicture,
+                isBookmarked = output.isBookmarked
             )
         }
     }

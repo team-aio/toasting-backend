@@ -10,6 +10,7 @@ import io.toasting.domain.post.application.out.GetPostDetailOutput
 import io.toasting.domain.post.application.out.SearchPostsOutput
 import io.toasting.domain.post.entity.Post
 import io.toasting.domain.post.exception.PostExceptionHandler
+import io.toasting.domain.post.repository.BookmarkRepository
 import io.toasting.domain.post.repository.PostRepository
 import io.toasting.global.external.crawler.PostCrawler
 import org.jsoup.Jsoup
@@ -24,9 +25,10 @@ import java.util.*
 class PostService(
     private val postRepository: PostRepository,
     private val memberRepository: MemberRepository,
+    private val bookmarkRepository: BookmarkRepository,
     private val postCrawler: PostCrawler,
 ) {
-    fun searchPost(keyword: String?, pageable: Pageable): PageResponse<SearchPostsOutput> {
+    fun searchPost(memberDetails: MemberDetails, keyword: String?, pageable: Pageable): PageResponse<SearchPostsOutput> {
         val postPage = postRepository.searchByKeyword(keyword, pageable)
         val postList = postPage.content
 
@@ -35,13 +37,16 @@ class PostService(
         val memberMapById = memberList.associateBy { it.id!! }
 
         val outputList = mutableListOf<SearchPostsOutput>()
+        val bookmarkList = bookmarkRepository.findByPostInAndMemberId(postPage.content, memberDetails.username.toLong())
+        val postIdSetByBookmarkSet = bookmarkList.map { it.post.id!! }.toSet()
         for (post in postList) {
             val memberId = post.memberId
             val member = memberMapById[memberId]
             if (member == null) {
                 throw MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND)
             }
-            val output = SearchPostsOutput.of(post, member)
+            val isBookmarked = postIdSetByBookmarkSet.contains(post.id)
+            val output = SearchPostsOutput.of(post, member, isBookmarked)
             outputList.add(output)
         }
 

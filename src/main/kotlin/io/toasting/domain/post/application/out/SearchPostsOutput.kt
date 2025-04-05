@@ -13,10 +13,11 @@ class SearchPostsOutput(
     val likeCount: Int,
     val memberId: Long,
     val nickname: String,
-    val profilePicture: String? = null
+    val profilePicture: String? = null,
+    val isBookmarked: Boolean
 ) {
     companion object {
-        fun of(post: Post, member: Member): SearchPostsOutput {
+        fun of(post: Post, member: Member, isBookmarked: Boolean): SearchPostsOutput {
             return SearchPostsOutput(
                 id = post.id!!,
                 sourceType = post.sourceType,
@@ -26,7 +27,8 @@ class SearchPostsOutput(
                 likeCount = post.likeCount,
                 memberId = member.id!!,
                 nickname = member.nickname,
-                profilePicture = member.profilePicture
+                profilePicture = member.profilePicture,
+                isBookmarked = isBookmarked
             )
         }
     }
