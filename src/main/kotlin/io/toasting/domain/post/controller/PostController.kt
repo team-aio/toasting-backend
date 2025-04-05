@@ -19,6 +19,7 @@ internal class PostController(
 ) {
     @GetMapping("/search")
     fun searchPosts(
+        @AuthenticationPrincipal memberDetails: MemberDetails,
         @PageableDefault(
             page = 0,
             size = 10,
@@ -27,7 +28,7 @@ internal class PostController(
         ) pageable: Pageable,
         @RequestParam("keyword", required = false) keyword: String?,
     ): ApiResponse<PageResponse<SearchPostsResponse>> {
-        val output = postService.searchPost(keyword, pageable)
+        val output = postService.searchPost(memberDetails, keyword, pageable)
         val response = output.content.map { SearchPostsResponse.from(it) }
         return ApiResponse.onSuccess(
             PageResponse.of(response,
