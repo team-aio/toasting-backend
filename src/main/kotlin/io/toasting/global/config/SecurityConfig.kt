@@ -36,7 +36,7 @@ class SecurityConfig {
 //                )
             allowedOriginPatterns = listOf("*") // 실제 프로덕션에선 절대 사용하지 말것. 테스트 환경에서만 사용
             exposedHeaders = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            allowedHeaders = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+            allowedHeaders = listOf("Content-Type", "Authorization", "X-Requested-With")
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
             allowCredentials = true
             maxAge = 3600
