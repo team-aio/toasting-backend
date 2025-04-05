@@ -79,6 +79,7 @@ class SecurityConfig {
                         "/v1/member/login/google",
                         "/v1/member/signup",
                         "/v1/member/exist?nickname=**",
+                        "/v1/non-member/**"
                     ).permitAll()
                     .anyRequest()
                     .authenticated()
