@@ -16,7 +16,7 @@ class CustomAuthenticationEntryPointHandler : AuthenticationEntryPoint {
         authException: AuthenticationException,
     ) {
         response.sendErrorResponse(
-            errorStatus = ErrorStatus.FORBIDDEN,
+            errorStatus = ErrorStatus.UNAUTHORIZED,
         )
     }
 }
