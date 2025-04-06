@@ -44,6 +44,7 @@ class JwtFilter(
                 "/api-test/**",
                 "/v1/member/login/google",
                 "/v1/member/signup",
+                "/v1/reissue",
             )
     }
 

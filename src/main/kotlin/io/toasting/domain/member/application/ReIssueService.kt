@@ -8,6 +8,7 @@ import io.toasting.domain.member.repository.RefreshTokenRepository
 import io.toasting.global.api.exception.handler.AuthExceptionHandler
 import io.toasting.global.security.jwt.JwtFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.Date
@@ -19,6 +20,7 @@ class ReIssueService(
 ) {
     private val log = KotlinLogging.logger {}
 
+    @Transactional
     fun reIssueAccessToken(refreshToken: String): ReIssueOutput {
         var output: ReIssueOutput? = null
         // TODO : 밑에 validateRefreshToken 역할이 있는데, 여기서 따로 validate하는게 맞는건지? 추후 리팩토링 해야함
