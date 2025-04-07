@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.util.matcher.RequestMatcher
@@ -50,6 +51,7 @@ class SecurityConfig {
     fun securityFilterChain(
         http: HttpSecurity,
         jwtFactory: JwtFactory,
+        authenticationEntryPoint: AuthenticationEntryPoint,
     ): SecurityFilterChain {
         http
             .httpBasic { it.disable() }
@@ -79,10 +81,13 @@ class SecurityConfig {
                         "/v1/member/login/google",
                         "/v1/member/signup",
                         "/v1/member/exist?nickname=**",
+                        "/v1/reissue",
                     ).permitAll()
                     .anyRequest()
                     .authenticated()
             }.addFilterBefore(JwtFilter(jwtFactory), UsernamePasswordAuthenticationFilter::class.java)
+
+        http.exceptionHandling { ex -> ex.authenticationEntryPoint(authenticationEntryPoint) }
 
         return http.build()
     }

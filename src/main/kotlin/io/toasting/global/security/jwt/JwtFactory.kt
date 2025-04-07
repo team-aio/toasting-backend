@@ -116,5 +116,5 @@ class JwtFactory(
                 .verify(accessToken)
                 .expiresAt
                 .before(Date(System.currentTimeMillis()))
-        }.getOrDefault(false)
+        }.getOrDefault(true)
 }
