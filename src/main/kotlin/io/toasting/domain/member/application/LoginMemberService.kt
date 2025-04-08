@@ -48,13 +48,13 @@ class LoginMemberService(
 
         val accessToken =
             jwtFactory.createAccessToken(
-                username = member.id.toString(),
+                username = member.memberIdHash ?: throw IllegalArgumentException("memberIdHash is null"),
                 role = member.role.name,
             )
 
         val refreshToken =
             jwtFactory.createRefreshToken(
-                username = member.id.toString(),
+                username = member.memberIdHash ?: throw IllegalArgumentException("memberIdHash is null"),
                 role = member.role.name,
             )
 
