@@ -8,11 +8,12 @@ object MemberCreator {
         id: Long,
         nickname: String,
         email: String,
+        memberIdHash: String,
     ) = Member(
         id = id,
         nickname = nickname,
         role = RoleType.ROLE_USER,
         email = email,
-        memberIdHash = "hash",
+        memberIdHash = memberIdHash,
     )
 }

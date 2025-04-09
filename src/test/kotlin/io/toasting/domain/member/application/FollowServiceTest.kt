@@ -12,6 +12,7 @@ import io.toasting.domain.member.application.input.ExistsFollowInput
 import io.toasting.domain.member.exception.FollowExceptionHandler
 import io.toasting.domain.member.repository.FollowRepository
 import io.toasting.domain.member.repository.MemberRepository
+import io.toasting.global.util.HashUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -34,8 +35,8 @@ class FollowServiceTest : BehaviorSpec() {
 
     init {
         given("저장된 유저 정보가 주어졌을 때") {
-            val m1 = MemberCreator.defaultMember(1L, "test1", "test1@naver.com")
-            val m2 = MemberCreator.defaultMember(2L, "test2", "test2@naver.com")
+            val m1 = MemberCreator.defaultMember(1L, "test1", "test1@naver.com", HashUtil.encode("1"))
+            val m2 = MemberCreator.defaultMember(2L, "test2", "test2@naver.com", HashUtil.encode("2"))
 
             memberRepository.saveAll(listOf(m1, m2))
             When("팔로우를 추가하면") {
