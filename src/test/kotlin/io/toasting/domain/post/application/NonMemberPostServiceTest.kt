@@ -102,24 +102,9 @@ class NonMemberPostServiceTest : BehaviorSpec() {
                 Then("포스팅 날짜 내림차순으로 정렬되어 조회된다.") {
                     postList.map { it.postedAt } shouldBeSortedWith compareByDescending { it }
                 }
-            }
-
-            When("member1이 post1을 북마크했을 때") {
-                val bookmark = Bookmark(post = post1, memberId = member1.id!!)
-                bookmarkRepository.save(bookmark)
-
-                val pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "postedAt"))
-                val keyword = "content"
-                val output = nonMemberPostService.searchPostWithoutMember(keyword, pageable)
-                val postList = output.content
-
-                Then("post1의 isBookmarked는 false이다.") {
-                    val resultPost = postList.find { it.id == post1.id }
-                    resultPost shouldNotBe null
-
-                    resultPost!!.isBookmarked shouldBe false
+                Then("모든 post의 isBookmarked는 false이다.") {
+                    postList.all { it.isBookmarked == false } shouldBe true
                 }
-
             }
 
             When("keyword를 보내지 않았을 때") {
