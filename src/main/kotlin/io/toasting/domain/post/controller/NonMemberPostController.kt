@@ -1,6 +1,7 @@
 package io.toasting.domain.post.controller
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import io.toasting.api.PageResponse
 import io.toasting.domain.post.application.NonMemberPostService
 import io.toasting.domain.post.controller.response.SearchPostsResponse
@@ -15,12 +16,13 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/v1/non-member/posts")
+@Tag(name = "NonMember-Post", description = "비로그인 게시글 관련 API")
 class NonMemberPostController(
     private val nonMemberPostService: NonMemberPostService
 ) {
 
     @GetMapping("/search")
-    @Operation(summary = "로그인 하지 않은 게시글 검색", description = "북마크 여부는 모두 false로 응답")
+    @Operation(summary = "로그인 하지 않은 게시글 검색", description = "북마크 여부는 모두 false로 응답합니다.")
     fun searchPostWithoutMember(
         @PageableDefault(
             page = 0,
