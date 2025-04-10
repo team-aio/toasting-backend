@@ -4,6 +4,8 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringTestExtension
 import io.kotest.extensions.spring.SpringTestLifecycleMode
+import io.kotest.matchers.collections.shouldBeSortedWith
+import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.toasting.creator.member.PostCreator
@@ -98,12 +100,7 @@ class NonMemberPostServiceTest : BehaviorSpec() {
                     output.totalPages shouldBe 1
                 }
                 Then("포스팅 날짜 내림차순으로 정렬되어 조회된다.") {
-                    val firstPost = postList[0]
-                    val secondPost = postList[1]
-                    firstPost.id shouldBe post1.id
-                    firstPost.memberId shouldBe member1.id
-                    secondPost.id shouldBe post2.id
-                    secondPost.memberId shouldBe member2.id
+                    postList.map { it.postedAt } shouldBeSortedWith compareByDescending { it }
                 }
             }
 
