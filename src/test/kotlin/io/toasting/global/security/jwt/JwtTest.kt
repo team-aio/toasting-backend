@@ -7,7 +7,6 @@ import io.toasting.creator.member.MemberCreator
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.member.vo.RoleType
 import io.toasting.global.util.HashUtil
-import jakarta.persistence.EntityManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -20,9 +19,6 @@ class JwtTest : BehaviorSpec() {
     @Autowired
     private lateinit var memberRepository: MemberRepository
 
-    @Autowired
-    private lateinit var entityManger: EntityManager
-
     private lateinit var jwtFactory: JwtFactory
 
     init {
@@ -33,7 +29,6 @@ class JwtTest : BehaviorSpec() {
                     secret = "asdfsdfsdfdsf",
                     accessExpiredMs = 60 * 60 * 2,
                     refreshExpiredMs = 60 * 60 * 24 * 7,
-                    memberRepository = memberRepository,
                 )
 
             memberRepository.saveAndFlush(

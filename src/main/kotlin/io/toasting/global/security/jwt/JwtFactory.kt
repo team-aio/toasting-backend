@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.toasting.api.code.status.ErrorStatus
-import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.global.api.exception.handler.AuthExceptionHandler
 import io.toasting.global.constants.Auth
 import org.springframework.beans.factory.annotation.Value
@@ -16,7 +15,6 @@ class JwtFactory(
     @Value("\${spring.jwt.secret}") private val secret: String,
     @Value("\${spring.jwt.access-token-expired-ms}") private val accessExpiredMs: Long,
     @Value("\${spring.jwt.refresh-token-expired-ms}") private val refreshExpiredMs: Long,
-    private val memberRepository: MemberRepository,
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -60,21 +58,17 @@ class JwtFactory(
             log.error { "Token verification failed: ${it.message}" }
         }.getOrNull()
 
-    fun memberId(accessToken: String): String? {
-        val memberIdHash =
-            runCatching {
-                JWT
-                    .require(Algorithm.HMAC256(secret))
-                    .build()
-                    .verify(accessToken)
-                    .getClaim(Auth.MEMBER_ID_HASH)
-                    .asString()
-            }.onFailure {
-                log.error { "Token verification failed: ${it.message}" }
-            }.getOrNull() ?: return null
-
-        return memberRepository.findByMemberIdHash(memberIdHash)?.id.toString()
-    }
+    fun memberId(accessToken: String): String? =
+        runCatching {
+            JWT
+                .require(Algorithm.HMAC256(secret))
+                .build()
+                .verify(accessToken)
+                .getClaim(Auth.MEMBER_ID_HASH)
+                .asString()
+        }.onFailure {
+            log.error { "Token verification failed: ${it.message}" }
+        }.getOrNull()
 
     fun validateAccessToken(token: String): Result<Unit> {
         if (isExpired(token)) {
