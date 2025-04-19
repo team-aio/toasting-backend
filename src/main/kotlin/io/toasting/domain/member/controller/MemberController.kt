@@ -18,6 +18,7 @@ import io.toasting.domain.member.repository.RefreshTokenRepository
 import io.toasting.domain.member.vo.SocialType
 import io.toasting.global.api.ApiResponse
 import io.toasting.global.api.exception.handler.AuthExceptionHandler
+import io.toasting.global.codec.MemberIdCodec
 import io.toasting.global.constants.Auth
 import io.toasting.global.extension.CookieExtension
 import io.toasting.global.extension.createCookie
@@ -44,6 +45,7 @@ class MemberController(
     private val checkMemberService: CheckMemberService,
     private val getProfileService: GetProfileService,
     private val refreshTokenRepository: RefreshTokenRepository, // TODO : 의존성 방향만 맞춤, 바로 Repository를 호출하면 아면 추후 리팩토링
+    private val memberIdCodec: MemberIdCodec,
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -134,10 +136,10 @@ class MemberController(
     @GetMapping("/profile")
     @Operation(summary = "특정 대상의 프로필 조회", description = "특정 대상의 프로필을 조회합니다. 로그인이 필요 없습니다.")
     fun getProfile(
-        @RequestParam memberId: Long,
+        @RequestParam memberId: String,
     ): ApiResponse<GetProfileResponse> =
         getProfileService
-            .getProfile(memberId)
+            .getProfile(memberIdCodec.decode(memberIdHash = memberId))
             .let { GetProfileResponse.from(it) }
             .let { response -> ApiResponse.onSuccess(response) }
 
