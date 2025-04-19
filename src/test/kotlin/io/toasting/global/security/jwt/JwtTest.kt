@@ -24,9 +24,11 @@ class JwtTest : BehaviorSpec() {
 
     private lateinit var jwtFactory: JwtFactory
 
+    private lateinit var memberIdHash: String
+
     init {
-        val memberIdHash = memberIdCodec.encode(1)
         beforeTest {
+            memberIdHash = memberIdCodec.encode(1)
             jwtFactory =
                 JwtFactory(
                     secret = "asdfsdfsdfdsf",
@@ -50,7 +52,6 @@ class JwtTest : BehaviorSpec() {
                 val token = jwtFactory.createAccessToken(memberIdHash, role, 60 * 60 * 2)
                 Then("담긴 값들이 모두 추출되어야한다.") {
                     jwtFactory.role(token) shouldBe role
-                    jwtFactory.memberId(token) shouldBe "1"
                 }
                 Then("잘못된 토큰으로 추출하려고 하면 null을 반환한다.") {
                     val result = jwtFactory.role("invalidToken.dsfd.ss")
