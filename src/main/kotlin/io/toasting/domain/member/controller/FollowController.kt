@@ -10,6 +10,7 @@ import io.toasting.domain.member.controller.response.ExistsFollowResponse
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.global.api.ApiResponse
 import io.toasting.global.codec.MemberIdCodec
+import io.toasting.global.extension.toMemberId
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -31,8 +32,7 @@ class FollowController(
         @PathVariable memberId: Long,
         @AuthenticationPrincipal memberDetails: MemberDetails,
     ): ApiResponse<Unit> {
-        val fromMemberId = memberDetails.username
-            .let { memberIdHash -> memberIdCodec.decode(memberIdHash) }
+        val fromMemberId = memberDetails.toMemberId(memberIdCodec)
 
         val addFollowInput = AddFollowInput(fromMemberId = fromMemberId, toMemberId = memberId)
 
@@ -46,8 +46,7 @@ class FollowController(
         @PathVariable memberId: Long,
         @AuthenticationPrincipal memberDetails: MemberDetails,
     ): ApiResponse<Unit> {
-        val fromMemberId = memberDetails.username
-            .let { memberIdHash -> memberIdCodec.decode(memberIdHash) }
+        val fromMemberId = memberDetails.toMemberId(memberIdCodec)
         val cancelFollowInput = CancelFollowInput(fromMemberId = fromMemberId, toMemberId = memberId)
 
         followService.cancelFollow(cancelFollowInput)
@@ -60,8 +59,7 @@ class FollowController(
         @PathVariable memberId: Long,
         @AuthenticationPrincipal memberDetails: MemberDetails,
     ): ApiResponse<ExistsFollowResponse> {
-        val fromMemberId = memberDetails.username
-            .let { memberIdHash -> memberIdCodec.decode(memberIdHash) }
+        val fromMemberId = memberDetails.toMemberId(memberIdCodec)
         val existsFollowInput = ExistsFollowInput(fromMemberId = fromMemberId, toMemberId = memberId)
 
         return followService

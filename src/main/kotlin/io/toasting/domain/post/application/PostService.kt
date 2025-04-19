@@ -12,6 +12,7 @@ import io.toasting.domain.post.entity.Post
 import io.toasting.domain.post.exception.PostExceptionHandler
 import io.toasting.domain.post.repository.PostRepository
 import io.toasting.global.codec.MemberIdCodec
+import io.toasting.global.extension.toMemberId
 import io.toasting.global.external.crawler.PostCrawler
 import org.jsoup.Jsoup
 import org.springframework.data.domain.Pageable
@@ -57,9 +58,7 @@ class PostService(
 
     @Transactional(readOnly = false)
     fun linkBlog(memberDetails: MemberDetails, id: String, sourceType: String) {
-        val memberId = memberDetails.username
-            .let { memberIdHash -> memberIdCodec.decode(memberIdHash) }
-        
+        val memberId = memberDetails.toMemberId(memberIdCodec)
         val member = memberRepository.findById(memberId)
             .orElseThrow { MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
         validateAlreadyLinkedBlog(member, sourceType)

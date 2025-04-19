@@ -23,6 +23,7 @@ import io.toasting.global.constants.Auth
 import io.toasting.global.extension.CookieExtension
 import io.toasting.global.extension.createCookie
 import io.toasting.global.extension.findRefreshTokenOrNull
+import io.toasting.global.extension.toMemberId
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
@@ -125,7 +126,7 @@ class MemberController(
     fun getMyProfile(
         @AuthenticationPrincipal memberDetails: MemberDetails,
     ): ApiResponse<GetMyProfileResponse> {
-        val memberId = memberDetails.username.toLong()
+        val memberId = memberDetails.toMemberId(memberIdCodec)
 
         return getProfileService
             .getProfile(memberId)
