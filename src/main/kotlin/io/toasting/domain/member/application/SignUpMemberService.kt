@@ -7,7 +7,7 @@ import io.toasting.domain.member.entity.SocialLogin
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.member.repository.SocialLoginRepository
-import io.toasting.global.util.HashUtil
+import io.toasting.global.codec.MemberIdCodec
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service
 class SignUpMemberService(
     private val socialLoginRepository: SocialLoginRepository,
     private val memberRepository: MemberRepository,
+    private val memberIdCodec: MemberIdCodec
 ) {
     /*
      * 소셜 로그인으로 회원가입할 때 (추후 확장성을 고려했습니다.)
@@ -60,7 +61,7 @@ class SignUpMemberService(
         memberId: Long,
         member: Member,
     ) {
-        val memberIdHash = HashUtil.encode(memberId.toString())
+        val memberIdHash = memberIdCodec.encode(memberId)
         memberRepository.save(
             member.updateMemberIdHash(memberIdHash),
         )

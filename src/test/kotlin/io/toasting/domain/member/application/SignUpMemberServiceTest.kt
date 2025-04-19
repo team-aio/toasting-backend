@@ -7,7 +7,7 @@ import io.kotest.matchers.shouldBe
 import io.toasting.creator.member.SignUpSocialLoginInputCreator
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
-import io.toasting.global.util.HashUtil
+import io.toasting.global.codec.MemberIdCodec
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -25,6 +25,9 @@ class SignUpMemberServiceTest : BehaviorSpec() {
     @Autowired
     private lateinit var memberRepository: MemberRepository
 
+    @Autowired
+    private lateinit var memberIdCodec: MemberIdCodec
+
     init {
         Given("회원 가입 정보가 주어졌을 때,") {
             val googleMember1 =
@@ -38,7 +41,7 @@ class SignUpMemberServiceTest : BehaviorSpec() {
                     val member = memberRepository.findById(savedMember1).get()
                     member.nickname shouldBe "tjdvy963"
                     member.email shouldBe "tjdvy963@naver.com"
-                    HashUtil.matches(member.id!!.toString(), member.memberIdHash!!) shouldBe true
+                    member.id!! shouldBe memberIdCodec.decode(member.memberIdHash!!)
                 }
             }
             When("이미 가입된 회원이 회원가입을 시도하면") {

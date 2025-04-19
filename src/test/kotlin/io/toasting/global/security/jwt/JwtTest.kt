@@ -6,7 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.toasting.creator.member.MemberCreator
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.member.vo.RoleType
-import io.toasting.global.util.HashUtil
+import io.toasting.global.codec.MemberIdCodec
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -19,10 +19,13 @@ class JwtTest : BehaviorSpec() {
     @Autowired
     private lateinit var memberRepository: MemberRepository
 
+    @Autowired
+    private lateinit var memberIdCodec: MemberIdCodec
+
     private lateinit var jwtFactory: JwtFactory
 
     init {
-        val memberIdHash = HashUtil.encode("1")
+        val memberIdHash = memberIdCodec.encode(1)
         beforeTest {
             jwtFactory =
                 JwtFactory(

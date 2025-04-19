@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
@@ -95,12 +96,15 @@ class SecurityConfig {
     private fun existMemberMatcher() =
         RequestMatcher { request ->
             request.requestURI == "/v1/member/exist" &&
-                request.getParameter("nickname")?.isNotEmpty() ?: false
+                    request.getParameter("nickname")?.isNotEmpty() ?: false
         }
 
     private fun getProfileMatcher() =
         RequestMatcher { request ->
             request.requestURI == "/v1/member/profile" &&
-                request.getParameter("memberId")?.isNotEmpty() ?: false
+                    request.getParameter("memberId")?.isNotEmpty() ?: false
         }
+
+    @Bean
+    fun passwordEncoder(): BCryptPasswordEncoder = BCryptPasswordEncoder()
 }
