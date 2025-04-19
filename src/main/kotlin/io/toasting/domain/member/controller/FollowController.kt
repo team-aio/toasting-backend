@@ -9,6 +9,7 @@ import io.toasting.domain.member.application.input.ExistsFollowInput
 import io.toasting.domain.member.controller.response.ExistsFollowResponse
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.global.api.ApiResponse
+import io.toasting.global.codec.MemberIdCodec
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "Following", description = "팔로우 관련 API")
 class FollowController(
     private val followService: FollowService,
+    private val memberIdCodec: MemberIdCodec,
 ) {
     @PostMapping("/{memberId}")
     @Operation(summary = "팔로우 추가", description = "해당 사용자를 팔로우합니다.")
@@ -29,7 +31,9 @@ class FollowController(
         @PathVariable memberId: Long,
         @AuthenticationPrincipal memberDetails: MemberDetails,
     ): ApiResponse<Unit> {
-        val fromMemberId = memberDetails.username.toLong()
+        val fromMemberId = memberDetails.username
+            .let { memberIdHash -> memberIdCodec.decode(memberIdHash) }
+
         val addFollowInput = AddFollowInput(fromMemberId = fromMemberId, toMemberId = memberId)
 
         followService.addFollow(addFollowInput)
@@ -42,7 +46,8 @@ class FollowController(
         @PathVariable memberId: Long,
         @AuthenticationPrincipal memberDetails: MemberDetails,
     ): ApiResponse<Unit> {
-        val fromMemberId = memberDetails.username.toLong()
+        val fromMemberId = memberDetails.username
+            .let { memberIdHash -> memberIdCodec.decode(memberIdHash) }
         val cancelFollowInput = CancelFollowInput(fromMemberId = fromMemberId, toMemberId = memberId)
 
         followService.cancelFollow(cancelFollowInput)
@@ -55,7 +60,8 @@ class FollowController(
         @PathVariable memberId: Long,
         @AuthenticationPrincipal memberDetails: MemberDetails,
     ): ApiResponse<ExistsFollowResponse> {
-        val fromMemberId = memberDetails.username.toLong()
+        val fromMemberId = memberDetails.username
+            .let { memberIdHash -> memberIdCodec.decode(memberIdHash) }
         val existsFollowInput = ExistsFollowInput(fromMemberId = fromMemberId, toMemberId = memberId)
 
         return followService
