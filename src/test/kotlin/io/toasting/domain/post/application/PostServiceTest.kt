@@ -11,6 +11,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import io.mockk.every
+import io.toasting.creator.member.MemberCreator
 import io.toasting.creator.member.PostCreator
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.MemberDetails
@@ -18,6 +19,7 @@ import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.post.exception.PostExceptionHandler
 import io.toasting.domain.post.repository.PostRepository
+import io.toasting.global.codec.MemberIdCodec
 import io.toasting.global.external.crawler.PostCrawler
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -42,6 +44,9 @@ class PostServiceTest : BehaviorSpec() {
     @Autowired
     private lateinit var memberRepository: MemberRepository
 
+    @Autowired
+    private lateinit var memberIdCodec: MemberIdCodec
+
     @MockkBean
     private lateinit var postCrawler: PostCrawler
 
@@ -51,9 +56,9 @@ class PostServiceTest : BehaviorSpec() {
 
     init {
         beforeSpec {
-            member1 = Member.defaultMember("member1", "member1@test.com")
-            member2 = Member.defaultMember("member2", "member2@test.com")
-            member3 = Member.defaultMember("member3", "member3@test.com")
+            member1 = MemberCreator.defaultMember(1L, "member1", "member1@test.com", memberIdCodec.encode(1))
+            member2 = MemberCreator.defaultMember(2L, "member2", "member2@test.com", memberIdCodec.encode(2))
+            member3 = MemberCreator.defaultMember(3L, "member3", "member3@test.com", memberIdCodec.encode(3))
             memberRepository.saveAll(listOf(member1, member2, member3))
         }
 
