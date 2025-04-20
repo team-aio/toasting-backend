@@ -6,6 +6,7 @@ import io.toasting.domain.member.application.output.ReIssueOutput
 import io.toasting.domain.member.entity.RefreshToken
 import io.toasting.domain.member.repository.RefreshTokenRepository
 import io.toasting.global.api.exception.handler.AuthExceptionHandler
+import io.toasting.global.codec.MemberIdCodec
 import io.toasting.global.security.jwt.JwtFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,6 +18,7 @@ import java.util.Date
 class ReIssueService(
     private val jwtFactory: JwtFactory,
     private val refreshTokenRepository: RefreshTokenRepository,
+    private val memberIdCodec: MemberIdCodec,
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -49,7 +51,7 @@ class ReIssueService(
 
         val refreshToken =
             RefreshToken(
-                memberId = memberId.toLong(),
+                memberId = memberIdCodec.decode(memberId),
                 token = newRefreshToken,
                 expiredAt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()),
             )
