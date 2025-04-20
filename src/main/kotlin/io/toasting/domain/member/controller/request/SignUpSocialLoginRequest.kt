@@ -5,6 +5,8 @@ import io.toasting.domain.member.application.input.SignUpSocialLoginInput
 import io.toasting.domain.member.vo.SocialType
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
 
 @Schema(title = "소셜 로그인 회원가입 요청 DTO", description = "소셜 로그인 회원가입 요청")
 data class SignUpSocialLoginRequest(
@@ -20,6 +22,11 @@ data class SignUpSocialLoginRequest(
     val snsId: String,
     @Schema(description = "닉네임", example = "호우동")
     @field:NotBlank(message = "닉네임은 빈 값이 될 수 없습니다.")
+    @field:Size(min = 3, max = 14, message = "닉네임은 15자 이내여야합니다.")
+    @field:Pattern(
+        regexp = "^[a-zA-Z0-9가-힣]+$",
+        message = "한글, 알파벳, 숫자의 조합으로 닉네임이 구성되어야 합니다."
+    )
     val nickname: String,
     val tistoryId: String?,
     val velogId: String?,
