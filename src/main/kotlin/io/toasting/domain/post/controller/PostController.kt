@@ -1,5 +1,7 @@
 package io.toasting.domain.post.controller
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import io.toasting.api.PageResponse
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.post.application.PostService
@@ -14,11 +16,14 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/v1/posts")
+@Tag(name = "Post", description = "게시글 관련 API")
 internal class PostController(
     private val postService: PostService
 ) {
     @GetMapping("/search")
+    @Operation(summary = "로그인했을 때 게시글 검색")
     fun searchPosts(
+        @AuthenticationPrincipal memberDetails: MemberDetails,
         @PageableDefault(
             page = 0,
             size = 10,
@@ -27,7 +32,7 @@ internal class PostController(
         ) pageable: Pageable,
         @RequestParam("keyword", required = false) keyword: String?,
     ): ApiResponse<PageResponse<SearchPostsResponse>> {
-        val output = postService.searchPost(keyword, pageable)
+        val output = postService.searchPost(memberDetails, keyword, pageable)
         val response = output.content.map { SearchPostsResponse.from(it) }
         return ApiResponse.onSuccess(
             PageResponse.of(response,
@@ -38,6 +43,7 @@ internal class PostController(
     }
 
     @PostMapping("/blog/{sourceType}/{id}")
+    @Operation(summary = "블로그 연동", description = "Tistory 또는 Velog를 연동합니다. id에는 각 블로그의 닉네임이 들어갑니다.")
     fun linkBlog(
         @AuthenticationPrincipal memberDetails: MemberDetails,
         @PathVariable("sourceType") sourceType: String,
@@ -48,6 +54,7 @@ internal class PostController(
     }
 
     @GetMapping("/{postId}")
+    @Operation(summary = "게시글 상세 조회", description = "리스트에서 조회된 게시글을 상세보기 합니다.")
     fun getPostDetail(
         @PathVariable("postId") postId: Long,
     ): ApiResponse<GetPostDetailResponse> {

@@ -16,7 +16,9 @@ import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
+import io.toasting.domain.post.entity.Bookmark
 import io.toasting.domain.post.exception.PostExceptionHandler
+import io.toasting.domain.post.repository.BookmarkRepository
 import io.toasting.domain.post.repository.PostRepository
 import io.toasting.global.external.crawler.PostCrawler
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,6 +34,9 @@ import java.time.LocalDateTime
 @ActiveProfiles("test")
 class PostServiceTest : BehaviorSpec() {
     override fun extensions() = listOf(SpringTestExtension(SpringTestLifecycleMode.Root))
+
+    @Autowired
+    private lateinit var bookmarkRepository: BookmarkRepository
 
     @Autowired
     private lateinit var postService: PostService
@@ -95,7 +100,8 @@ class PostServiceTest : BehaviorSpec() {
             When("content라는 글이 포함된 게시글을 검색했을 떄,") {
                 val pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "postedAt"))
                 val keyword = "content"
-                val output = postService.searchPost(keyword, pageable)
+                val memberDetails = MemberDetails.from(member1)
+                val output = postService.searchPost(memberDetails, keyword, pageable)
                 val postList = output.content
 
                 Then("검색 결과의 총 개수는 2개이다.") {
@@ -113,10 +119,30 @@ class PostServiceTest : BehaviorSpec() {
                 }
             }
 
+            When("member1이 post1을 북마크했을 때") {
+                val bookmark = Bookmark(post = post1, memberId = member1.id!!)
+                bookmarkRepository.save(bookmark)
+
+                val pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "postedAt"))
+                val keyword = "content"
+                val memberDetails = MemberDetails.from(member1)
+                val output = postService.searchPost(memberDetails, keyword, pageable)
+                val postList = output.content
+
+                Then("post1의 isBookmarked는 true이다.") {
+                    val resultPost = postList.find{ it.id == post1.id }
+                    resultPost shouldNotBe null
+
+                    resultPost!!.isBookmarked shouldBe true
+                }
+
+            }
+
             When("keyword를 보내지 않았을 때") {
                 val pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "postedAt"))
                 val keyword = null
-                val output = postService.searchPost(keyword, pageable)
+                val memberDetails = MemberDetails.from(member1)
+                val output = postService.searchPost(memberDetails, keyword, pageable)
                 val postList = output.content
 
                 Then("모든 게시글 4개가 조회된다.") {
@@ -136,9 +162,10 @@ class PostServiceTest : BehaviorSpec() {
                 postRepository.save(exceptionPost)
                 val pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "postedAt"))
                 val keyword = "exception"
+                val memberDetails = MemberDetails.from(member1)
                 Then("MemberNotFoundException을 던진다.") {
                     shouldThrow<MemberExceptionHandler.MemberNotFoundException> {
-                        postService.searchPost(keyword, pageable)
+                        postService.searchPost(memberDetails, keyword, pageable)
                     }
                 }
             }

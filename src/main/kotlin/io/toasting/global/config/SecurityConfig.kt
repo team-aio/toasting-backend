@@ -82,6 +82,7 @@ class SecurityConfig {
                         "/v1/member/signup",
                         "/v1/member/exist?nickname=**",
                         "/v1/reissue",
+                        "/v1/non-member/**"
                     ).permitAll()
                     .anyRequest()
                     .authenticated()
