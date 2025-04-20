@@ -5,6 +5,7 @@ import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.global.api.exception.handler.AuthExceptionHandler
 import io.toasting.global.constants.Auth
+import io.toasting.global.extension.sendErrorResponse
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -43,6 +44,7 @@ class JwtFilter(
                 "/api-test/**",
                 "/v1/member/login/google",
                 "/v1/member/signup",
+                "/v1/reissue",
             )
     }
 
@@ -70,7 +72,10 @@ class JwtFilter(
         jwtFactory
             .validateAccessToken(trimmedAccessToken)
             .onSuccess { sendAuthToken(trimmedAccessToken, filterChain, request, response) }
-            .onFailure { exception -> response.status = findTokenException(exception) }
+            .onFailure { exception ->
+                val errorStatus = findTokenException(exception)
+                response.sendErrorResponse(errorStatus)
+            }
     }
 
     private fun sendAuthToken(
@@ -102,10 +107,10 @@ class JwtFilter(
 
     private fun findTokenException(exception: Throwable) =
         when (exception) {
-            is AuthExceptionHandler.TokenExpiredException -> ErrorStatus.ACCESS_TOKEN_EXPIRED.httpStatus.value()
+            is AuthExceptionHandler.TokenExpiredException -> ErrorStatus.ACCESS_TOKEN_EXPIRED
 
-            is AuthExceptionHandler.TokenNotFoundException -> ErrorStatus.UNAUTHORIZED.httpStatus.value()
+            is AuthExceptionHandler.TokenNotFoundException -> ErrorStatus.UNAUTHORIZED
 
-            else -> ErrorStatus.TOKEN_ERROR.httpStatus.value()
+            else -> ErrorStatus.TOKEN_ERROR
         }
 }
