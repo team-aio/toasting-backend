@@ -31,6 +31,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.util.UUID
 
 @SpringBootTest
 @Transactional
@@ -58,9 +59,9 @@ class MessageServiceTest :
     init {
 
         Given("member1과 member2의 채팅방, member1과 member3의 채팅방, member2가 메세지 10개, member3이 메시지 5개 보낸 것이 주어지고,") {
-            val member1 = Member.defaultMember("member1", "member1@test.com")
-            val member2 = Member.defaultMember("member2", "member2@test.com")
-            val member3 = Member.defaultMember("member3", "member3@test.com")
+            val member1 = Member.defaultMember("member1", "member1@test.com", UUID.randomUUID())
+            val member2 = Member.defaultMember("member2", "member2@test.com", UUID.randomUUID())
+            val member3 = Member.defaultMember("member3", "member3@test.com", UUID.randomUUID())
             memberRepository.saveAll(mutableListOf(member1, member2, member3))
 
             val chatRoom1 = ChatRoom()
@@ -103,8 +104,8 @@ class MessageServiceTest :
         }
 
         Given("member1과 member2의 채팅방이 주어지고,") {
-            val member1 = Member.defaultMember("member1", "member1@test.com")
-            val member2 = Member.defaultMember("member2", "member2@test.com")
+            val member1 = Member.defaultMember("member1", "member1@test.com", UUID.randomUUID())
+            val member2 = Member.defaultMember("member2", "member2@test.com", UUID.randomUUID())
             memberRepository.saveAll(mutableListOf(member1, member2))
 
             val chatRoom = ChatRoom()
@@ -137,8 +138,8 @@ class MessageServiceTest :
         }
 
         Given("member2와 member1의 채팅방과 member1이 읽지 않은 메세지가 10개 주어졌고,") {
-            val member1 = Member.defaultMember("member1", "member1@test.com")
-            val member2 = Member.defaultMember("member2", "member2@test.com")
+            val member1 = Member.defaultMember("member1", "member1@test.com", UUID.randomUUID())
+            val member2 = Member.defaultMember("member2", "member2@test.com", UUID.randomUUID())
             memberRepository.saveAll(mutableListOf(member1, member2))
 
             val chatRoom = ChatRoom()
@@ -185,10 +186,10 @@ class MessageServiceTest :
         }
 
         Given("member1과 member2의 채팅방, member1과 member3의 채팅방, member1과 member4의 채팅방이 주어졌고,") {
-            val member1 = Member.defaultMember("member1", "member1@test.com")
-            val member2 = Member.defaultMember("member2", "member2@test.com")
-            val member3 = Member.defaultMember("member3", "member3@test.com")
-            val member4 = Member.defaultMember("member4", "member4@test.com")
+            val member1 = Member.defaultMember("member1", "member1@test.com", UUID.randomUUID())
+            val member2 = Member.defaultMember("member2", "member2@test.com", UUID.randomUUID())
+            val member3 = Member.defaultMember("member3", "member3@test.com", UUID.randomUUID())
+            val member4 = Member.defaultMember("member4", "member4@test.com", UUID.randomUUID())
             memberRepository.saveAll(mutableListOf(member1, member2, member3, member4))
 
             val chatRoom1With2 =
@@ -252,9 +253,9 @@ class MessageServiceTest :
         }
 
         Given("member1, member2, member3과 member2과 member3의 채팅방이 있고,") {
-            val member1 = Member.defaultMember("member1", "member1@test.com")
-            val member2 = Member.defaultMember("member2", "member2@test.com")
-            val member3 = Member.defaultMember("member3", "member3@test.com")
+            val member1 = Member.defaultMember("member1", "member1@test.com", UUID.randomUUID())
+            val member2 = Member.defaultMember("member2", "member2@test.com", UUID.randomUUID())
+            val member3 = Member.defaultMember("member3", "member3@test.com", UUID.randomUUID())
             memberRepository.saveAll(mutableListOf(member1, member2, member3))
 
             var notActivatedChatRoom = ChatRoomCreator.notActivatedChatRoom()

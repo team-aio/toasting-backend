@@ -28,6 +28,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.util.UUID
 
 @SpringBootTest
 @Transactional
@@ -56,9 +57,9 @@ class PostServiceTest : BehaviorSpec() {
 
     init {
         beforeSpec {
-            member1 = Member.defaultMember("member1", "member1@test.com")
-            member2 = Member.defaultMember("member2", "member2@test.com")
-            member3 = Member.defaultMember("member3", "member3@test.com")
+            member1 = Member.defaultMember("member1", "member1@test.com", UUID.randomUUID())
+            member2 = Member.defaultMember("member2", "member2@test.com", UUID.randomUUID())
+            member3 = Member.defaultMember("member3", "member3@test.com", UUID.randomUUID())
             memberRepository.saveAll(listOf(member1, member2, member3))
         }
 

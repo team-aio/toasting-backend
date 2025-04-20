@@ -3,7 +3,6 @@ package io.toasting.domain.member.application
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.toasting.domain.member.application.input.LoginGoogleInput
 import io.toasting.domain.member.application.output.LoginGoogleOutput
-import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.RefreshToken
 import io.toasting.domain.member.entity.SocialLogin
 import io.toasting.domain.member.repository.RefreshTokenRepository
@@ -37,17 +36,6 @@ class LoginMemberService(
             refreshToken = refreshToken,
         )
     }
-
-    private fun createNewSocialMember(loginGoogleInput: LoginGoogleInput) =
-        SocialLogin(
-            socialType = loginGoogleInput.socialType,
-            externalId = loginGoogleInput.externalId,
-            member =
-                Member.defaultMember(
-                    email = loginGoogleInput.email,
-                    nickname = loginGoogleInput.username,
-                ),
-        )
 
     private fun findSocialMemberOrNull(loginGoogleInput: LoginGoogleInput) =
         socialLoginRepository.findBySocialTypeAndExternalId(
