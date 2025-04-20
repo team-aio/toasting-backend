@@ -89,8 +89,7 @@ class MemberController(
         @Pattern(
             regexp = "^[a-zA-Z0-9가-힣]+$",
             message = "한글, 알파벳, 숫자의 조합으로 닉네임이 구성되어야 합니다."
-        )
-        nickname: String,
+        ) nickname: String,
     ): ApiResponse<Unit> {
         checkMemberService.checkMemberNicknameIsDuplicated(nickname)
         return ApiResponse.onSuccess()
