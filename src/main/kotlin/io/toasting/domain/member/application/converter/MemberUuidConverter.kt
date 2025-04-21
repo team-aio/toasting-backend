@@ -10,6 +10,6 @@ import java.util.UUID
 class MemberUuidConverter(
     private val memberRepository: MemberRepository
 ) {
-    fun toMemberId(uuid: UUID): Long = memberRepository.findByUuid(uuid)?.id
+    fun toMemberId(uuid: String): Long = memberRepository.findByUuid(UUID.fromString(uuid))?.id
         ?: throw MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND)
 }

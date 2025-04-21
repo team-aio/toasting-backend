@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 
 @RestController
 @RequestMapping("/v1/follow")
@@ -32,8 +31,8 @@ class FollowController(
         @PathVariable memberId: String,
         @AuthenticationPrincipal memberDetails: MemberDetails,
     ): ApiResponse<Unit> {
-        val fromMemberId = memberUuidConverter.toMemberId(UUID.fromString(memberDetails.username))
-        val toMemberId = memberUuidConverter.toMemberId(UUID.fromString(memberId))
+        val fromMemberId = memberUuidConverter.toMemberId(memberDetails.username)
+        val toMemberId = memberUuidConverter.toMemberId(memberId)
 
         val addFollowInput = AddFollowInput(fromMemberId = fromMemberId, toMemberId = toMemberId)
 
@@ -47,8 +46,8 @@ class FollowController(
         @PathVariable memberId: String,
         @AuthenticationPrincipal memberDetails: MemberDetails,
     ): ApiResponse<Unit> {
-        val fromMemberId = memberUuidConverter.toMemberId(UUID.fromString(memberDetails.username))
-        val toMemberId = memberUuidConverter.toMemberId(UUID.fromString(memberId))
+        val fromMemberId = memberUuidConverter.toMemberId(memberDetails.username)
+        val toMemberId = memberUuidConverter.toMemberId(memberId)
 
         val cancelFollowInput = CancelFollowInput(fromMemberId = fromMemberId, toMemberId = toMemberId)
 
@@ -62,9 +61,9 @@ class FollowController(
         @PathVariable memberId: String,
         @AuthenticationPrincipal memberDetails: MemberDetails,
     ): ApiResponse<ExistsFollowResponse> {
-        val fromMemberId = memberUuidConverter.toMemberId(UUID.fromString(memberDetails.username))
-        val toMemberId = memberUuidConverter.toMemberId(UUID.fromString(memberId))
-        
+        val fromMemberId = memberUuidConverter.toMemberId(memberDetails.username)
+        val toMemberId = memberUuidConverter.toMemberId(memberId)
+
         val existsFollowInput = ExistsFollowInput(fromMemberId = fromMemberId, toMemberId = toMemberId)
 
         return followService
