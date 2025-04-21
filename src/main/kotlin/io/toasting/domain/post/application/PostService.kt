@@ -3,7 +3,6 @@ package io.toasting.domain.post.application
 import io.toasting.api.PageResponse
 import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.member.entity.Member
-import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.post.application.out.GetPostDetailOutput
@@ -30,7 +29,7 @@ class PostService(
     private val postCrawler: PostCrawler,
 ) {
     fun searchPost(
-        memberDetails: MemberDetails,
+        memberId: Long,
         keyword: String?,
         pageable: Pageable
     ): PageResponse<SearchPostsOutput> {
@@ -42,7 +41,7 @@ class PostService(
         val memberMapById = memberList.associateBy { it.id!! }
 
         val outputList = mutableListOf<SearchPostsOutput>()
-        val bookmarkList = bookmarkRepository.findByPostInAndMemberId(postPage.content, memberDetails.username.toLong())
+        val bookmarkList = bookmarkRepository.findByPostInAndMemberId(postPage.content, memberId)
         val postIdSetByBookmarkSet = bookmarkList.map { it.post.id!! }.toSet()
         for (post in postList) {
             val memberId = post.memberId
@@ -63,8 +62,7 @@ class PostService(
     }
 
     @Transactional(readOnly = false)
-    fun linkBlog(memberDetails: MemberDetails, id: String, sourceType: String) {
-        val memberId = memberDetails.username.toLong()
+    fun linkBlog(memberId: Long, id: String, sourceType: String) {
         var member = memberRepository.findById(memberId)
             .orElseThrow { MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
         validateAlreadyLinkedBlog(member, sourceType)
