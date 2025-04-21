@@ -2,11 +2,12 @@ package io.toasting.domain.post.application.out
 
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.post.entity.Post
+import io.toasting.domain.post.vo.SourceType
 import java.time.LocalDateTime
 
 class GetPostDetailOutput(
     val id: Long,
-    val sourceType: String,
+    val sourceType: SourceType,
     val url: String,
     val postedAt: LocalDateTime? = null,
     val content: String,

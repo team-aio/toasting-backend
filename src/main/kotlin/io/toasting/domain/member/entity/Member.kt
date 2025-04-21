@@ -2,6 +2,7 @@ package io.toasting.domain.member.entity
 
 import io.toasting.domain.member.vo.RoleType
 import io.toasting.domain.model.BaseEntity
+import io.toasting.domain.post.vo.SourceType
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -47,8 +48,8 @@ class Member(
             email = email,
         )
 
-    fun registerBlog(sourceType: String, id: String) {
-        if (sourceType.equals("tistory")) {
+    fun registerBlog(sourceType: SourceType, id: String) {
+        if (sourceType.equals(SourceType.TISTORY)) {
             this.tistoryId = id
         } else {
             this.velogId = id
