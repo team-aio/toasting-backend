@@ -18,8 +18,9 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.text.SimpleDateFormat
-import java.time.*
-import java.util.*
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.util.Locale
 
 @Service
 class PostService(
@@ -28,7 +29,11 @@ class PostService(
     private val bookmarkRepository: BookmarkRepository,
     private val postCrawler: PostCrawler,
 ) {
-    fun searchPost(memberDetails: MemberDetails, keyword: String?, pageable: Pageable): PageResponse<SearchPostsOutput> {
+    fun searchPost(
+        memberDetails: MemberDetails,
+        keyword: String?,
+        pageable: Pageable
+    ): PageResponse<SearchPostsOutput> {
         val postPage = postRepository.searchByKeyword(keyword, pageable)
         val postList = postPage.content
 
@@ -60,7 +65,8 @@ class PostService(
     @Transactional(readOnly = false)
     fun linkBlog(memberDetails: MemberDetails, id: String, sourceType: String) {
         val memberId = memberDetails.username.toLong()
-        var member = memberRepository.findById(memberId).orElseThrow{ MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
+        var member = memberRepository.findById(memberId)
+            .orElseThrow { MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
         validateAlreadyLinkedBlog(member, sourceType)
         member.registerBlog(sourceType, id)
         memberRepository.save(member)
@@ -89,15 +95,16 @@ class PostService(
     }
 
     fun validateAlreadyLinkedBlog(member: Member, sourceType: String) {
-        if ((sourceType.equals("tistory") && !member.tistoryId.isNullOrBlank()) ||
-            (sourceType.equals("velog") && !member.velogId.isNullOrBlank())) {
+        if ((sourceType == "tistory" && !member.tistoryId.isNullOrBlank()) ||
+            (sourceType == "velog" && !member.velogId.isNullOrBlank())
+        ) {
             throw PostExceptionHandler.AlreadyLinkedBlog(ErrorStatus.ALREADY_LINKED_BLOG)
         }
     }
 
     fun getPostDetail(postId: Long): GetPostDetailOutput {
         val post = postRepository.findById(postId)
-            .orElseThrow{ PostExceptionHandler.PostNotFoundException(ErrorStatus.POST_NOT_FOUND) }
+            .orElseThrow { PostExceptionHandler.PostNotFoundException(ErrorStatus.POST_NOT_FOUND) }
         val member = memberRepository.findById(post.memberId)
             .orElseThrow { MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
 
