@@ -94,8 +94,7 @@ class MessageServiceTest :
             messageRepository.saveAll(messageList)
 
             When("member1이 읽지 않은 메세지 개수를 조회했을 때") {
-                val memberDetails = MemberDetails.from(member1)
-                val result = messageService.getUnreadMessageCount(memberDetails)
+                val result = messageService.getUnreadMessageCount(member1.id!!)
 
                 Then("15가 반환되어야 한다.") {
                     result.count shouldBe 15
@@ -118,7 +117,7 @@ class MessageServiceTest :
             When("member2가 member1에게 메세지를 보냈을 때,") {
                 val memberDetails = MemberDetails.from(member2)
                 val input = SendMessageInput("2->1")
-                val result = messageService.sendMessage(memberDetails, chatRoom.id!!, input)
+                val result = messageService.sendMessage(member2.id!!, chatRoom.id!!, input)
 
                 Then("메세지가 저장, 채팅방의 recent 값들이 바뀌고, 메시지의 정보가 반환된다.") {
                     val messageList = messageRepository.findAll()
@@ -159,7 +158,7 @@ class MessageServiceTest :
             When("member1이 해당 채팅방의 메세지를 모두 읽을 때,") {
                 val memberDetails = MemberDetails.from(member1)
                 val chatRoomId = chatRoom.id!!
-                messageService.readAllMessage(memberDetails, chatRoomId)
+                messageService.readAllMessage(member1.id!!, chatRoomId)
                 Then("읽지 않은 메세지의 개수가 0이 된다.") {
                     val messageList =
                         messageRepository.findByChatRoomAndSenderIdNotAndIsRead(chatRoom, member1.id!!, false)
@@ -172,7 +171,7 @@ class MessageServiceTest :
                 val memberDetails = MemberDetails.from(member1)
                 val chatRoomId = chatRoom.id!!
                 val page = PageRequest.of(0, 4, Sort.by(Sort.Direction.DESC, "id"))
-                val result = messageService.getChatRoomMessages(memberDetails, chatRoomId, page)
+                val result = messageService.getChatRoomMessages(member1.id!!, chatRoomId, page)
 
                 Then("데이터의 개수는 4, 페이지 개수는 3, 총 개수는 10이 된다.") {
                     result.content.size shouldBe 4
@@ -232,7 +231,7 @@ class MessageServiceTest :
             When("member1이 채팅방 리스트를 조회했을 때") {
                 val memberDetails = MemberDetails.from(member1)
                 val pageRequest = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "recentSendAt"))
-                val chatRoomPage = messageService.getChatRooms(memberDetails, pageRequest)
+                val chatRoomPage = messageService.getChatRooms(member1.id!!, pageRequest)
 
                 val firstChatRoom = chatRoomPage.content.get(0)
                 val secondChatRoom = chatRoomPage.content.get(1)
@@ -276,10 +275,9 @@ class MessageServiceTest :
             chatMemberRepository.saveAll(mutableListOf(chatMember1With3, chatMember3With1))
 
             When("member1이 member2와의 채팅방을 생성하면") {
-                val memberDetails = MemberDetails.from(member1)
-                val input = CreateChatRoomInput(member2.id!!)
+                val input = CreateChatRoomInput(member1.id!!, member2.id!!)
 
-                val output = messageService.createChatRoom(memberDetails, input)
+                val output = messageService.createChatRoom(input)
                 Then("새로운 채팅방이 생성되고, 그 채팅방의 chatMemeber는 member1과 member2이다.") {
                     val outputChatRoom =
                         chatRoomRepository
@@ -295,10 +293,9 @@ class MessageServiceTest :
             }
 
             When("member2가 member3과의 채팅방을 생성하면") {
-                val memberDetails = MemberDetails.from(member2)
-                val input = CreateChatRoomInput(member3.id!!)
+                val input = CreateChatRoomInput(member2.id!!, member3.id!!)
 
-                val output = messageService.createChatRoom(memberDetails, input)
+                val output = messageService.createChatRoom(input)
                 Then("기존에 생성되어 있던 활성화되지 않은 채팅방이 응답된다.") {
                     notActivatedChatRoom.id shouldBe output.chatRoomId
                 }
@@ -306,10 +303,10 @@ class MessageServiceTest :
 
             When("member1이 member3과의 채팅방을 생성하면") {
                 val memberDetails = MemberDetails.from(member1)
-                val input = CreateChatRoomInput(member3.id!!)
+                val input = CreateChatRoomInput(member1.id!!, member3.id!!)
                 Then("ChatRoomAlreadyExistsException을 던진다.") {
                     shouldThrow<MessageExceptionHandler.ChatRoomAlreadyExistsException> {
-                        messageService.createChatRoom(memberDetails, input)
+                        messageService.createChatRoom(input)
                     }
                 }
             }

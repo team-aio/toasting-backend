@@ -9,6 +9,7 @@ import io.toasting.domain.member.application.CheckMemberService
 import io.toasting.domain.member.application.GetProfileService
 import io.toasting.domain.member.application.LoginMemberService
 import io.toasting.domain.member.application.SignUpMemberService
+import io.toasting.domain.member.application.converter.MemberUuidConverter
 import io.toasting.domain.member.controller.request.LoginGoogleRequest
 import io.toasting.domain.member.controller.request.SignUpSocialLoginRequest
 import io.toasting.domain.member.controller.response.GetMyProfileResponse
@@ -44,6 +45,7 @@ class MemberController(
     private val checkMemberService: CheckMemberService,
     private val getProfileService: GetProfileService,
     private val refreshTokenRepository: RefreshTokenRepository, // TODO : 의존성 방향만 맞춤, 바로 Repository를 호출하면 아면 추후 리팩토링
+    private val memberUuidConverter: MemberUuidConverter,
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -134,10 +136,10 @@ class MemberController(
     @GetMapping("/profile")
     @Operation(summary = "특정 대상의 프로필 조회", description = "특정 대상의 프로필을 조회합니다. 로그인이 필요 없습니다.")
     fun getProfile(
-        @RequestParam memberId: Long,
+        @RequestParam memberId: String,
     ): ApiResponse<GetProfileResponse> =
         getProfileService
-            .getProfile(memberId)
+            .getProfile(memberUuidConverter.toMemberId(memberId))
             .let { GetProfileResponse.from(it) }
             .let { response -> ApiResponse.onSuccess(response) }
 
