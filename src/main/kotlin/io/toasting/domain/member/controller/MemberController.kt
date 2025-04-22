@@ -85,7 +85,7 @@ class MemberController(
     @Operation(summary = "닉네임 중복 확인", description = "닉네임 중복을 확인합니다.")
     fun isExistNickname(
         @RequestParam("nickname", required = true)
-        @Size(min = 3, max = 14, message = "닉네임은 15자 이내여야합니다.")
+        @Size(min = 3, max = 14, message = "닉네임은 3자 이상 15자 이내여야합니다.")
         @Pattern(
             regexp = "^[a-zA-Z0-9가-힣]+$",
             message = "한글, 알파벳, 숫자의 조합으로 닉네임이 구성되어야 합니다."

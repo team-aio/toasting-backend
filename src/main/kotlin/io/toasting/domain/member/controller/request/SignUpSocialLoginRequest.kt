@@ -22,7 +22,7 @@ data class SignUpSocialLoginRequest(
     val snsId: String,
     @Schema(description = "닉네임", example = "호우동")
     @field:NotBlank(message = "닉네임은 빈 값이 될 수 없습니다.")
-    @field:Size(min = 3, max = 14, message = "닉네임은 15자 이내여야합니다.")
+    @field:Size(min = 3, max = 14, message = "닉네임은 3자 이상 15자 이내여야합니다.")
     @field:Pattern(
         regexp = "^[a-zA-Z0-9가-힣]+$",
         message = "한글, 알파벳, 숫자의 조합으로 닉네임이 구성되어야 합니다."
