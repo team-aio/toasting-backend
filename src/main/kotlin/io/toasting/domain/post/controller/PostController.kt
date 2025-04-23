@@ -8,12 +8,15 @@ import io.toasting.domain.post.application.PostService
 import io.toasting.domain.post.controller.response.GetPostDetailResponse
 import io.toasting.domain.post.controller.response.SearchPostsResponse
 import io.toasting.global.api.ApiResponse
+import jakarta.validation.constraints.Size
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
+@Validated
 @RestController
 @RequestMapping("/v1/posts")
 @Tag(name = "Post", description = "게시글 관련 API")
@@ -30,7 +33,11 @@ internal class PostController(
             sort = arrayOf("postedAt"),
             direction = Sort.Direction.DESC,
         ) pageable: Pageable,
-        @RequestParam("keyword", required = false) keyword: String?,
+        @RequestParam("keyword", required = false)
+        @Size(
+            max = 255,
+            message = "검색어는 최대 255자입니다."
+        ) keyword: String?,
     ): ApiResponse<PageResponse<SearchPostsResponse>> {
         val output = postService.searchPost(memberDetails, keyword, pageable)
         val response = output.content.map { SearchPostsResponse.from(it) }
@@ -47,7 +54,12 @@ internal class PostController(
     fun linkBlog(
         @AuthenticationPrincipal memberDetails: MemberDetails,
         @PathVariable("sourceType") sourceType: String,
-        @PathVariable("id") id: String,
+        @PathVariable("id")
+        @Size(
+            min = 2,
+            max = 255,
+            message = "아이디는 2 ~ 255글자 입니다."
+        ) id: String,
     ) : ApiResponse<Unit> {
         postService.linkBlog(memberDetails, id, sourceType)
         return ApiResponse.onSuccess()

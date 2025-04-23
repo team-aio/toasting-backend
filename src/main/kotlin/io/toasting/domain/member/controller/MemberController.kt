@@ -25,8 +25,11 @@ import io.toasting.global.extension.findRefreshTokenOrNull
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
+import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -34,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
+@Validated
 @RestController
 @RequestMapping("/v1/member")
 @Tag(name = "Member", description = "회원 관련 API")
@@ -80,7 +84,12 @@ class MemberController(
     @GetMapping("/exist")
     @Operation(summary = "닉네임 중복 확인", description = "닉네임 중복을 확인합니다.")
     fun isExistNickname(
-        @RequestParam("nickname", required = true) nickname: String,
+        @RequestParam("nickname", required = true)
+        @Size(min = 3, max = 14, message = "닉네임은 3자 이상 15자 이내여야합니다.")
+        @Pattern(
+            regexp = "^[a-zA-Z0-9가-힣]+$",
+            message = "한글, 알파벳, 숫자의 조합으로 닉네임이 구성되어야 합니다."
+        ) nickname: String,
     ): ApiResponse<Unit> {
         checkMemberService.checkMemberNicknameIsDuplicated(nickname)
         return ApiResponse.onSuccess()
