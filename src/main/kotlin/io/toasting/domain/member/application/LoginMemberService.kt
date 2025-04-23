@@ -3,7 +3,6 @@ package io.toasting.domain.member.application
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.toasting.domain.member.application.input.LoginGoogleInput
 import io.toasting.domain.member.application.output.LoginGoogleOutput
-import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.RefreshToken
 import io.toasting.domain.member.entity.SocialLogin
 import io.toasting.domain.member.repository.RefreshTokenRepository
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.Date
+import java.util.UUID
 
 @Service
 class LoginMemberService(
@@ -38,17 +38,6 @@ class LoginMemberService(
         )
     }
 
-    private fun createNewSocialMember(loginGoogleInput: LoginGoogleInput) =
-        SocialLogin(
-            socialType = loginGoogleInput.socialType,
-            externalId = loginGoogleInput.externalId,
-            member =
-                Member.defaultMember(
-                    email = loginGoogleInput.email,
-                    nickname = loginGoogleInput.username,
-                ),
-        )
-
     private fun findSocialMemberOrNull(loginGoogleInput: LoginGoogleInput) =
         socialLoginRepository.findBySocialTypeAndExternalId(
             socialType = loginGoogleInput.socialType,
@@ -60,13 +49,13 @@ class LoginMemberService(
 
         val accessToken =
             jwtFactory.createAccessToken(
-                username = member.id.toString(),
+                uuid = member.uuid.toString(),
                 role = member.role.name,
             )
 
         val refreshToken =
             jwtFactory.createRefreshToken(
-                username = member.id.toString(),
+                username = member.uuid.toString(),
                 role = member.role.name,
             )
 
@@ -74,12 +63,14 @@ class LoginMemberService(
     }
 
     private fun saveRefreshToken(token: String) {
-        val memberId = jwtFactory.memberId(token) ?: throw IllegalArgumentException("memberId is null")
+        val memberUuid = jwtFactory.memberUuid(token)
+            ?: throw IllegalArgumentException("memberUuid is null")
+
         val date = Date(System.currentTimeMillis() + jwtFactory.refreshExpiredMs())
 
         val refreshToken =
             RefreshToken(
-                memberId = memberId.toLong(),
+                memberUuid = UUID.fromString(memberUuid),
                 token = token,
                 expiredAt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()),
             )

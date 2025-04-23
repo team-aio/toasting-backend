@@ -3,6 +3,7 @@ package io.toasting.domain.post.controller
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.toasting.api.PageResponse
+import io.toasting.domain.member.application.converter.MemberUuidConverter
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.post.application.PostService
 import io.toasting.domain.post.controller.response.GetPostDetailResponse
@@ -21,7 +22,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/v1/posts")
 @Tag(name = "Post", description = "게시글 관련 API")
 internal class PostController(
-    private val postService: PostService
+    private val postService: PostService,
+    private val memberUuidConverter: MemberUuidConverter,
 ) {
     @GetMapping("/search")
     @Operation(summary = "로그인했을 때 게시글 검색")
@@ -39,10 +41,12 @@ internal class PostController(
             message = "검색어는 최대 255자입니다."
         ) keyword: String?,
     ): ApiResponse<PageResponse<SearchPostsResponse>> {
-        val output = postService.searchPost(memberDetails, keyword, pageable)
+        val memberId = memberUuidConverter.toMemberId(memberDetails.username)
+        val output = postService.searchPost(memberId, keyword, pageable)
         val response = output.content.map { SearchPostsResponse.from(it) }
         return ApiResponse.onSuccess(
-            PageResponse.of(response,
+            PageResponse.of(
+                response,
                 output.totalElements,
                 output.totalPages
             )
@@ -61,6 +65,7 @@ internal class PostController(
             message = "아이디는 2 ~ 255글자 입니다."
         ) id: String,
     ) : ApiResponse<Unit> {
+        val memberId = memberUuidConverter.toMemberId(memberDetails.username)
         postService.linkBlog(memberDetails, id, sourceType)
         return ApiResponse.onSuccess()
     }

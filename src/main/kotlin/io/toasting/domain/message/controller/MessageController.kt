@@ -3,6 +3,7 @@ package io.toasting.domain.message.controller
 import GetChatRoomListResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.toasting.api.PageResponse
+import io.toasting.domain.member.application.converter.MemberUuidConverter
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.message.applicatoin.MessageService
 import io.toasting.domain.message.controller.request.CreateChatRoomRequest
@@ -27,16 +28,18 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/v1/chat-rooms")
-class MessageController (
-    private val messageService : MessageService,
-){
+class MessageController(
+    private val messageService: MessageService,
+    private val memberUuidConverter: MemberUuidConverter
+) {
     @GetMapping("/messages/count")
     fun getUnreadMessageCount(
         @AuthenticationPrincipal memberDetails: MemberDetails,
     ): ApiResponse<GetMessageCountResponse> {
+        val memberId = memberUuidConverter.toMemberId(memberDetails.username)
         return ApiResponse.onSuccess(
             GetMessageCountResponse.fromOutput(
-                messageService.getUnreadMessageCount(memberDetails)
+                messageService.getUnreadMessageCount(memberId)
             )
         )
     }
@@ -47,9 +50,11 @@ class MessageController (
         @PathVariable("chatRoomId") chatRoomId: Long,
         @RequestBody @Valid request: SendMessageRequest,
     ): ApiResponse<SendMessageResponse> {
+        val memberId = memberUuidConverter.toMemberId(memberDetails.username)
+
         return ApiResponse.onSuccess(
             SendMessageResponse.fromOutput(
-                messageService.sendMessage(memberDetails, chatRoomId, request.toInput())
+                messageService.sendMessage(memberId, chatRoomId, request.toInput())
             )
         )
     }
@@ -60,8 +65,10 @@ class MessageController (
         @PathVariable("chatRoomId") chatRoomId: Long,
         @PageableDefault(size = 10, sort = ["id"], direction = Sort.Direction.DESC) pageable: Pageable,
     ): ApiResponse<PageResponse<GetChatRoomMessagesResponse>> {
-        val output = messageService.getChatRoomMessages(memberDetails, chatRoomId, pageable)
-        val responseList = output.content.map {GetChatRoomMessagesResponse.fromOutput(it) }
+        val memberId = memberUuidConverter.toMemberId(memberDetails.username)
+
+        val output = messageService.getChatRoomMessages(memberId, chatRoomId, pageable)
+        val responseList = output.content.map { GetChatRoomMessagesResponse.fromOutput(it) }
         return ApiResponse.onSuccess(
             PageResponse.of(responseList, output.totalElements, output.totalPages)
         )
@@ -72,7 +79,8 @@ class MessageController (
         @AuthenticationPrincipal memberDetails: MemberDetails,
         @PathVariable("chatRoomId") chatRoomId: Long,
     ): ApiResponse<Unit> {
-        messageService.readAllMessage(memberDetails, chatRoomId)
+        val memberId = memberUuidConverter.toMemberId(memberDetails.username)
+        messageService.readAllMessage(memberId, chatRoomId)
         return ApiResponse.onSuccess()
     }
 
@@ -81,7 +89,8 @@ class MessageController (
         @AuthenticationPrincipal memberDetails: MemberDetails,
         @PageableDefault(size = 10) pageable: Pageable,
     ): ApiResponse<PageResponse<GetChatRoomListResponse>> {
-        val output = messageService.getChatRooms(memberDetails, pageable)
+        val memberId = memberUuidConverter.toMemberId(memberDetails.username)
+        val output = messageService.getChatRooms(memberId, pageable)
         val response = output.content.map { GetChatRoomListResponse.from(it) }
         return ApiResponse.onSuccess(
             PageResponse.of(
@@ -98,7 +107,8 @@ class MessageController (
         @AuthenticationPrincipal memberDetails: MemberDetails,
         @RequestBody @Valid request: CreateChatRoomRequest,
     ): ApiResponse<CreateChatRoomResponse> {
-        val output = messageService.createChatRoom(memberDetails, request.toInput())
+        val myId = memberUuidConverter.toMemberId(memberDetails.username)
+        val output = messageService.createChatRoom(request.toInput(myId))
         val response = CreateChatRoomResponse.from(output)
 
         return ApiResponse.onSuccess(

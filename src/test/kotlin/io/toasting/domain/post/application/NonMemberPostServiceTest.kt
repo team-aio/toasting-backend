@@ -5,14 +5,11 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringTestExtension
 import io.kotest.extensions.spring.SpringTestLifecycleMode
 import io.kotest.matchers.collections.shouldBeSortedWith
-import io.kotest.matchers.collections.shouldContainInOrder
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import io.toasting.creator.member.PostCreator
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
-import io.toasting.domain.post.entity.Bookmark
 import io.toasting.domain.post.repository.BookmarkRepository
 import io.toasting.domain.post.repository.PostRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,6 +19,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.util.UUID
 
 @SpringBootTest
 @Transactional
@@ -47,9 +45,9 @@ class NonMemberPostServiceTest : BehaviorSpec() {
 
     init {
         beforeSpec {
-            member1 = Member.defaultMember("member1", "member1@test.com")
-            member2 = Member.defaultMember("member2", "member2@test.com")
-            member3 = Member.defaultMember("member3", "member3@test.com")
+            member1 = Member.defaultMember("member1", "member1@test.com", UUID.randomUUID())
+            member2 = Member.defaultMember("member2", "member2@test.com", UUID.randomUUID())
+            member3 = Member.defaultMember("member3", "member3@test.com", UUID.randomUUID())
             memberRepository.saveAll(listOf(member1, member2, member3))
         }
 

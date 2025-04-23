@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.Date
+import java.util.UUID
 
 @Service
 class ReIssueService(
@@ -44,12 +45,12 @@ class ReIssueService(
         newRefreshToken: String,
     ) {
         refreshTokenRepository.deleteByToken(oldRefreshToken)
-        val memberId = jwtFactory.memberId(newRefreshToken) ?: throw IllegalArgumentException("memberId is null")
+        val memberUuid = jwtFactory.memberUuid(newRefreshToken) ?: throw IllegalArgumentException("memberId is null")
         val date = Date(System.currentTimeMillis() + jwtFactory.refreshExpiredMs())
 
         val refreshToken =
             RefreshToken(
-                memberId = memberId.toLong(),
+                memberUuid = UUID.fromString(memberUuid),
                 token = newRefreshToken,
                 expiredAt = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()),
             )
@@ -76,7 +77,7 @@ class ReIssueService(
 
     private fun createNewAccessAndRefreshToken(refreshToken: String): Pair<String, String> {
         val memberId =
-            jwtFactory.memberId(refreshToken) ?: run {
+            jwtFactory.memberUuid(refreshToken) ?: run {
                 log.error { "memberId is null" }
                 throw IllegalArgumentException("memberId is null")
             }
