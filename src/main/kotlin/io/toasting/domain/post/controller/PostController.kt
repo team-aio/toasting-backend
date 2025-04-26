@@ -64,9 +64,9 @@ internal class PostController(
             max = 255,
             message = "아이디는 2 ~ 255글자 입니다."
         ) id: String,
-    ) : ApiResponse<Unit> {
+    ): ApiResponse<Unit> {
         val memberId = memberUuidConverter.toMemberId(memberDetails.username)
-        postService.linkBlog(memberDetails, id, sourceType)
+        postService.linkBlog(memberId, id, sourceType)
         return ApiResponse.onSuccess()
     }
 
