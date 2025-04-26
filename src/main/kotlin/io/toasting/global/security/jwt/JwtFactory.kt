@@ -19,14 +19,14 @@ class JwtFactory(
     private val log = KotlinLogging.logger {}
 
     fun createAccessToken(
-        username: String,
+        uuid: String,
         role: String,
         accessExpiredMs: Long = this.accessExpiredMs,
     ): String =
         JWT
             .create()
             .withClaim(Auth.CATEGORY, Auth.ACCESS_TOKEN)
-            .withClaim(Auth.MEMBER_ID, username)
+            .withClaim(Auth.MEMBER_UUID, uuid)
             .withClaim(Auth.ROLE, role)
             .withExpiresAt(Date(System.currentTimeMillis() + accessExpiredMs))
             .withIssuedAt(Date(System.currentTimeMillis()))
@@ -40,7 +40,7 @@ class JwtFactory(
         JWT
             .create()
             .withClaim(Auth.CATEGORY, Auth.REFRESH_TOKEN)
-            .withClaim(Auth.MEMBER_ID, username)
+            .withClaim(Auth.MEMBER_UUID, username)
             .withClaim(Auth.ROLE, role)
             .withExpiresAt(Date(System.currentTimeMillis() + refreshExpiredMs))
             .withIssuedAt(Date(System.currentTimeMillis()))
@@ -58,13 +58,13 @@ class JwtFactory(
             log.error { "Token verification failed: ${it.message}" }
         }.getOrNull()
 
-    fun memberId(accessToken: String): String? =
+    fun memberUuid(accessToken: String): String? =
         runCatching {
             JWT
                 .require(Algorithm.HMAC256(secret))
                 .build()
                 .verify(accessToken)
-                .getClaim(Auth.MEMBER_ID)
+                .getClaim(Auth.MEMBER_UUID)
                 .asString()
         }.onFailure {
             log.error { "Token verification failed: ${it.message}" }
@@ -116,5 +116,5 @@ class JwtFactory(
                 .verify(accessToken)
                 .expiresAt
                 .before(Date(System.currentTimeMillis()))
-        }.getOrDefault(false)
+        }.getOrDefault(true)
 }

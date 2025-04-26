@@ -2,7 +2,6 @@ package io.toasting.domain.message.applicatoin
 
 import io.toasting.api.PageResponse
 import io.toasting.api.code.status.ErrorStatus
-import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.message.applicatoin.input.CreateChatRoomInput
@@ -34,8 +33,7 @@ class MessageService(
     private val memberRepository: MemberRepository,
     private val messageRepository: MessageRepository,
 ) {
-    fun getUnreadMessageCount(memberDetails: MemberDetails): GetMessageCountOutput {
-        val memberId = memberDetails.username.toLong()
+    fun getUnreadMessageCount(memberId: Long): GetMessageCountOutput {
         val chatMemberList: MutableList<ChatMember> = chatMemberRepository.findByMemberId(memberId)
         val chatRoomList: MutableList<ChatRoom> = chatMemberList.map { it.chatRoom }.toMutableList()
         val unreadMessageCount =
@@ -45,11 +43,10 @@ class MessageService(
 
     @Transactional(readOnly = false)
     fun sendMessage(
-        memberDetails: MemberDetails,
+        memberId: Long,
         chatRoomId: Long,
         input: SendMessageInput,
     ): SendMessageOutput {
-        val memberId = memberDetails.username.toLong()
         val chatRoom =
             chatRoomRepository
                 .findById(chatRoomId)
@@ -68,10 +65,9 @@ class MessageService(
 
     @Transactional(readOnly = false)
     fun readAllMessage(
-        memberDetails: MemberDetails,
+        memberId: Long,
         chatRoomId: Long,
     ) {
-        val memberId = memberDetails.username.toLong()
         val chatMember =
             chatMemberRepository
                 .findByMemberIdAndChatRoomId(memberId, chatRoomId)
@@ -87,11 +83,10 @@ class MessageService(
     }
 
     fun getChatRoomMessages(
-        memberDetails: MemberDetails,
+        memberId: Long,
         chatRoomId: Long,
         pageable: Pageable,
     ): PageResponse<GetChatRoomMessagesOutput> {
-        val memberId = memberDetails.username.toLong()
         chatMemberRepository
             .findByMemberIdAndChatRoomId(memberId, chatRoomId)
             .orElseThrow { ChatMemberNotFoundException(ErrorStatus.NOT_BELONG_TO_CHAT_ROOM) }
@@ -108,10 +103,9 @@ class MessageService(
     }
 
     fun getChatRooms(
-        memberDetails: MemberDetails,
+        memberId: Long,
         pageable: Pageable,
     ): PageResponse<GetChatRoomListOutput> {
-        val memberId = memberDetails.username.toLong()
         val chatRoomPage = chatRoomRepository.findByMemberId(memberId, pageable)
 
         val outputList = mutableListOf<GetChatRoomListOutput>()
@@ -162,14 +156,15 @@ class MessageService(
 
     @Transactional(readOnly = false)
     fun createChatRoom(
-        memberDetails: MemberDetails,
-        request: CreateChatRoomInput,
+        createChatRoomInput: CreateChatRoomInput,
     ): CreateChatRoomOutput {
-        val myId = memberDetails.username.toLong()
+        val myId = createChatRoomInput.myId
+        val partnerId = createChatRoomInput.partnerId
+
         memberRepository
-            .findById(memberDetails.username.toLong())
+            .findById(createChatRoomInput.myId)
             .orElseThrow { MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
-        val partnerId = request.partnerId
+
         memberRepository
             .findById(partnerId)
             .orElseThrow { MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }

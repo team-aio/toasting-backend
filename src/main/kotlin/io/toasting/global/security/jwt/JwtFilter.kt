@@ -5,6 +5,7 @@ import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.global.api.exception.handler.AuthExceptionHandler
 import io.toasting.global.constants.Auth
+import io.toasting.global.extension.sendErrorResponse
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -24,12 +25,12 @@ class JwtFilter(
         private val EXIST_MEMBER_NICKNAME_API =
             RequestMatcher { request ->
                 request.requestURI == "/v1/member/exist" &&
-                    request.getParameter("nickname")?.isNotEmpty() ?: false
+                        request.getParameter("nickname")?.isNotEmpty() ?: false
             }
         private val GET_PROFILE_API =
             RequestMatcher { request ->
                 request.requestURI == "/v1/member/profile" &&
-                    request.getParameter("memberId")?.isNotEmpty() ?: false
+                        request.getParameter("memberId")?.isNotEmpty() ?: false
             }
         private val EXCLUDE_PATHS =
             listOf(
@@ -43,6 +44,7 @@ class JwtFilter(
                 "/api-test/**",
                 "/v1/member/login/google",
                 "/v1/member/signup",
+                "/v1/reissue",
             )
     }
 
@@ -51,7 +53,7 @@ class JwtFilter(
     override fun shouldNotFilter(request: HttpServletRequest): Boolean =
         OrRequestMatcher(
             EXCLUDE_PATHS.map { AntPathRequestMatcher(it) } +
-                listOf(EXIST_MEMBER_NICKNAME_API, GET_PROFILE_API),
+                    listOf(EXIST_MEMBER_NICKNAME_API, GET_PROFILE_API),
         ).matches(request)
 
     override fun doFilterInternal(
@@ -70,7 +72,10 @@ class JwtFilter(
         jwtFactory
             .validateAccessToken(trimmedAccessToken)
             .onSuccess { sendAuthToken(trimmedAccessToken, filterChain, request, response) }
-            .onFailure { exception -> response.status = findTokenException(exception) }
+            .onFailure { exception ->
+                val errorStatus = findTokenException(exception)
+                response.sendErrorResponse(errorStatus)
+            }
     }
 
     private fun sendAuthToken(
@@ -79,8 +84,8 @@ class JwtFilter(
         request: HttpServletRequest,
         response: HttpServletResponse,
     ) {
-        val memberId =
-            jwtFactory.memberId(accessToken)
+        val memberUuid =
+            jwtFactory.memberUuid(accessToken)
                 ?: run {
                     log.error { "Member id is null" }
                     return
@@ -93,7 +98,7 @@ class JwtFilter(
                     return
                 }
 
-        val memberDetails = MemberDetails(role, memberId.toLong())
+        val memberDetails = MemberDetails(role, memberUuid)
         val authToken = UsernamePasswordAuthenticationToken(memberDetails, null, memberDetails.authorities)
         SecurityContextHolder.getContext().authentication = authToken
 
@@ -102,10 +107,10 @@ class JwtFilter(
 
     private fun findTokenException(exception: Throwable) =
         when (exception) {
-            is AuthExceptionHandler.TokenExpiredException -> ErrorStatus.ACCESS_TOKEN_EXPIRED.httpStatus.value()
+            is AuthExceptionHandler.TokenExpiredException -> ErrorStatus.ACCESS_TOKEN_EXPIRED
 
-            is AuthExceptionHandler.TokenNotFoundException -> ErrorStatus.UNAUTHORIZED.httpStatus.value()
+            is AuthExceptionHandler.TokenNotFoundException -> ErrorStatus.UNAUTHORIZED
 
-            else -> ErrorStatus.TOKEN_ERROR.httpStatus.value()
+            else -> ErrorStatus.TOKEN_ERROR
         }
 }

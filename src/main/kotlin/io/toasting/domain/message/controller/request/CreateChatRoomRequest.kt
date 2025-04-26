@@ -7,7 +7,8 @@ class CreateChatRoomRequest(
     @field:NotNull(message = "partnerId cannot be null or empty")
     val partnerId: Long
 ) {
-    fun toInput(): CreateChatRoomInput = CreateChatRoomInput(
-            partnerId = partnerId
-        )
+    fun toInput(myId: Long): CreateChatRoomInput = CreateChatRoomInput(
+        myId = myId,
+        partnerId = partnerId
+    )
 }

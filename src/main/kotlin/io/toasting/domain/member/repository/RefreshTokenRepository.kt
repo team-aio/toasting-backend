@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 interface RefreshTokenRepository : JpaRepository<RefreshToken, Long> {
     fun existsByToken(token: String): Boolean
 
-    fun deleteByToken(token: String): Boolean
+    fun deleteByToken(token: String): Int
 
     fun deleteByExpiredAtBefore(dateTime: LocalDateTime): List<RefreshToken>
 }

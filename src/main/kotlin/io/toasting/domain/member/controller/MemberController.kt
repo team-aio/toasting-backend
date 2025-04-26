@@ -9,6 +9,7 @@ import io.toasting.domain.member.application.CheckMemberService
 import io.toasting.domain.member.application.GetProfileService
 import io.toasting.domain.member.application.LoginMemberService
 import io.toasting.domain.member.application.SignUpMemberService
+import io.toasting.domain.member.application.converter.MemberUuidConverter
 import io.toasting.domain.member.controller.request.LoginGoogleRequest
 import io.toasting.domain.member.controller.request.SignUpSocialLoginRequest
 import io.toasting.domain.member.controller.response.GetMyProfileResponse
@@ -26,8 +27,11 @@ import io.toasting.global.extension.findRefreshTokenOrNull
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
+import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -35,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
+@Validated
 @RestController
 @RequestMapping("/v1/member")
 @Tag(name = "Member", description = "회원 관련 API")
@@ -45,6 +50,7 @@ class MemberController(
     private val checkMemberService: CheckMemberService,
     private val getProfileService: GetProfileService,
     private val refreshTokenRepository: RefreshTokenRepository, // TODO : 의존성 방향만 맞춤, 바로 Repository를 호출하면 아면 추후 리팩토링
+    private val memberUuidConverter: MemberUuidConverter,
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -81,7 +87,12 @@ class MemberController(
     @GetMapping("/exist")
     @Operation(summary = "닉네임 중복 확인", description = "닉네임 중복을 확인합니다.")
     fun isExistNickname(
-        @RequestParam("nickname", required = true) nickname: String,
+        @RequestParam("nickname", required = true)
+        @Size(min = 3, max = 14, message = "닉네임은 3자 이상 15자 이내여야합니다.")
+        @Pattern(
+            regexp = "^[a-zA-Z0-9가-힣]+$",
+            message = "한글, 알파벳, 숫자의 조합으로 닉네임이 구성되어야 합니다."
+        ) nickname: String,
     ): ApiResponse<Unit> {
         checkMemberService.checkMemberNicknameIsDuplicated(nickname)
         return ApiResponse.onSuccess()
@@ -135,10 +146,10 @@ class MemberController(
     @GetMapping("/profile")
     @Operation(summary = "특정 대상의 프로필 조회", description = "특정 대상의 프로필을 조회합니다. 로그인이 필요 없습니다.")
     fun getProfile(
-        @RequestParam memberId: Long,
+        @RequestParam memberId: String,
     ): ApiResponse<GetProfileResponse> =
         getProfileService
-            .getProfile(memberId)
+            .getProfile(memberUuidConverter.toMemberId(memberId))
             .let { GetProfileResponse.from(it) }
             .let { response -> ApiResponse.onSuccess(response) }
 
