@@ -42,8 +42,8 @@ class JwtFilter(
                 "/swagger-resources/**",
                 "/v3/api-docs/**",
                 "/api-test/**",
-                "/v1/member/login/google",
-                "/v1/member/signup",
+                "/v1/members/login/google",
+                "/v1/members/signup",
                 "/v1/reissue",
             )
     }

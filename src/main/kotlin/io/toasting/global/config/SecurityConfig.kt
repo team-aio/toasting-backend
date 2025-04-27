@@ -77,9 +77,9 @@ class SecurityConfig {
                         "/swagger-resources/**",
                         "/v3/api-docs/**",
                         "/api-test/**",
-                        "/v1/member/login/google",
-                        "/v1/member/signup",
-                        "/v1/member/exist?nickname=**",
+                        "/v1/members/login/google",
+                        "/v1/members/signup",
+                        "/v1/members/exist?nickname=**",
                         "/v1/reissue",
                         "/v1/non-member/**"
                     ).permitAll()
@@ -95,12 +95,12 @@ class SecurityConfig {
     private fun existMemberMatcher() =
         RequestMatcher { request ->
             request.requestURI == "/v1/member/exist" &&
-                request.getParameter("nickname")?.isNotEmpty() ?: false
+                    request.getParameter("nickname")?.isNotEmpty() ?: false
         }
 
     private fun getProfileMatcher() =
         RequestMatcher { request ->
             request.requestURI == "/v1/member/profile" &&
-                request.getParameter("memberId")?.isNotEmpty() ?: false
+                    request.getParameter("memberId")?.isNotEmpty() ?: false
         }
 }
