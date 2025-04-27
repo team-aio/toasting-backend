@@ -52,20 +52,6 @@ class Member(
         )
     }
 
-    fun updateWith(
-        nickname: String,
-        email: String,
-    ): Member =
-        Member(
-            id = id,
-            role = role,
-            profilePicture = profilePicture,
-            velogId = velogId,
-            tistoryId = tistoryId,
-            nickname = nickname,
-            email = email,
-        )
-
     fun registerBlog(sourceType: SourceType, id: String) {
         if (sourceType == SourceType.TISTORY) {
             this.tistoryId = id
