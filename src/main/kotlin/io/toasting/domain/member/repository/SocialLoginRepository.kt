@@ -1,5 +1,6 @@
 package io.toasting.domain.member.repository
 
+import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.entity.SocialLogin
 import io.toasting.domain.member.vo.SocialType
 import org.springframework.data.jpa.repository.JpaRepository
@@ -16,4 +17,6 @@ interface SocialLoginRepository : JpaRepository<SocialLogin, Long> {
         socialType: SocialType,
         externalId: String,
     ): Boolean
+
+    fun deleteByMember(member: Member)
 }

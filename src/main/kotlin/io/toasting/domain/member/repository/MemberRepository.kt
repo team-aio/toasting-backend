@@ -10,4 +10,5 @@ interface MemberRepository : JpaRepository<Member, Long> {
     fun existsByNickname(nickname: String): Boolean
     fun existsByUuid(uuid: UUID): Boolean
     fun findByUuid(uuid: UUID): Member?
+    fun deleteMemberById(id: Long): Member?
 }
