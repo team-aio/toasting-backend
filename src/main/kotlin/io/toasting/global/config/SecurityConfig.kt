@@ -94,13 +94,13 @@ class SecurityConfig {
 
     private fun existMemberMatcher() =
         RequestMatcher { request ->
-            request.requestURI == "/v1/member/exist" &&
+            request.requestURI == "/v1/members/exist" &&
                     request.getParameter("nickname")?.isNotEmpty() ?: false
         }
 
     private fun getProfileMatcher() =
         RequestMatcher { request ->
-            request.requestURI == "/v1/member/profile" &&
+            request.requestURI == "/v1/members/profile" &&
                     request.getParameter("memberId")?.isNotEmpty() ?: false
         }
 }

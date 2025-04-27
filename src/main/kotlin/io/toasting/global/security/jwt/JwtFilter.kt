@@ -24,12 +24,12 @@ class JwtFilter(
     companion object {
         private val EXIST_MEMBER_NICKNAME_API =
             RequestMatcher { request ->
-                request.requestURI == "/v1/member/exist" &&
+                request.requestURI == "/v1/members/exist" &&
                         request.getParameter("nickname")?.isNotEmpty() ?: false
             }
         private val GET_PROFILE_API =
             RequestMatcher { request ->
-                request.requestURI == "/v1/member/profile" &&
+                request.requestURI == "/v1/members/profile" &&
                         request.getParameter("memberId")?.isNotEmpty() ?: false
             }
         private val EXCLUDE_PATHS =
