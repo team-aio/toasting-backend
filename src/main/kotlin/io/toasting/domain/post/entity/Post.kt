@@ -10,6 +10,7 @@ class Post(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
+    @Enumerated(EnumType.STRING)
     val sourceType: SourceType,
     val url: String,
     val postedAt: LocalDateTime? = null,
