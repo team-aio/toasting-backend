@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @Validated
 @RestController
-@RequestMapping("/v1/member")
+@RequestMapping("/v1/members")
 @Tag(name = "Member", description = "회원 관련 API")
 class MemberController(
     @Value("\${spring.jwt.refresh-token-expired-ms}") private val refreshTokenExpiredMs: Long,
