@@ -6,7 +6,7 @@ import java.util.UUID
 
 object MemberCreator {
     fun defaultMember(
-        id: Long,
+        id: Long?,
         nickname: String,
         email: String,
         uuid: UUID = UUID.randomUUID()

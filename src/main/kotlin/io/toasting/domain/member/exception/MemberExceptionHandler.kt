@@ -15,6 +15,13 @@ sealed class MemberExceptionHandler {
     class SocialMemberAlreadySignUpException(
         errorCode: BaseErrorCode,
     ) : GeneralException(
-            errorCode,
-        )
+        errorCode,
+    )
+
+    class MemberException(
+        errorCode: BaseErrorCode,
+    ) : GeneralException(
+        errorCode,
+    )
+
 }
