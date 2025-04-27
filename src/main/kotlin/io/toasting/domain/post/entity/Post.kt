@@ -1,6 +1,7 @@
 package io.toasting.domain.post.entity
 
 import io.toasting.domain.model.BaseEntity
+import io.toasting.domain.post.vo.SourceType
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -9,7 +10,8 @@ class Post(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    val sourceType: String,
+    @Enumerated(EnumType.STRING)
+    val sourceType: SourceType,
     val url: String,
     val postedAt: LocalDateTime? = null,
     val shortContent: String? = null,

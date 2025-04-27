@@ -2,13 +2,14 @@ package io.toasting.domain.post.controller.response
 
 import io.swagger.v3.oas.annotations.media.Schema
 import io.toasting.domain.post.application.out.SearchPostsOutput
+import io.toasting.domain.post.vo.SourceType
 import java.time.LocalDateTime
 
 class SearchPostsResponse(
     @Schema(description = "게시글 id", example = "1")
     val id: Long,
     @Schema(description = "블로그 종류, tistory or velog", example = "tistory")
-    val sourceType: String,
+    val sourceType: SourceType,
     @Schema(description = "게시일", example = "2024-03-31T12:58:01")
     val postedAt: LocalDateTime? = null,
     @Schema(description = "미리보기 내용 100자, html 태그 없음", example = "미리보기입니다. 미리보기입니다. 미리보기입니다. 미리보기입니다. ")

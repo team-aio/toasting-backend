@@ -8,6 +8,7 @@ import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.post.application.PostService
 import io.toasting.domain.post.controller.response.GetPostDetailResponse
 import io.toasting.domain.post.controller.response.SearchPostsResponse
+import io.toasting.domain.post.vo.SourceType
 import io.toasting.global.api.ApiResponse
 import jakarta.validation.constraints.Size
 import org.springframework.data.domain.Pageable
@@ -57,7 +58,7 @@ internal class PostController(
     @Operation(summary = "블로그 연동", description = "Tistory 또는 Velog를 연동합니다. id에는 각 블로그의 닉네임이 들어갑니다.")
     fun linkBlog(
         @AuthenticationPrincipal memberDetails: MemberDetails,
-        @PathVariable("sourceType") sourceType: String,
+        @PathVariable("sourceType") sourceType: SourceType,
         @PathVariable("id")
         @Size(
             min = 2,

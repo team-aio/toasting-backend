@@ -11,6 +11,7 @@ import io.toasting.domain.post.entity.Post
 import io.toasting.domain.post.exception.PostExceptionHandler
 import io.toasting.domain.post.repository.BookmarkRepository
 import io.toasting.domain.post.repository.PostRepository
+import io.toasting.domain.post.vo.SourceType
 import io.toasting.global.external.crawler.PostCrawler
 import org.jsoup.Jsoup
 import org.springframework.data.domain.Pageable
@@ -62,7 +63,7 @@ class PostService(
     }
 
     @Transactional(readOnly = false)
-    fun linkBlog(memberId: Long, id: String, sourceType: String) {
+    fun linkBlog(memberId: Long, id: String, sourceType: SourceType) {
         var member = memberRepository.findById(memberId)
             .orElseThrow { MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
         validateAlreadyLinkedBlog(member, sourceType)
@@ -92,10 +93,9 @@ class PostService(
         postRepository.saveAll(postList)
     }
 
-    fun validateAlreadyLinkedBlog(member: Member, sourceType: String) {
-        if ((sourceType == "tistory" && !member.tistoryId.isNullOrBlank()) ||
-            (sourceType == "velog" && !member.velogId.isNullOrBlank())
-        ) {
+    fun validateAlreadyLinkedBlog(member: Member, sourceType: SourceType) {
+        if ((sourceType == SourceType.TISTORY && !member.tistoryId.isNullOrBlank()) ||
+            (sourceType == SourceType.VELOG && !member.velogId.isNullOrBlank())) {
             throw PostExceptionHandler.AlreadyLinkedBlog(ErrorStatus.ALREADY_LINKED_BLOG)
         }
     }

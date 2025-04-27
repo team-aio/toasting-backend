@@ -1,5 +1,6 @@
 package io.toasting.global.external.crawler
 
+import io.toasting.domain.post.vo.SourceType
 import io.toasting.global.external.crawler.dto.CrawlResponse
 import io.toasting.global.external.crawler.dto.CrawledPostDto
 import org.springframework.beans.factory.annotation.Value
@@ -12,7 +13,7 @@ class PostCrawler(
     @Value("\${crawler.tistory-uri}") private val tistoryUri: String,
     @Value("\${crawler.velog-uri}") private val velogUri: String,
 ) {
-    fun crawlPost(id: String, sourceType: String): MutableList<CrawledPostDto> {
+    fun crawlPost(id: String, sourceType: SourceType): MutableList<CrawledPostDto> {
         return WebClient.create(baseUrl).get()
             .uri(determineUri(id, sourceType))
             .retrieve()
@@ -21,10 +22,10 @@ class PostCrawler(
             .block() ?: mutableListOf()
     }
 
-    fun determineUri(id: String, sourceType: String) : String {
-        if (sourceType.equals("tistory")) {
+    fun determineUri(id: String, sourceType: SourceType) : String {
+        if (sourceType == SourceType.TISTORY) {
             return tistoryUri + id
-        } else if (sourceType.equals("velog")){
+        } else if (sourceType == SourceType.VELOG){
             return velogUri + id
         } else {
             throw IllegalArgumentException("Unsupported sourceType: $sourceType")

@@ -19,6 +19,7 @@ import io.toasting.domain.post.entity.Bookmark
 import io.toasting.domain.post.exception.PostExceptionHandler
 import io.toasting.domain.post.repository.BookmarkRepository
 import io.toasting.domain.post.repository.PostRepository
+import io.toasting.domain.post.vo.SourceType
 import io.toasting.global.external.crawler.PostCrawler
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -170,7 +171,7 @@ class PostServiceTest : BehaviorSpec() {
         Given("member가 있고,") {
             every { postCrawler.crawlPost(any(), any()) } returns PostCreator.crawledPostList()
             When("tistory 블로그를 연동했을 때") {
-                postService.linkBlog(member1.id!!, "test", "velog")
+                postService.linkBlog(member1.id!!, "test", SourceType.VELOG)
 
                 val postList = postRepository.findAll()
                 Then("tistory 게시글 10개가 저장된다.") {
@@ -195,11 +196,11 @@ class PostServiceTest : BehaviorSpec() {
             }
 
             When("tistory 블로그를 연동하면") {
-                member2.registerBlog("tistory", "test")
+                member2.registerBlog(SourceType.TISTORY, "test")
                 memberRepository.save(member2)
                 Then("ALREADY_LINKED_BLOG 예외를 던진다.") {
                     shouldThrow<PostExceptionHandler.AlreadyLinkedBlog> {
-                        postService.linkBlog(member2.id!!, "test", "tistory")
+                        postService.linkBlog(member2.id!!, "test", SourceType.TISTORY)
                     }
                 }
             }

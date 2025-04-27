@@ -2,6 +2,7 @@ package io.toasting.domain.member.entity
 
 import io.toasting.domain.member.vo.RoleType
 import io.toasting.domain.model.BaseEntity
+import io.toasting.domain.post.vo.SourceType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -51,8 +52,22 @@ class Member(
         )
     }
 
-    fun registerBlog(sourceType: String, id: String) {
-        if (sourceType == "tistory") {
+    fun updateWith(
+        nickname: String,
+        email: String,
+    ): Member =
+        Member(
+            id = id,
+            role = role,
+            profilePicture = profilePicture,
+            velogId = velogId,
+            tistoryId = tistoryId,
+            nickname = nickname,
+            email = email,
+        )
+
+    fun registerBlog(sourceType: SourceType, id: String) {
+        if (sourceType == SourceType.TISTORY) {
             this.tistoryId = id
         } else {
             this.velogId = id

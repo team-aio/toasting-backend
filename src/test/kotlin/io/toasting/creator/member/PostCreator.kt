@@ -1,6 +1,7 @@
 package io.toasting.creator.member
 
 import io.toasting.domain.post.entity.Post
+import io.toasting.domain.post.vo.SourceType
 import io.toasting.global.external.crawler.dto.CrawledPostDto
 import java.time.LocalDateTime
 
@@ -18,7 +19,7 @@ class PostCreator {
                 content = content,
                 url = "url",
                 shortContent = shortContent,
-                sourceType = "TISTORY",
+                sourceType = SourceType.TISTORY,
                 postedAt = postedAt,
                 likeCount = 0,
                 memberId = memberId
