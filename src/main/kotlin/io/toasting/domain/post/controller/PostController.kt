@@ -27,9 +27,9 @@ internal class PostController(
     private val memberUuidConverter: MemberUuidConverter,
 ) {
     @GetMapping("/search")
-    @Operation(summary = "로그인했을 때 게시글 검색")
+    @Operation(summary = "게시글 검색, 로그인하지 않은 경우 isBookmarked는 false를 반환한다.")
     fun searchPosts(
-        @AuthenticationPrincipal memberDetails: MemberDetails,
+        @AuthenticationPrincipal memberDetails: MemberDetails?,
         @PageableDefault(
             page = 0,
             size = 10,
@@ -42,7 +42,7 @@ internal class PostController(
             message = "검색어는 최대 255자입니다."
         ) keyword: String?,
     ): ApiResponse<PageResponse<SearchPostsResponse>> {
-        val memberId = memberUuidConverter.toMemberId(memberDetails.username)
+        val memberId = memberDetails?.let { memberUuidConverter.toMemberId(it.username) }
         val output = postService.searchPost(memberId, keyword, pageable)
         val response = output.content.map { SearchPostsResponse.from(it) }
         return ApiResponse.onSuccess(
