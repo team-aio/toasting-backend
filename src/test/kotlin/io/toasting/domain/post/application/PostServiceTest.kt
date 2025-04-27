@@ -137,6 +137,17 @@ class PostServiceTest : BehaviorSpec() {
 
             }
 
+            When("로그인하지 않아서 memberId가 null일 때,") {
+                val pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "postedAt"))
+                val keyword = "content"
+                val output = postService.searchPost(null, keyword, pageable)
+                val postList = output.content
+
+                Then("요소의 isBookmarked는 모두 false이다.") {
+                    postList.forEach { it.isBookmarked shouldBe false }
+                }
+            }
+
             When("keyword를 보내지 않았을 때") {
                 val pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "postedAt"))
                 val keyword = null
