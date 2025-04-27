@@ -25,12 +25,12 @@ class JwtFilter(
         private val EXIST_MEMBER_NICKNAME_API =
             RequestMatcher { request ->
                 request.requestURI == "/v1/member/exist" &&
-                    request.getParameter("nickname")?.isNotEmpty() ?: false
+                        request.getParameter("nickname")?.isNotEmpty() ?: false
             }
         private val GET_PROFILE_API =
             RequestMatcher { request ->
                 request.requestURI == "/v1/member/profile" &&
-                    request.getParameter("memberId")?.isNotEmpty() ?: false
+                        request.getParameter("memberId")?.isNotEmpty() ?: false
             }
         private val EXCLUDE_PATHS =
             listOf(
@@ -53,7 +53,7 @@ class JwtFilter(
     override fun shouldNotFilter(request: HttpServletRequest): Boolean =
         OrRequestMatcher(
             EXCLUDE_PATHS.map { AntPathRequestMatcher(it) } +
-                listOf(EXIST_MEMBER_NICKNAME_API, GET_PROFILE_API),
+                    listOf(EXIST_MEMBER_NICKNAME_API, GET_PROFILE_API),
         ).matches(request)
 
     override fun doFilterInternal(
@@ -84,8 +84,8 @@ class JwtFilter(
         request: HttpServletRequest,
         response: HttpServletResponse,
     ) {
-        val memberId =
-            jwtFactory.memberId(accessToken)
+        val memberUuid =
+            jwtFactory.memberUuid(accessToken)
                 ?: run {
                     log.error { "Member id is null" }
                     return
@@ -98,7 +98,7 @@ class JwtFilter(
                     return
                 }
 
-        val memberDetails = MemberDetails(role, memberId.toLong())
+        val memberDetails = MemberDetails(role, memberUuid)
         val authToken = UsernamePasswordAuthenticationToken(memberDetails, null, memberDetails.authorities)
         SecurityContextHolder.getContext().authentication = authToken
 

@@ -3,7 +3,6 @@ package io.toasting.domain.post.application
 import io.toasting.api.PageResponse
 import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.member.entity.Member
-import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.post.application.out.GetPostDetailOutput
@@ -19,8 +18,9 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.text.SimpleDateFormat
-import java.time.*
-import java.util.*
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.util.Locale
 
 @Service
 class PostService(
@@ -29,7 +29,11 @@ class PostService(
     private val bookmarkRepository: BookmarkRepository,
     private val postCrawler: PostCrawler,
 ) {
-    fun searchPost(memberDetails: MemberDetails, keyword: String?, pageable: Pageable): PageResponse<SearchPostsOutput> {
+    fun searchPost(
+        memberId: Long,
+        keyword: String?,
+        pageable: Pageable
+    ): PageResponse<SearchPostsOutput> {
         val postPage = postRepository.searchByKeyword(keyword, pageable)
         val postList = postPage.content
 
@@ -38,7 +42,7 @@ class PostService(
         val memberMapById = memberList.associateBy { it.id!! }
 
         val outputList = mutableListOf<SearchPostsOutput>()
-        val bookmarkList = bookmarkRepository.findByPostInAndMemberId(postPage.content, memberDetails.username.toLong())
+        val bookmarkList = bookmarkRepository.findByPostInAndMemberId(postPage.content, memberId)
         val postIdSetByBookmarkSet = bookmarkList.map { it.post.id!! }.toSet()
         for (post in postList) {
             val memberId = post.memberId
@@ -59,9 +63,9 @@ class PostService(
     }
 
     @Transactional(readOnly = false)
-    fun linkBlog(memberDetails: MemberDetails, id: String, sourceType: SourceType) {
-        val memberId = memberDetails.username.toLong()
-        var member = memberRepository.findById(memberId).orElseThrow{ MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
+    fun linkBlog(memberId: Long, id: String, sourceType: SourceType) {
+        var member = memberRepository.findById(memberId)
+            .orElseThrow { MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
         validateAlreadyLinkedBlog(member, sourceType)
         member.registerBlog(sourceType, id)
         memberRepository.save(member)
@@ -98,7 +102,7 @@ class PostService(
 
     fun getPostDetail(postId: Long): GetPostDetailOutput {
         val post = postRepository.findById(postId)
-            .orElseThrow{ PostExceptionHandler.PostNotFoundException(ErrorStatus.POST_NOT_FOUND) }
+            .orElseThrow { PostExceptionHandler.PostNotFoundException(ErrorStatus.POST_NOT_FOUND) }
         val member = memberRepository.findById(post.memberId)
             .orElseThrow { MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
 

@@ -5,6 +5,7 @@ import kotlin.random.Random
 class GetChatRoomListResponse(
     val chatRoomId: Long,
     val memberId: Long,
+    val nickname: String,
     val profilePicture: String? = null,
     val recentMessageContent: String,
     val recentSendAt: LocalDateTime,
@@ -15,6 +16,7 @@ class GetChatRoomListResponse(
             GetChatRoomListResponse(
                 chatRoomId = Random.nextLong(1, 10),
                 Random.nextLong(1, 10),
+                nickname = "nickname",
                 "st",
                 "last message content",
                 LocalDateTime.now(),
@@ -25,6 +27,7 @@ class GetChatRoomListResponse(
             GetChatRoomListResponse(
                 chatRoomId = output.chatRoomId,
                 memberId = output.memberId,
+                nickname = output.nickname,
                 profilePicture = output.profilePicture,
                 recentMessageContent = output.recentMessageContent,
                 recentSendAt = output.recentSendAt,

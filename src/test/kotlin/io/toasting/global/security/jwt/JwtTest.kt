@@ -19,7 +19,7 @@ class JwtTest :
                 val token = jwtFactory.createAccessToken(username, role, 60 * 60 * 2)
                 Then("담긴 값들이 모두 추출되어야한다.") {
                     jwtFactory.role(token) shouldBe role
-                    jwtFactory.memberId(token) shouldBe username
+                    jwtFactory.memberUuid(token) shouldBe username
                 }
                 Then("잘못된 토큰으로 추출하려고 하면 null을 반환한다.") {
                     val result = jwtFactory.role("invalidToken.dsfd.ss")
