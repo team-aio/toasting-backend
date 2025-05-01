@@ -6,8 +6,8 @@ import kotlin.random.Random
 class GetChatRoomListResponse(
     @Schema(description = "채팅방 id", example = "1")
     val chatRoomId: Long,
-    @Schema(description = "상대방 id", example = "1")
-    val memberId: Long,
+    @Schema(description = "상대방 id", example = "a91a4d6a-4e66-481e-a493-14bf1bab5bea")
+    val memberId: String,
     @Schema(description = "상대방 닉네임", example = "howdong")
     val nickname: String,
     @Schema(description = "상대방 프로필 사진", example = "")
@@ -20,17 +20,6 @@ class GetChatRoomListResponse(
     val unreadMessageCount: Int,
 ) {
     companion object {
-        fun mock() =
-            GetChatRoomListResponse(
-                chatRoomId = Random.nextLong(1, 10),
-                Random.nextLong(1, 10),
-                nickname = "nickname",
-                "st",
-                "last message content",
-                LocalDateTime.now(),
-                Random.nextInt(1, 10),
-            )
-
         fun from(output: GetChatRoomListOutput) =
             GetChatRoomListResponse(
                 chatRoomId = output.chatRoomId,

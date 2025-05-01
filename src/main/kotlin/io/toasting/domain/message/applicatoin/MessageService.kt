@@ -2,6 +2,7 @@ package io.toasting.domain.message.applicatoin
 
 import io.toasting.api.PageResponse
 import io.toasting.api.code.status.ErrorStatus
+import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
 import io.toasting.domain.message.applicatoin.input.CreateChatRoomInput
@@ -55,12 +56,15 @@ class MessageService(
             .findByMemberIdAndChatRoomId(memberId, chatRoomId)
             .orElseThrow { ChatMemberNotFoundException(ErrorStatus.NOT_BELONG_TO_CHAT_ROOM) }
 
-        var message: Message = input.toMessageEntity(memberId, chatRoom)
+        var message = input.toMessageEntity(memberId, chatRoom)
         message = messageRepository.save(message)
 
         chatRoomRepository.save(input.toChatRoomEntity(memberId, chatRoom))
 
-        return SendMessageOutput.fromEntity(message)
+        val member = memberRepository.findById(memberId)
+            .orElseThrow{ MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
+
+        return SendMessageOutput.of(message, member.uuid)
     }
 
     @Transactional(readOnly = false)
@@ -97,7 +101,15 @@ class MessageService(
                 .orElseThrow { ChatRoomNotFoundException(ErrorStatus.NOT_BELONG_TO_CHAT_ROOM) }
         val messagePage = messageRepository.findByChatRoom(chatRoom, pageable)
 
-        val outputList = messagePage.content.map { GetChatRoomMessagesOutput.fromEntity(it) }
+        val senderIds = messagePage.content.map { it.senderId }
+
+        val memberMapById = memberRepository.findAllById(senderIds).associateBy { it.id!! }
+
+        val outputList = messagePage.content.map { message ->
+            val sender = memberMapById[message.senderId]
+                ?: throw MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND)
+            GetChatRoomMessagesOutput.fromEntity(message, sender.uuid)
+        }
 
         return PageResponse.of(outputList, messagePage.totalElements, messagePage.totalPages)
     }
@@ -122,7 +134,7 @@ class MessageService(
                 val output =
                     GetChatRoomListOutput(
                         chatRoomId = chatRoom.id ?: throw ChatRoomNotFoundException(ErrorStatus.CHAT_ROOM_NOT_FOUND),
-                        memberId = partnerId,
+                        memberId = partner.uuid.toString(),
                         nickname = partner.nickname,
                         profilePicture = partner.profilePicture,
                         recentMessageContent = chatRoom.recentMessageContent!!,

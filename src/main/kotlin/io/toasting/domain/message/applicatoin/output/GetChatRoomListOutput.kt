@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 class GetChatRoomListOutput(
     val chatRoomId: Long,
-    val memberId: Long,
+    val memberId: String,
     val nickname: String,
     val profilePicture: String? = null,
     val recentMessageContent: String,

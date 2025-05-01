@@ -9,8 +9,8 @@ class SendMessageResponse(
     val id: Long,
     @Schema(description = "채팅방 id", example = "1")
     val chatRoomId: Long,
-    @Schema(description = "발신자 id", example = "1")
-    val senderId: Long,
+    @Schema(description = "발신자 id", example = "a91a4d6a-4e66-481e-a493-14bf1bab5bea")
+    val senderId: String,
     @Schema(description = "메세지 내용", example = "안녕하세요.")
     val content: String,
     @Schema(description = "보낸 시간", example = "2025-04-27T07:50:26.255Z")
