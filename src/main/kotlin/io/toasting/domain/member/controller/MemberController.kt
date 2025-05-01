@@ -18,6 +18,8 @@ import io.toasting.domain.member.controller.response.LoginGoogleResponse
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.repository.RefreshTokenRepository
 import io.toasting.domain.member.vo.SocialType
+import io.toasting.domain.post.application.PostService
+import io.toasting.domain.post.vo.SourceType
 import io.toasting.global.api.ApiResponse
 import io.toasting.global.api.exception.handler.AuthExceptionHandler
 import io.toasting.global.constants.Auth
@@ -51,6 +53,7 @@ class MemberController(
     private val getProfileService: GetProfileService,
     private val refreshTokenRepository: RefreshTokenRepository, // TODO : 의존성 방향만 맞춤, 바로 Repository를 호출하면 아면 추후 리팩토링
     private val memberUuidConverter: MemberUuidConverter,
+    private val postService: PostService,
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -109,7 +112,15 @@ class MemberController(
         @Valid @RequestBody signUpSocialLoginRequest: SignUpSocialLoginRequest,
     ): ApiResponse<Unit> {
         validate(snsType, signUpSocialLoginRequest)
-        signUpMemberService.signUpBySocialLogin(signUpSocialLoginRequest.toInput())
+        val memberId = signUpMemberService.signUpBySocialLogin(signUpSocialLoginRequest.toInput())
+        val velogId = signUpSocialLoginRequest.velogId
+        val tistoryId = signUpSocialLoginRequest.tistoryId
+        if (velogId != null) {
+            postService.linkBlog(memberId, velogId, SourceType.VELOG)
+        }
+        if (tistoryId != null) {
+            postService.linkBlog(memberId, tistoryId, SourceType.TISTORY)
+        }
         return ApiResponse.onSuccess()
     }
 
