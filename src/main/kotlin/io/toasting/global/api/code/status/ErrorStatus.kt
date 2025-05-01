@@ -23,6 +23,7 @@ enum class ErrorStatus(
 
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_NOT_FOUND", "member를 찾을 수 없습니다."),
     MEMBER_NAME_DUPLICATION(HttpStatus.BAD_REQUEST, "MEMBER_NAME_DUPLICATION", "닉네임이 중복되었습니다."),
+    MEMBER_NOT_MINE(HttpStatus.BAD_REQUEST, "MEMBER_NOT_MINE", "본인이 아닙니다."),
     ALERADY_SIGN_UP_MEMBER(HttpStatus.BAD_REQUEST, "", "이미 가입한 멤버입니다."),
     EXAMPLE_NOT_FOUND(HttpStatus.NOT_FOUND, "EXAMPLE_NOT_FOUND,", "example 엔티티를 찾을 수 없습니다."),
 

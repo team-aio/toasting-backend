@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import io.toasting.api.code.status.ErrorStatus
 import io.toasting.api.code.status.SuccessStatus
 import io.toasting.domain.member.application.CheckMemberService
+import io.toasting.domain.member.application.DeleteMemberService
 import io.toasting.domain.member.application.GetProfileService
 import io.toasting.domain.member.application.LoginMemberService
 import io.toasting.domain.member.application.SignUpMemberService
@@ -16,6 +17,7 @@ import io.toasting.domain.member.controller.response.GetMyProfileResponse
 import io.toasting.domain.member.controller.response.GetProfileResponse
 import io.toasting.domain.member.controller.response.LoginGoogleResponse
 import io.toasting.domain.member.entity.MemberDetails
+import io.toasting.domain.member.exception.MemberExceptionHandler.MemberException
 import io.toasting.domain.member.repository.RefreshTokenRepository
 import io.toasting.domain.member.vo.SocialType
 import io.toasting.domain.post.application.PostService
@@ -34,7 +36,9 @@ import jakarta.validation.constraints.Size
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -53,6 +57,7 @@ class MemberController(
     private val getProfileService: GetProfileService,
     private val refreshTokenRepository: RefreshTokenRepository, // TODO : 의존성 방향만 맞춤, 바로 Repository를 호출하면 아면 추후 리팩토링
     private val memberUuidConverter: MemberUuidConverter,
+    private val deleteMemberService: DeleteMemberService,
     private val postService: PostService,
 ) {
     private val log = KotlinLogging.logger {}
@@ -121,6 +126,20 @@ class MemberController(
         if (tistoryId != null) {
             postService.linkBlog(memberId, tistoryId, SourceType.TISTORY)
         }
+        return ApiResponse.onSuccess()
+    }
+
+    @DeleteMapping("/{memberId}")
+    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 합니다.")
+    fun deleteMember(
+        @PathVariable memberId: String,
+        @AuthenticationPrincipal memberDetails: MemberDetails,
+    ): ApiResponse<Unit> {
+        val memberUuid = memberDetails.username
+        if (memberId != memberUuid) {
+            throw MemberException(ErrorStatus.MEMBER_NOT_MINE)
+        }
+        deleteMemberService.deleteMember(memberUuidConverter.toMemberId(memberId))
         return ApiResponse.onSuccess()
     }
 

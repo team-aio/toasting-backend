@@ -1,4 +1,4 @@
-package io.toasting.creator.member
+package io.toasting.creator.post
 
 import io.toasting.domain.post.entity.Post
 import io.toasting.domain.post.vo.SourceType
