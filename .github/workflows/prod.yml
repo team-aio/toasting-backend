@@ -60,16 +60,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Copy docker-compose via scp action
+      - name: Copy docker-compose via SCP
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.PROD_EC2_HOST }}
           username: ${{ secrets.PROD_EC2_USERNAME }}
           key: ${{ secrets.PROD_EC2_KEY }}
           port: ${{ secrets.PROD_EC2_PORT }}
-          scp: |
-            './docker-compose.yml' => /home/toasting/
-          last_ssh: |
+          source: "./docker-compose.yml"
+          target: "/home/toasting/"
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.PROD_EC2_HOST }}
+          username: ${{ secrets.PROD_EC2_USERNAME }}
+          key: ${{ secrets.PROD_EC2_KEY }}
+          port: ${{ secrets.PROD_EC2_PORT }}
+          script: |
             cd /home/toasting
             
             export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
@@ -82,4 +90,4 @@ jobs:
             docker-compose down
             docker-compose pull
             docker image prune -a -f
-            docker-compose -f docker-compose.yml up --build -d
+            docker-compose up --build -d
