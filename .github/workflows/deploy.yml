@@ -2,7 +2,7 @@ name: Deploy Containers
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "develop" ]
 
 jobs:
   upload-images:

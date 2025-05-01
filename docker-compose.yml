@@ -17,4 +17,4 @@ services:
 
 networks:
   toasting:
-    external: trueㅍ
+    external: true
