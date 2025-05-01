@@ -30,29 +30,22 @@ class PostService(
     private val postCrawler: PostCrawler,
 ) {
     fun searchPost(
-        memberId: Long,
+        memberId: Long?,
         keyword: String?,
         pageable: Pageable
     ): PageResponse<SearchPostsOutput> {
         val postPage = postRepository.searchByKeyword(keyword, pageable)
         val postList = postPage.content
 
-        val memberIdList = postList.map { it.memberId }
-        val memberList = memberRepository.findAllById(memberIdList)
-        val memberMapById = memberList.associateBy { it.id!! }
+        val memberMapById = getMemberMapById(postList)
 
-        val outputList = mutableListOf<SearchPostsOutput>()
-        val bookmarkList = bookmarkRepository.findByPostInAndMemberId(postPage.content, memberId)
-        val postIdSetByBookmarkSet = bookmarkList.map { it.post.id!! }.toSet()
-        for (post in postList) {
-            val memberId = post.memberId
-            val member = memberMapById[memberId]
-            if (member == null) {
-                throw MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND)
-            }
-            val isBookmarked = postIdSetByBookmarkSet.contains(post.id)
-            val output = SearchPostsOutput.of(post, member, isBookmarked)
-            outputList.add(output)
+        val bookmarkedPostIdSet = getBookmarkedPostIdSet(memberId, postList)
+
+        val outputList = postList.map { post ->
+            val member = memberMapById[post.memberId]
+                ?: throw MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND)
+            val isBookmarked = bookmarkedPostIdSet.contains(post.id)
+            SearchPostsOutput.of(post, member, isBookmarked)
         }
 
         return PageResponse.of(
@@ -60,6 +53,19 @@ class PostService(
             postPage.totalElements,
             postPage.totalPages
         )
+    }
+
+    private fun getMemberMapById(postList: List<Post>): Map<Long, Member> {
+        val memberIdList = postList.map { it.memberId }
+        val memberList = memberRepository.findAllById(memberIdList)
+        return memberList.associateBy { it.id!! }
+    }
+
+    private fun getBookmarkedPostIdSet(memberId: Long?, postList: List<Post>): Set<Long> {
+        if (memberId == null) return emptySet()
+        return bookmarkRepository.findByPostInAndMemberId(postList, memberId)
+            .mapNotNull { it.post.id }
+            .toSet()
     }
 
     @Transactional(readOnly = false)
