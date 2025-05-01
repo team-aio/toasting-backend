@@ -5,7 +5,9 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import io.toasting.api.PageResponse
 import io.toasting.domain.member.application.converter.MemberUuidConverter
 import io.toasting.domain.member.entity.MemberDetails
+import io.toasting.domain.post.application.NonMemberPostService
 import io.toasting.domain.post.application.PostService
+import io.toasting.domain.post.application.out.SearchPostsOutput
 import io.toasting.domain.post.controller.response.GetPostDetailResponse
 import io.toasting.domain.post.controller.response.SearchPostsResponse
 import io.toasting.domain.post.vo.SourceType
@@ -24,12 +26,13 @@ import org.springframework.web.bind.annotation.*
 @Tag(name = "Post", description = "게시글 관련 API")
 internal class PostController(
     private val postService: PostService,
+    private val nonMemberPostService: NonMemberPostService,
     private val memberUuidConverter: MemberUuidConverter,
 ) {
     @GetMapping("/search")
-    @Operation(summary = "로그인했을 때 게시글 검색")
+    @Operation(summary = "게시글 검색, 로그인하지 않은 경우 isBookmarked는 false를 반환한다.")
     fun searchPosts(
-        @AuthenticationPrincipal memberDetails: MemberDetails,
+        @AuthenticationPrincipal memberDetails: MemberDetails?,
         @PageableDefault(
             page = 0,
             size = 10,
@@ -42,12 +45,16 @@ internal class PostController(
             message = "검색어는 최대 255자입니다."
         ) keyword: String?,
     ): ApiResponse<PageResponse<SearchPostsResponse>> {
-        val memberId = memberUuidConverter.toMemberId(memberDetails.username)
-        val output = postService.searchPost(memberId, keyword, pageable)
-        val response = output.content.map { SearchPostsResponse.from(it) }
+        val output = if (memberDetails == null) {
+            nonMemberPostService.searchPostWithoutMember(keyword, pageable)
+        } else {
+            val memberId = memberUuidConverter.toMemberId(memberDetails.username)
+            postService.searchPost(memberId, keyword, pageable)
+        }
+
         return ApiResponse.onSuccess(
             PageResponse.of(
-                response,
+                output.content.map { SearchPostsResponse.from(it) },
                 output.totalElements,
                 output.totalPages
             )
