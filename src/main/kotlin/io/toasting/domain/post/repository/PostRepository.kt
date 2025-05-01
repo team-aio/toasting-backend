@@ -9,4 +9,5 @@ interface PostRepository :
     JpaRepository<Post, Long>,
     CustomPostRepository {
     fun countByMemberId(memberId: Long): Long
+    fun deleteAllByMemberId(memberId: Long): Long
 }
