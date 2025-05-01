@@ -1,0 +1,48 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jwt:
+    access-token-expired-ms: 6000000 # 100 minutes
+    refresh-token-expired-ms: 86400000 # 1 day
+  jpa:
+    properties:
+      hibernate:
+        default_batch_fetch_size: 200
+        properties:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.MySQLDialect
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-name: google
+            client-id: 694693785172-m0i9kmlib8vuup30g6jnls8m50i55voq.apps.googleusercontent.com
+            client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+            redirect-uri: http://localhost:8000/login/oauth2/code/google
+            authorization-grant-type: authorization_code
+            scope:
+              - profile
+              - email
+
+springdoc:
+  swagger-ui:
+    groups-order: DESC
+    tags-sorter: alpha
+    path: /api-test
+    enabled: true
+  paths-to-match:
+    - /v1/**
+  api-docs:
+    enabled: true
+server:
+  port: 8000
+  address: 0.0.0.0
+
+crawler:
+  base-url: http://blog-crawler:3000/blog/
+  tistory-uri: tistory/
+  velog-uri: velog/
