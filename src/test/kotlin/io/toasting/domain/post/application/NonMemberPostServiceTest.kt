@@ -6,7 +6,7 @@ import io.kotest.extensions.spring.SpringTestExtension
 import io.kotest.extensions.spring.SpringTestLifecycleMode
 import io.kotest.matchers.collections.shouldBeSortedWith
 import io.kotest.matchers.shouldBe
-import io.toasting.creator.member.PostCreator
+import io.toasting.creator.post.PostCreator
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
