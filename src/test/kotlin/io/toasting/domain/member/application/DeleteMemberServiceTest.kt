@@ -58,7 +58,7 @@ class DeleteMemberServiceTest : BehaviorSpec() {
             likeRepository.save(LikeCreator.default(post, member.id!!))
             bookmarkRepository.save(BookmarkCreator.default(post, member.id!!))
             When("회원 탈퇴 이벤트가 발행되면") {
-                deleteMemberService.deleteMember(1L)
+                deleteMemberService.deleteMember(member.id!!)
                 Then("멤버가 삭제되어야 한다.") {
                     memberRepository.findAll().filter { it.id == member.id }.size shouldBe 0
                 }

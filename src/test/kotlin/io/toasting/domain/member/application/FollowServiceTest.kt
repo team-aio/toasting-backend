@@ -34,34 +34,35 @@ class FollowServiceTest : BehaviorSpec() {
 
     init {
         given("저장된 유저 정보가 주어졌을 때") {
-            val m1 = MemberCreator.defaultMember(1L, "test1", "test1@naver.com")
-            val m2 = MemberCreator.defaultMember(2L, "test2", "test2@naver.com")
+            val m1 = MemberCreator.defaultMember(null, "test1", "test1@naver.com")
+            val m2 = MemberCreator.defaultMember(null, "test2", "test2@naver.com")
 
             memberRepository.saveAll(listOf(m1, m2))
             When("팔로우를 추가하면") {
-                followService.addFollow(AddFollowInput(1L, 2L))
+                followService.addFollow(AddFollowInput(m1.id!!, m2.id!!))
                 Then("저장된 정보가 일치하여야 한다") {
-                    val follow = followRepository.findById(1L).get()
+                    val follows = followRepository.findAll()
+                    val follow = follows.find { it.fromMember.id == m1.id && it.toMember.id == m2.id }!!
                     follow.fromMember.nickname shouldBe m1.nickname
                     follow.toMember.nickname shouldBe m2.nickname
                 }
             }
             When(" 이미 팔로우 했는지 확인했을 때") {
-                val result = followService.existsFollow(ExistsFollowInput(1L, 2L))
+                val result = followService.existsFollow(ExistsFollowInput(m1.id!!, m2.id!!))
                 Then("팔로우를 했으므로 true를 반환해야 한다") {
                     result shouldBe true
                 }
             }
             When("팔로우를 취소하면") {
-                followService.cancelFollow(CancelFollowInput(1L, 2L))
+                followService.cancelFollow(CancelFollowInput(m1.id!!, m2.id!!))
                 Then("저장된 정보가 없어야 한다") {
                     val follow = followRepository.findAll()
                     follow.isEmpty() shouldBe true
                 }
             }
             When("팔로우를 취소하고 이미 팔로우 했는지 확인했을 때") {
-                followService.cancelFollow(CancelFollowInput(1L, 2L))
-                val result = followService.existsFollow(ExistsFollowInput(1L, 2L))
+                followService.cancelFollow(CancelFollowInput(m1.id!!, m2.id!!))
+                val result = followService.existsFollow(ExistsFollowInput(m1.id!!, m2.id!!))
                 Then("팔로우를 취소했으므로 false를 반환해야 한다") {
                     result shouldBe false
                 }
@@ -69,7 +70,7 @@ class FollowServiceTest : BehaviorSpec() {
             When("내 자신을 팔로우 하려고 하면") {
                 Then("예외가 발생해야 한다") {
                     shouldThrow<FollowExceptionHandler.SelfFollowException> {
-                        followService.addFollow(AddFollowInput(1L, 1L))
+                        followService.addFollow(AddFollowInput(m1.id!!, m1.id!!))
                     }
                 }
             }

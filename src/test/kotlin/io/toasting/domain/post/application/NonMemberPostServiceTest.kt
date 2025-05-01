@@ -2,8 +2,7 @@ package io.toasting.domain.post.application
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
-import io.kotest.extensions.spring.SpringTestExtension
-import io.kotest.extensions.spring.SpringTestLifecycleMode
+import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.collections.shouldBeSortedWith
 import io.kotest.matchers.shouldBe
 import io.toasting.creator.post.PostCreator
@@ -25,7 +24,7 @@ import java.util.UUID
 @Transactional
 @ActiveProfiles("test")
 class NonMemberPostServiceTest : BehaviorSpec() {
-    override fun extensions() = listOf(SpringTestExtension(SpringTestLifecycleMode.Root))
+    override fun extensions() = listOf(SpringExtension)
 
     @Autowired
     private lateinit var bookmarkRepository: BookmarkRepository
@@ -51,7 +50,7 @@ class NonMemberPostServiceTest : BehaviorSpec() {
             memberRepository.saveAll(listOf(member1, member2, member3))
         }
 
-        Given("게시글 5개가 주어지고, ") {
+        Given("게시글 4개가 주어지고, ") {
             val post1 =
                 PostCreator.defaultPost(
                     "title1",
