@@ -74,9 +74,7 @@ jobs:
           username: ${{ secrets.PROD_EC2_USERNAME }}
           key: ${{ secrets.PROD_EC2_KEY }}
           port: ${{ secrets.PROD_EC2_PORT }}
-          source: |
-            ./docker-compose.yml
-            .env
+          source: "./docker-compose.yml,.env"
           target: "/home/toasting/"
 
       - name: Deploy to EC2 via SSH
