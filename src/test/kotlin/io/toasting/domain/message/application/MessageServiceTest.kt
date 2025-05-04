@@ -126,7 +126,7 @@ class MessageServiceTest :
                     messageList.size shouldBe 1
                     message.id shouldBe result.id
                     message.chatRoom.id shouldBe result.chatRoomId
-                    message.senderId shouldBe result.senderId
+                    message.senderId shouldBe member2.id
                     message.content shouldBe input.content
 
                     val chatRoom = chatRoomRepository.findAll().first()
@@ -176,7 +176,7 @@ class MessageServiceTest :
                 Then("데이터의 개수는 4, 페이지 개수는 3, 총 개수는 10이 된다.") {
                     result.content.size shouldBe 4
                     result.content.first().chatRoomId shouldBe chatRoomId
-                    result.content.first().senderId shouldBe member2.id
+                    result.content.first().senderId shouldBe member2.uuid.toString()
                     result.content.get(0).id shouldBeGreaterThan result.content.get(1).id
                     result.totalPages shouldBe 3
                     result.totalElements shouldBe 10

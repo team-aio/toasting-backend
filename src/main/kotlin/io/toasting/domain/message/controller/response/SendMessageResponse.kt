@@ -1,13 +1,19 @@
 package io.toasting.domain.message.controller.response
 
+import io.swagger.v3.oas.annotations.media.Schema
 import io.toasting.domain.message.applicatoin.output.SendMessageOutput
 import java.time.LocalDateTime
 
 class SendMessageResponse(
+    @Schema(description = "메세지 id", example = "1")
     val id: Long,
+    @Schema(description = "채팅방 id", example = "1")
     val chatRoomId: Long,
-    val senderId: Long,
+    @Schema(description = "발신자 id", example = "a91a4d6a-4e66-481e-a493-14bf1bab5bea")
+    val senderId: String,
+    @Schema(description = "메세지 내용", example = "안녕하세요.")
     val content: String,
+    @Schema(description = "보낸 시간", example = "2025-04-27T07:50:26.255Z")
     val createdAt: LocalDateTime,
 ) {
     companion object {
