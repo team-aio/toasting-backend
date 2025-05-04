@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Copy docker-compose via SCP
         uses: appleboy/ssh-action@v1.0.3
