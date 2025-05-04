@@ -57,26 +57,6 @@ jobs:
     needs: upload-images
     runs-on: ubuntu-latest
     steps:
-      - name: Create .env file
-        run: |
-          echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" >> .env
-          echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" >> .env
-          echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
-          echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
-          echo "SPRING_DATASOURCE_HIKARI_SCHEMA=${{ secrets.SPRING_DATASOURCE_HIKARI_SCHEMA}}" >> .env
-          echo "SPRING_JWT_SECRET=${{ secrets.SPRING_JWT_SECRET }}" >> .env
-          echo "SPRING_PROFILES_ACTIVE=prod" >> .env
-
-      - name: Copy docker-compose and .env via SCP
-        uses: appleboy/scp-action@v0.1.3
-        with:
-          host: ${{ secrets.PROD_EC2_HOST }}
-          username: ${{ secrets.PROD_EC2_USERNAME }}
-          key: ${{ secrets.PROD_EC2_KEY }}
-          port: ${{ secrets.PROD_EC2_PORT }}
-          source: "./docker-compose.yml,.env"
-          target: "/home/toasting/"
-
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -85,10 +65,23 @@ jobs:
           key: ${{ secrets.PROD_EC2_KEY }}
           port: ${{ secrets.PROD_EC2_PORT }}
           script: |
-            cd /home/toasting
-      
-            sudo docker compose down
-            sudo docker compose pull
+            sudo docker stop toasting-spring || true
+            sudo docker rm toasting-spring || true
+            
+            sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/toasting-spring:latest
+            
+            sudo docker run -d \
+              --name toasting-spring \
+              --restart always \
+              --network toasting \
+              -p 8000:8000 \
+              -e SPRING_PROFILES_ACTIVE=prod \
+              -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
+              -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
+              -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
+              -e SPRING_DATASOURCE_HIKARI_SCHEMA=${{ secrets.SPRING_DATASOURCE_HIKARI_SCHEMA }} \
+              -e SPRING_JWT_SECRET=${{ secrets.SPRING_JWT_SECRET }} \
+              ${{ secrets.DOCKER_HUB_USERNAME }}/toasting-spring:latest
+            
+            # Clean up unused images
             sudo docker image prune -a -f
-            sudo docker compose up --build -d
-            rm -f .env
