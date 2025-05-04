@@ -66,7 +66,7 @@ jobs:
           echo "SPRING_DATASOURCE_HIKARI_SCHEMA=${{ secrets.SPRING_DATASOURCE_HIKARI_SCHEMA}}" >> .env
           echo "SPRING_JWT_SECRET=${{ secrets.SPRING_JWT_SECRET }}" >> .env
           echo "SPRING_PROFILES_ACTIVE=prod" >> .env
-      
+
       - name: Copy docker-compose and .env via SCP
         uses: appleboy/scp-action@v0.1.3
         with:
@@ -76,7 +76,7 @@ jobs:
           port: ${{ secrets.PROD_EC2_PORT }}
           source: "./docker-compose.yml,.env"
           target: "/home/toasting/"
-      
+
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
