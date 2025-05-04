@@ -63,6 +63,7 @@ jobs:
           echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" >> .env
           echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
           echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
+          echo "SPRING_DATASOURCE_HIKARI_SCHEMA=${{ secrets.SPRING_DATASOURCE_HIKARI_SCHEMA}}" >> .env
           echo "SPRING_JWT_SECRET=${{ secrets.SPRING_JWT_SECRET }}" >> .env
           echo "SPRING_PROFILES_ACTIVE=prod" >> .env
       
