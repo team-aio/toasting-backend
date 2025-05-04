@@ -87,7 +87,7 @@ jobs:
             export SPRING_JWT_SECRET=${{ secrets.SPRING_JWT_SECRET }}
             export SPRING_PROFILES_ACTIVE=prod
             
-            docker-compose down
-            docker-compose pull
-            docker image prune -a -f
-            docker-compose up --build -d
+            sudo docker compose down
+            sudo docker compose pull
+            sudo docker image prune -a -f
+            sudo docker compose up --build -d
