@@ -1,6 +1,6 @@
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.postgresql.Driver
 
   jwt:
     access-token-expired-ms: 6000000 # 100 minutes
@@ -13,7 +13,8 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: validate
-    database-platform: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: postgresql
   security:
     oauth2:
       client:
