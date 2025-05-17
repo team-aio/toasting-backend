@@ -18,7 +18,7 @@ class CustomCompanyExperience(
     @Column("start_date")
     val startDate: LocalDate,
     @Column("end_date")
-    val endDate: LocalDate,
+    val endDate: LocalDate? = null,
     @Column("position")
     val position: String,
     @Column("activities", columnDefinition = "text")
