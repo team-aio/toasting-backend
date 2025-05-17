@@ -4,7 +4,10 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.company.application.AddCompanyExperienceService
+import io.toasting.domain.company.application.GetCompanyExperienceService
 import io.toasting.domain.company.controller.request.AddCompanyExperienceRequest
+import io.toasting.domain.company.controller.response.GetCompanyExperienceResponse
+import io.toasting.domain.member.application.converter.MemberUuidConverter
 import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.exception.MemberExceptionHandler.MemberException
 import io.toasting.global.api.ApiResponse
@@ -20,16 +23,23 @@ import org.springframework.web.bind.annotation.RequestMapping
 @RequestMapping("/v1/members")
 @Tag(name = "Member", description = "회원 관련 API")
 class CompanyExperienceController(
-    private val addCompanyExperienceService: AddCompanyExperienceService
+    private val memberUuidConverter: MemberUuidConverter,
+    private val addCompanyExperienceService: AddCompanyExperienceService,
+    private val getCompanyExperienceService: GetCompanyExperienceService,
 ) {
 
     // TODO : 로그인을 안해도 해당 API를 호출할 수 있도록 JWT Filter를 뚫어놔야 함(현재 안뚫려있음)
     @GetMapping("{memberId}/experience/company")
     @Operation(summary = "유저 회사 경력 조회", description = "회사 경력을 조회합니다. 로그인이 필요 없습니다.")
     fun getCompanyExperience(
-        @PathVariable memberId: String,
-    ): ApiResponse<Unit> {
-        return ApiResponse.onSuccess()
+        @PathVariable("memberId") memberUuid: String,
+    ): ApiResponse<GetCompanyExperienceResponse> {
+        val memberId = memberUuidConverter.toMemberId(memberUuid)
+        
+        return getCompanyExperienceService
+            .getCompanyExperience(memberId)
+            .let { GetCompanyExperienceResponse.from(it) }
+            .let { ApiResponse.onSuccess(it) }
     }
 
     @PostMapping("{memberId}/experience/company")
