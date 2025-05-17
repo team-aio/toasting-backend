@@ -6,6 +6,7 @@ import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.company.application.AddCompanyExperienceService
 import io.toasting.domain.company.application.GetCompanyExperienceService
 import io.toasting.domain.company.controller.request.AddCompanyExperienceRequest
+import io.toasting.domain.company.controller.request.UpdateCompanyExperienceRequest
 import io.toasting.domain.company.controller.response.GetCompanyExperienceResponse
 import io.toasting.domain.member.application.converter.MemberUuidConverter
 import io.toasting.domain.member.entity.MemberDetails
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
@@ -59,5 +61,18 @@ class CompanyExperienceController(
             false -> addCompanyExperienceService.addExistCompanyExperience(request.toExistInput(memberId))
         }
         return ApiResponse.onSuccess()
+    }
+
+    @PutMapping("{memberId}/experience/company")
+    @Operation(summary = "유저 회사 경력 수정", description = "회사 경력을 수정합니다.")
+    fun updateCompanyExperience(
+        @PathVariable("memberId") memberUuid: String,
+        @AuthenticationPrincipal memberDetails: MemberDetails,
+        @RequestBody request: UpdateCompanyExperienceRequest,
+    ): ApiResponse<Unit> {
+        if (memberUuid != memberDetails.username) {
+            throw MemberException(ErrorStatus.MEMBER_NOT_MINE)
+        }
+        val memberId = memberUuidConverter.toMemberId(memberDetails.username)
     }
 }
