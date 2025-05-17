@@ -7,6 +7,7 @@ import io.toasting.domain.company.application.AddCompanyExperienceService
 import io.toasting.domain.company.application.GetCompanyExperienceService
 import io.toasting.domain.company.application.UpdateCompanyExperienceService
 import io.toasting.domain.company.controller.request.AddCompanyExperienceRequest
+import io.toasting.domain.company.controller.request.UpdateCompanyExperienceIsViewRequest
 import io.toasting.domain.company.controller.request.UpdateCompanyExperienceRequest
 import io.toasting.domain.company.controller.response.GetCompanyExperienceResponse
 import io.toasting.domain.member.application.converter.MemberUuidConverter
@@ -79,6 +80,24 @@ class CompanyExperienceController(
         when (request.isCustom) {
             true -> updateCompanyExperienceService.updateCustomCompanyExperience(request.toCustomInput(memberId))
             false -> updateCompanyExperienceService.updateExistCompanyExperience(request.toExistInput(memberId))
+        }
+        return ApiResponse.onSuccess()
+    }
+
+    @PutMapping("{memberId}/experience/company/is-view")
+    @Operation(summary = "회사 경력 공개 여부 수정", description = "회사 경력을 공개할지 여부를 수정합니다.")
+    fun updateCompanyExperienceIsView(
+        @PathVariable("memberId") memberUuid: String,
+        @AuthenticationPrincipal memberDetails: MemberDetails,
+        @RequestBody request: UpdateCompanyExperienceIsViewRequest,
+    ): ApiResponse<Unit> {
+        if (memberUuid != memberDetails.username) {
+            throw MemberException(ErrorStatus.MEMBER_NOT_MINE)
+        }
+        val memberId = memberUuidConverter.toMemberId(memberDetails.username)
+        when (request.isCustom) {
+            true -> updateCompanyExperienceService.updateCustomCompanyExperienceIsView(request.toCustomInput(memberId))
+            false -> updateCompanyExperienceService.updateExistCompanyExperienceIsView(request.toExistInput(memberId))
         }
         return ApiResponse.onSuccess()
     }
