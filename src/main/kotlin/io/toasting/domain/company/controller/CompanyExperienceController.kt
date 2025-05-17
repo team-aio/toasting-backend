@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.company.application.AddCompanyExperienceService
 import io.toasting.domain.company.application.GetCompanyExperienceService
+import io.toasting.domain.company.application.UpdateCompanyExperienceService
 import io.toasting.domain.company.controller.request.AddCompanyExperienceRequest
 import io.toasting.domain.company.controller.request.UpdateCompanyExperienceRequest
 import io.toasting.domain.company.controller.response.GetCompanyExperienceResponse
@@ -28,6 +29,7 @@ class CompanyExperienceController(
     private val memberUuidConverter: MemberUuidConverter,
     private val addCompanyExperienceService: AddCompanyExperienceService,
     private val getCompanyExperienceService: GetCompanyExperienceService,
+    private val updateCompanyExperienceService: UpdateCompanyExperienceService,
 ) {
 
     // TODO : 로그인을 안해도 해당 API를 호출할 수 있도록 JWT Filter를 뚫어놔야 함(현재 안뚫려있음)
@@ -74,5 +76,10 @@ class CompanyExperienceController(
             throw MemberException(ErrorStatus.MEMBER_NOT_MINE)
         }
         val memberId = memberUuidConverter.toMemberId(memberDetails.username)
+        when (request.isCustom) {
+            true -> updateCompanyExperienceService.updateCustomCompanyExperience(request.toCustomInput(memberId))
+            false -> updateCompanyExperienceService.updateExistCompanyExperience(request.toExistInput(memberId))
+        }
+        return ApiResponse.onSuccess()
     }
 }
