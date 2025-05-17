@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.company.application.AddCompanyExperienceService
+import io.toasting.domain.company.application.DeleteCompanyExperienceService
 import io.toasting.domain.company.application.GetCompanyExperienceService
 import io.toasting.domain.company.application.UpdateCompanyExperienceService
 import io.toasting.domain.company.controller.request.AddCompanyExperienceRequest
@@ -16,12 +17,14 @@ import io.toasting.domain.member.exception.MemberExceptionHandler.MemberExceptio
 import io.toasting.global.api.ApiResponse
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 
 @Controller
 @RequestMapping("/v1/members")
@@ -31,6 +34,7 @@ class CompanyExperienceController(
     private val addCompanyExperienceService: AddCompanyExperienceService,
     private val getCompanyExperienceService: GetCompanyExperienceService,
     private val updateCompanyExperienceService: UpdateCompanyExperienceService,
+    private val deleteCompanyExperienceService: DeleteCompanyExperienceService,
 ) {
 
     // TODO : 로그인을 안해도 해당 API를 호출할 수 있도록 JWT Filter를 뚫어놔야 함(현재 안뚫려있음)
@@ -98,6 +102,25 @@ class CompanyExperienceController(
         when (request.isCustom) {
             true -> updateCompanyExperienceService.updateCustomCompanyExperienceIsView(request.toCustomInput(memberId))
             false -> updateCompanyExperienceService.updateExistCompanyExperienceIsView(request.toExistInput(memberId))
+        }
+        return ApiResponse.onSuccess()
+    }
+
+    @DeleteMapping("{memberId}/experience/company")
+    @Operation(summary = "유저 회사 경력 삭제", description = "회사 경력을 삭제합니다.")
+    fun deleteCompanyExperience(
+        @PathVariable("memberId") memberUuid: String,
+        @RequestParam("isCustom") isCustom: Boolean,
+        @RequestParam("experienceId") experienceId: Long,
+        @AuthenticationPrincipal memberDetails: MemberDetails,
+    ): ApiResponse<Unit> {
+        if (memberUuid != memberDetails.username) {
+            throw MemberException(ErrorStatus.MEMBER_NOT_MINE)
+        }
+        val memberId = memberUuidConverter.toMemberId(memberDetails.username)
+        when (isCustom) {
+            true -> deleteCompanyExperienceService.deleteCustomCompanyExperience(memberId, experienceId)
+            false -> deleteCompanyExperienceService.deleteExistCompanyExperience(memberId, experienceId)
         }
         return ApiResponse.onSuccess()
     }
