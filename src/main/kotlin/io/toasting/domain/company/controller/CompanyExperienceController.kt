@@ -35,8 +35,8 @@ class CompanyExperienceController(
         }
 
         when (request.isCustom) {
-            true -> addCompanyExperienceService.addCustomCompanyExperience()
-            false -> addCompanyExperienceService.addExistCompanyExperience()
+            true -> addCompanyExperienceService.addCustomCompanyExperience(request.toCustomInput())
+            false -> addCompanyExperienceService.addExistCompanyExperience(request.toExistInput())
         }
         return ApiResponse.onSuccess()
     }
