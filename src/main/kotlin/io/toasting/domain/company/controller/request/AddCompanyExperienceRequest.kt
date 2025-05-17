@@ -13,7 +13,8 @@ data class AddCompanyExperienceRequest(
     val activities: String,
     val imageUrl: String,
 ) {
-    fun toExistInput() = AddExistCompanyExperienceInput(
+    fun toExistInput(memberId: Long) = AddExistCompanyExperienceInput(
+        memberId = memberId,
         companyId = companyId,
         name = name,
         startDate = startDate,
@@ -23,7 +24,8 @@ data class AddCompanyExperienceRequest(
         imageUrl = imageUrl,
     )
 
-    fun toCustomInput() = AddCustomCompanyExperienceInput(
+    fun toCustomInput(memberId: Long) = AddCustomCompanyExperienceInput(
+        memberId = memberId,
         companyId = companyId,
         name = name,
         startDate = startDate,

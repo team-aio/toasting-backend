@@ -35,7 +35,7 @@ class CompanyExperienceController(
         @PathVariable("memberId") memberUuid: String,
     ): ApiResponse<GetCompanyExperienceResponse> {
         val memberId = memberUuidConverter.toMemberId(memberUuid)
-        
+
         return getCompanyExperienceService
             .getCompanyExperience(memberId)
             .let { GetCompanyExperienceResponse.from(it) }
@@ -45,18 +45,18 @@ class CompanyExperienceController(
     @PostMapping("{memberId}/experience/company")
     @Operation(summary = "유저 회사 경력 추가", description = "회사 경력을 추가합니다.")
     fun addCompanyExperience(
-        @PathVariable memberId: String,
+        @PathVariable("memberId") memberUuid: String,
         @AuthenticationPrincipal memberDetails: MemberDetails,
         @RequestBody request: AddCompanyExperienceRequest,
     ): ApiResponse<Unit> {
-        val memberUuid = memberDetails.username
-        if (memberId != memberUuid) {
+        if (memberUuid != memberDetails.username) {
             throw MemberException(ErrorStatus.MEMBER_NOT_MINE)
         }
+        val memberId = memberUuidConverter.toMemberId(memberDetails.username)
 
         when (request.isCustom) {
-            true -> addCompanyExperienceService.addCustomCompanyExperience(request.toCustomInput())
-            false -> addCompanyExperienceService.addExistCompanyExperience(request.toExistInput())
+            true -> addCompanyExperienceService.addCustomCompanyExperience(request.toCustomInput(memberId))
+            false -> addCompanyExperienceService.addExistCompanyExperience(request.toExistInput(memberId))
         }
         return ApiResponse.onSuccess()
     }

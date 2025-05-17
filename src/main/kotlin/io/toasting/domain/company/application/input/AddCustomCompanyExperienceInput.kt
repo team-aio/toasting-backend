@@ -1,6 +1,7 @@
 package io.toasting.domain.company.application.input
 
 data class AddCustomCompanyExperienceInput(
+    val memberId: Long,
     val companyId: Boolean,
     val name: String,
     val startDate: String,
