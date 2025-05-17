@@ -15,20 +15,20 @@ class CustomCompanyExperience(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    @Column("start_date")
+    @Column(name = "start_date")
     val startDate: LocalDate,
-    @Column("end_date")
+    @Column(name = "end_date")
     val endDate: LocalDate? = null,
-    @Column("position")
+    @Column(name = "position")
     val position: String,
-    @Column("activities", columnDefinition = "text")
+    @Column(name = "activities", columnDefinition = "text")
     val activities: String,
-    @Column("profile_image")
+    @Column(name = "profile_image")
     val profileImage: String,
-    @Column("company_name")
+    @Column(name = "company_name")
     val companyName: String,
-    @Column("member_id")
+    @Column(name = "member_id")
     val memberId: Long,
-    @Column("is_view")
+    @Column(name = "is_view")
     val isView: Boolean,
 ) : BaseEntity()
