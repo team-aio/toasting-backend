@@ -1,5 +1,6 @@
 package io.toasting.domain.company.controller
 
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.toasting.api.code.status.ErrorStatus
 import io.toasting.domain.company.controller.request.AddCompanyExperienceRequest
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 class CompanyExperienceController {
 
     @PostMapping("{memberId}/experience/company")
+    @Operation(summary = "유저 회사 경력 추가", description = "회사 경력을 추가합니다.")
     fun addCompanyExperience(
         @PathVariable memberId: String,
         @AuthenticationPrincipal memberDetails: MemberDetails,
