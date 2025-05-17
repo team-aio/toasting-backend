@@ -85,7 +85,7 @@ class CompanyExperienceController(
     }
 
     @PutMapping("{memberId}/experience/company/is-view")
-    @Operation(summary = "회사 경력 공개 여부 수정", description = "회사 경력을 공개할지 여부를 수정합니다.")
+    @Operation(summary = "유저 회사 경력 공개 여부 수정", description = "회사 경력을 공개할지 여부를 수정합니다.")
     fun updateCompanyExperienceIsView(
         @PathVariable("memberId") memberUuid: String,
         @AuthenticationPrincipal memberDetails: MemberDetails,
