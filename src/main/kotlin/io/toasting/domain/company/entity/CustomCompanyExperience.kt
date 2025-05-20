@@ -31,4 +31,25 @@ class CustomCompanyExperience(
     val memberId: Long,
     @Column(name = "is_view")
     val isView: Boolean,
-) : BaseEntity()
+) : BaseEntity() {
+    companion object {
+        fun defaultEntity(
+            startDate: LocalDate,
+            endDate: LocalDate,
+            position: String,
+            activities: String,
+            profileImage: String,
+            companyName: String,
+            memberId: Long,
+        ) = CustomCompanyExperience(
+            startDate = startDate,
+            endDate = endDate,
+            position = position,
+            activities = activities,
+            profileImage = profileImage,
+            companyName = companyName,
+            memberId = memberId,
+            isView = true
+        )
+    }
+}
