@@ -42,13 +42,14 @@ class CompanyExperienceController(
     @Operation(summary = "유저 회사 경력 조회", description = "회사 경력을 조회합니다. 로그인이 필요 없습니다.")
     fun getCompanyExperience(
         @PathVariable("memberId") memberUuid: String,
-    ): ApiResponse<GetCompanyExperienceResponse> {
+    ): ApiResponse<List<GetCompanyExperienceResponse>> {
         val memberId = memberUuidConverter.toMemberId(memberUuid)
 
-        return getCompanyExperienceService
-            .getCompanyExperience(memberId)
-            .let { GetCompanyExperienceResponse.from(it) }
-            .let { ApiResponse.onSuccess(it) }
+        return ApiResponse.onSuccess(
+            getCompanyExperienceService
+                .getCompanyExperience(memberId)
+                .map { GetCompanyExperienceResponse.from(it) }
+        )
     }
 
     @PostMapping("{memberId}/experience/company")
