@@ -34,6 +34,8 @@ enum class ErrorStatus(
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_NOT_FOUND", "게시글을 찾을 수 없습니다."),
     SELF_FOLLOW_BANNED(HttpStatus.BAD_REQUEST, "SELF_FOLLOW_BANNED", "자신을 팔로우 할 수 없습니다."),
     ALREADY_LINKED_BLOG(HttpStatus.BAD_REQUEST, "ALREADY_LINKED_BLOG", "이미 블로그를 연동했습니다."),
+
+    COMPANY_NOT_FOUND(HttpStatus.NOT_FOUND, "COMPANY_NOT_FOUND", "회사를 찾을 수 없습니다."),
     ;
 
     override fun getReason() =
