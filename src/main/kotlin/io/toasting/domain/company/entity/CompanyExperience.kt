@@ -24,7 +24,7 @@ class CompanyExperience(
     @Column(name = "activities", columnDefinition = "text")
     val activities: String,
     @Column(name = "profile_image")
-    val profileImage: String,
+    val profileImage: String, //이게 여기 있는게 맞나 ?? 회사 프로필이니까 company에 ??
     @Column(name = "company_id")
     val companyId: Long,
     @Column(name = "member_id")
