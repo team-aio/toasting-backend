@@ -10,6 +10,7 @@ import io.toasting.domain.company.exception.CompanyExceptionHandler.CompanyNotFo
 import io.toasting.domain.member.exception.MemberExceptionHandler.MemberNotFoundException
 import io.toasting.domain.member.repository.MemberRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class AddCompanyExperienceService(
@@ -18,6 +19,7 @@ class AddCompanyExperienceService(
     private val customCompanyExperienceRepository: CustomCompanyExperienceRepository,
     private val memberRepository: MemberRepository
 ) {
+    @Transactional(readOnly = false)
     fun addExistCompanyExperience(input: AddExistCompanyExperienceInput) {
         memberRepository.findById(input.memberId)
             .orElseThrow { MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
@@ -28,6 +30,7 @@ class AddCompanyExperienceService(
         companyExperienceRepository.save(companyExperience)
     }
 
+    @Transactional(readOnly = false)
     fun addCustomCompanyExperience(input: AddCustomCompanyExperienceInput) {
         memberRepository.findById(input.memberId)
             .orElseThrow { MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
