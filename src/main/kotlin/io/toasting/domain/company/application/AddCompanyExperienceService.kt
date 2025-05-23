@@ -31,8 +31,6 @@ class AddCompanyExperienceService(
 
     private fun AddCustomCompanyExperienceInput.toCustomCompanyExperienceEntity(): CustomCompanyExperience {
         return CustomCompanyExperience.defaultEntity(
-            // TODO : startDate와 endDate가 여기서 변환되는 것은 옳지 않음
-            // TODO : Controller 단으로 옳겨서 예외처리 되는 것으로 develop PR 머지되면 controller로 구조 옮기기
             startDate = startDate,
             endDate = endDate,
             position = position,
