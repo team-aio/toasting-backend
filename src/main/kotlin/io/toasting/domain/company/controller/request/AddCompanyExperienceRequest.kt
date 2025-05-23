@@ -5,7 +5,7 @@ import io.toasting.domain.company.application.input.AddExistCompanyExperienceInp
 
 data class AddCompanyExperienceRequest(
     val isCustom: Boolean,
-    val companyId: Boolean,
+    val companyId: Long,
     val name: String,
     val startDate: String,
     val endDate: String,
