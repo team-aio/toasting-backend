@@ -2,6 +2,7 @@ package io.toasting.domain.company.controller.request
 
 import io.toasting.domain.company.application.input.AddCustomCompanyExperienceInput
 import io.toasting.domain.company.application.input.AddExistCompanyExperienceInput
+import io.toasting.global.extension.toLocalDateOrThrow
 
 data class AddCompanyExperienceRequest(
     val isCustom: Boolean,
@@ -17,8 +18,8 @@ data class AddCompanyExperienceRequest(
         memberId = memberId,
         companyId = companyId,
         name = name,
-        startDate = startDate,
-        endDate = endDate,
+        startDate = startDate.toLocalDateOrThrow(),
+        endDate = endDate.toLocalDateOrThrow(),
         position = position,
         activities = activities,
         imageUrl = imageUrl,
@@ -28,8 +29,8 @@ data class AddCompanyExperienceRequest(
         memberId = memberId,
         companyId = companyId,
         name = name,
-        startDate = startDate,
-        endDate = endDate,
+        startDate = startDate.toLocalDateOrThrow(),
+        endDate = endDate.toLocalDateOrThrow(),
         position = position,
         activities = activities,
         imageUrl = imageUrl,
