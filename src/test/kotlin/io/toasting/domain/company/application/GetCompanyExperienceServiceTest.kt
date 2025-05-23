@@ -2,6 +2,8 @@ package io.toasting.domain.company.application
 
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
+import io.kotest.extensions.spring.SpringTestExtension
+import io.kotest.extensions.spring.SpringTestLifecycleMode
 import io.kotest.matchers.collections.shouldBeSortedWith
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -22,7 +24,7 @@ import java.time.LocalDate
 @Transactional
 @ActiveProfiles("test")
 class GetCompanyExperienceServiceTest : BehaviorSpec() {
-    override fun extensions() = listOf(SpringExtension)
+    override fun extensions() = listOf(SpringTestExtension(SpringTestLifecycleMode.Root))
 
     @Autowired
     private lateinit var getCompanyExperienceService: GetCompanyExperienceService
@@ -41,6 +43,10 @@ class GetCompanyExperienceServiceTest : BehaviorSpec() {
 
     init {
         beforeSpec {
+            customCompanyExperienceRepository.deleteAll()
+            companyExperienceRepository.deleteAll()
+            companyRepository.deleteAll()
+
             company = companyRepository.save(
                 Company(
                     name = "토스"

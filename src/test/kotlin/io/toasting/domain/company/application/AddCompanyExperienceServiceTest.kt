@@ -3,6 +3,8 @@ package io.toasting.domain.company.application
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
+import io.kotest.extensions.spring.SpringTestExtension
+import io.kotest.extensions.spring.SpringTestLifecycleMode
 import io.kotest.matchers.shouldBe
 import io.toasting.domain.company.application.input.AddCustomCompanyExperienceInput
 import io.toasting.domain.company.application.input.AddExistCompanyExperienceInput
@@ -25,7 +27,7 @@ import java.util.UUID
 @Transactional
 @ActiveProfiles("test")
 class AddCompanyExperienceServiceTest : BehaviorSpec() {
-    override fun extensions() = listOf(SpringExtension)
+    override fun extensions() = listOf(SpringTestExtension(SpringTestLifecycleMode.Root))
 
     @Autowired
     private lateinit var addCompanyExperienceService: AddCompanyExperienceService
@@ -47,6 +49,11 @@ class AddCompanyExperienceServiceTest : BehaviorSpec() {
 
     init {
         beforeSpec {
+            customCompanyExperienceRepository.deleteAll()
+            companyExperienceRepository.deleteAll()
+            companyRepository.deleteAll()
+            memberRepository.deleteAll()
+
             member = memberRepository.save(
                 Member.defaultMember("testUser", "testUser@test.com", UUID.randomUUID())
             )
