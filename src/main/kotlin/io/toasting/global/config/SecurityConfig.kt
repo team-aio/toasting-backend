@@ -10,7 +10,6 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -62,12 +61,6 @@ class SecurityConfig {
         http
             .authorizeHttpRequests {
                 it
-                    .requestMatchers(existMemberMatcher())
-                    .permitAll()
-                it
-                    .requestMatchers(getProfileMatcher())
-                    .permitAll()
-                it
                     .requestMatchers(
                         "/",
                         "/h2-console/**",
@@ -79,9 +72,10 @@ class SecurityConfig {
                         "/api-test/**",
                         "/v1/members/login/google",
                         "/v1/members/signup",
-                        "/v1/members/exist?nickname=**",
                         "/v1/reissue",
-                        "/v1/posts/search"
+                        "/v1/posts/search",
+                        "/v1/members/exist/**",
+                        "/v1/members/profile/**"
                     ).permitAll()
                     .anyRequest()
                     .authenticated()
@@ -91,16 +85,4 @@ class SecurityConfig {
 
         return http.build()
     }
-
-    private fun existMemberMatcher() =
-        RequestMatcher { request ->
-            request.requestURI == "/v1/members/exist" &&
-                    request.getParameter("nickname")?.isNotEmpty() ?: false
-        }
-
-    private fun getProfileMatcher() =
-        RequestMatcher { request ->
-            request.requestURI == "/v1/members/profile" &&
-                    request.getParameter("memberId")?.isNotEmpty() ?: false
-        }
 }

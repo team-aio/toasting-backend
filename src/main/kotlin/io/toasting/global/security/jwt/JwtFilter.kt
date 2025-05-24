@@ -11,9 +11,6 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
-import org.springframework.security.web.util.matcher.OrRequestMatcher
-import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.filter.OncePerRequestFilter
 
 private const val EMPTY = ""
@@ -21,40 +18,7 @@ private const val EMPTY = ""
 class JwtFilter(
     private val jwtFactory: JwtFactory,
 ) : OncePerRequestFilter() {
-    companion object {
-        private val EXIST_MEMBER_NICKNAME_API =
-            RequestMatcher { request ->
-                request.requestURI == "/v1/members/exist" &&
-                        request.getParameter("nickname")?.isNotEmpty() ?: false
-            }
-        private val GET_PROFILE_API =
-            RequestMatcher { request ->
-                request.requestURI == "/v1/members/profile" &&
-                        request.getParameter("memberId")?.isNotEmpty() ?: false
-            }
-        private val EXCLUDE_PATHS =
-            listOf(
-                "/",
-                "/h2-console/**",
-                "/favicon.ico",
-                "/error",
-                "/swagger-ui/**",
-                "/swagger-resources/**",
-                "/v3/api-docs/**",
-                "/api-test/**",
-                "/v1/members/login/google",
-                "/v1/members/signup",
-                "/v1/reissue",
-            )
-    }
-
     private val log = KotlinLogging.logger {}
-
-    override fun shouldNotFilter(request: HttpServletRequest): Boolean =
-        OrRequestMatcher(
-            EXCLUDE_PATHS.map { AntPathRequestMatcher(it) } +
-                    listOf(EXIST_MEMBER_NICKNAME_API, GET_PROFILE_API),
-        ).matches(request)
 
     override fun doFilterInternal(
         request: HttpServletRequest,
