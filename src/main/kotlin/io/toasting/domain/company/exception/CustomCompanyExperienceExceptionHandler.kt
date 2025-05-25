@@ -11,4 +11,12 @@ sealed class CustomCompanyExperienceExceptionHandler {
     class UnauthorizedDeleteCustomCompanyExperienceException(
         errorCode: BaseErrorCode,
     ) : GeneralException(errorCode)
+
+    class UnauthorizedUpdateException(
+        errorCode: BaseErrorCode,
+    ) : GeneralException(errorCode)
+
+    class UnauthorizedUpdateIsViewException(
+        errorCode: BaseErrorCode,
+    ) : GeneralException(errorCode)
 }

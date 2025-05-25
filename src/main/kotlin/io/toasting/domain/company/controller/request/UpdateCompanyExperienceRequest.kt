@@ -2,14 +2,15 @@ package io.toasting.domain.company.controller.request
 
 import io.toasting.domain.company.application.input.UpdateCustomCompanyExperienceInput
 import io.toasting.domain.company.application.input.UpdateExistCompanyExperienceInput
+import java.time.LocalDate
 
 data class UpdateCompanyExperienceRequest(
     val experienceId: Long,
     val isCustom: Boolean,
     val companyId: Long,
     val name: String,
-    val startDate: String,
-    val endDate: String,
+    val startDate: LocalDate,
+    val endDate: LocalDate?,
     val position: String,
     val activities: String,
     val imageUrl: String,
@@ -32,7 +33,6 @@ data class UpdateCompanyExperienceRequest(
         return UpdateCustomCompanyExperienceInput(
             memberId = memberId,
             experienceId = experienceId,
-            companyId = companyId,
             name = name,
             startDate = startDate,
             endDate = endDate,
