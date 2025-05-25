@@ -7,7 +7,7 @@ data class AddCustomCompanyExperienceInput(
     val companyId: Long,
     val name: String,
     val startDate: LocalDate,
-    val endDate: LocalDate,
+    val endDate: LocalDate?,
     val position: String,
     val activities: String,
     val imageUrl: String,

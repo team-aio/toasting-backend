@@ -35,7 +35,7 @@ class CustomCompanyExperience(
     companion object {
         fun defaultEntity(
             startDate: LocalDate,
-            endDate: LocalDate,
+            endDate: LocalDate?,
             position: String,
             activities: String,
             profileImage: String,
