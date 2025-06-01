@@ -23,7 +23,7 @@ data class GetCompanyExperienceOutput(
                 position = companyExperience.position,
                 startDate = companyExperience.startDate.toString(),
                 endDate = companyExperience.endDate?.toString(),
-                imageUrl = companyExperience.profileImage,
+                imageUrl = company.profileImage,
                 activities = companyExperience.activities,
                 isCustom = false,
                 isView = companyExperience.isView

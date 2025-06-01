@@ -59,7 +59,8 @@ class AddCompanyExperienceServiceTest : BehaviorSpec() {
             )
             company = companyRepository.save(
                 Company(
-                    name = "테스트회사"
+                    name = "테스트회사",
+                    profileImage = "profile.png"
                 )
             )
         }
@@ -72,7 +73,6 @@ class AddCompanyExperienceServiceTest : BehaviorSpec() {
                 endDate = LocalDate.of(2023, 1, 1),
                 position = "Backend",
                 activities = "백엔드 개발 참여",
-                imageUrl = "profile.png"
             )
 
             When("addExistCompanyExperience를 호출하면") {
@@ -99,7 +99,6 @@ class AddCompanyExperienceServiceTest : BehaviorSpec() {
                 endDate = LocalDate.of(2023, 1, 1),
                 position = "Backend",
                 activities = "백엔드 개발 참여",
-                imageUrl = "profile.png"
             )
 
             When("addExistCompanyExperience를 호출하면") {
@@ -119,7 +118,6 @@ class AddCompanyExperienceServiceTest : BehaviorSpec() {
                 endDate = LocalDate.of(2023, 1, 1),
                 position = "Backend",
                 activities = "백엔드 개발 참여",
-                imageUrl = "profile.png"
             )
 
             When("addExistCompanyExperience를 호출하면") {

@@ -65,7 +65,12 @@ class UpdateCompanyExperienceServiceTest : BehaviorSpec() {
             anotherMember = memberRepository.save(
                 Member.defaultMember("userY", "userY@toasting.io", UUID.randomUUID())
             )
-            company = companyRepository.save(Company(name = "업데이트회사"))
+            company = companyRepository.save(
+                Company(
+                    name = "업데이트회사",
+                    profileImage = "after.png",
+                    )
+            )
             companyExperience = companyExperienceRepository.save(
                 CompanyExperience(
                     companyId = company.id!!,
@@ -73,7 +78,6 @@ class UpdateCompanyExperienceServiceTest : BehaviorSpec() {
                     position = "백엔드 개발자",
                     startDate = LocalDate.of(2021, 1, 1),
                     endDate = LocalDate.of(2022, 1, 1),
-                    profileImage = "before.png",
                     activities = "초기 작업",
                     isView = true,
                 )
@@ -98,19 +102,16 @@ class UpdateCompanyExperienceServiceTest : BehaviorSpec() {
                     memberId = member.id!!,
                     experienceId = companyExperience.id!!,
                     companyId = company.id!!,
-                    name = "업데이트회사",
                     startDate = LocalDate.of(2021, 2, 1),
                     endDate = LocalDate.of(2022, 2, 1),
                     position = "시니어 백엔드",
                     activities = "업데이트된 작업",
-                    imageUrl = "after.png"
                 )
                 updateCompanyExperienceService.updateExistCompanyExperience(input)
                 Then("회사 경험 정보가 정상적으로 수정된다") {
                     val updated = companyExperienceRepository.findById(companyExperience.id!!).get()
                     updated.position shouldBe "시니어 백엔드"
                     updated.activities shouldBe "업데이트된 작업"
-                    updated.profileImage shouldBe "after.png"
                     updated.startDate shouldBe LocalDate.of(2021, 2, 1)
                     updated.endDate shouldBe LocalDate.of(2022, 2, 1)
                     updated.companyId shouldBe company.id
@@ -121,12 +122,10 @@ class UpdateCompanyExperienceServiceTest : BehaviorSpec() {
                     memberId = member.id!!,
                     experienceId = -1L,
                     companyId = company.id!!,
-                    name = "업데이트회사",
                     startDate = LocalDate.now(),
                     endDate = LocalDate.now(),
                     position = "직함",
                     activities = "내용",
-                    imageUrl = "img.png"
                 )
                 Then("CompanyExperienceNotFoundException이 발생한다") {
                     shouldThrow<CompanyExperienceExceptionHandler.CompanyExperienceNotFoundException> {
@@ -139,12 +138,10 @@ class UpdateCompanyExperienceServiceTest : BehaviorSpec() {
                     memberId = anotherMember.id!!,
                     experienceId = companyExperience.id!!,
                     companyId = company.id!!,
-                    name = "업데이트회사",
                     startDate = LocalDate.now(),
                     endDate = LocalDate.now(),
                     position = "직함",
                     activities = "내용",
-                    imageUrl = "img.png"
                 )
                 Then("UnauthorizedUpdateException이 발생한다") {
                     shouldThrow<CompanyExperienceExceptionHandler.UnauthorizedUpdateException> {
@@ -157,12 +154,10 @@ class UpdateCompanyExperienceServiceTest : BehaviorSpec() {
                     memberId = member.id!!,
                     experienceId = companyExperience.id!!,
                     companyId = -1L,
-                    name = "없는회사",
                     startDate = LocalDate.now(),
                     endDate = LocalDate.now(),
                     position = "직함",
                     activities = "내용",
-                    imageUrl = "a.png"
                 )
                 Then("CompanyNotFoundException이 발생한다") {
                     shouldThrow<CompanyExceptionHandler.CompanyNotFoundException> {

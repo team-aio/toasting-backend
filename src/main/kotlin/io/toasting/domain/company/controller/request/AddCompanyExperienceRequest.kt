@@ -12,7 +12,7 @@ data class AddCompanyExperienceRequest(
     val endDate: LocalDate,
     val position: String,
     val activities: String,
-    val imageUrl: String,
+    val imageUrl: String?,
 ) {
     fun toExistInput(memberId: Long) = AddExistCompanyExperienceInput(
         memberId = memberId,
@@ -21,7 +21,6 @@ data class AddCompanyExperienceRequest(
         endDate = endDate,
         position = position,
         activities = activities,
-        imageUrl = imageUrl,
     )
 
     fun toCustomInput(memberId: Long) = AddCustomCompanyExperienceInput(
@@ -31,6 +30,6 @@ data class AddCompanyExperienceRequest(
         endDate = endDate,
         position = position,
         activities = activities,
-        imageUrl = imageUrl,
+        imageUrl = imageUrl!!,
     )
 }

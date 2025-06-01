@@ -70,7 +70,12 @@ class DeleteCompanyExperienceServiceTest : BehaviorSpec() {
             anotherMember = memberRepository.save(
                 Member.defaultMember("user2", "user2@toasting.io", UUID.randomUUID())
             )
-            company = companyRepository.save(Company(name = "테스트회사"))
+            company = companyRepository.save(
+                Company(
+                    name = "테스트회사",
+                    profileImage = "profile_image.png",
+                    )
+            )
             companyExperience = companyExperienceRepository.save(
                 CompanyExperience(
                     companyId = company.id!!,
@@ -78,7 +83,6 @@ class DeleteCompanyExperienceServiceTest : BehaviorSpec() {
                     position = "Backend Developer",
                     startDate = LocalDate.of(2022, 1, 1),
                     endDate = LocalDate.of(2023, 1, 1),
-                    profileImage = "profile_image.png",
                     activities = "백엔드 개발 및 배포",
                     isView = true,
                 )

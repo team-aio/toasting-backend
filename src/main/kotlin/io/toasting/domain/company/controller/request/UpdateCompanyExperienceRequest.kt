@@ -20,12 +20,10 @@ data class UpdateCompanyExperienceRequest(
             memberId = memberId,
             experienceId = experienceId,
             companyId = companyId,
-            name = name,
             startDate = startDate,
             endDate = endDate,
             position = position,
             activities = activities,
-            imageUrl = imageUrl,
         )
     }
 

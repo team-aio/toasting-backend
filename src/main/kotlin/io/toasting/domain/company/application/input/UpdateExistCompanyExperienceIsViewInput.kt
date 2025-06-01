@@ -13,7 +13,6 @@ data class UpdateExistCompanyExperienceIsViewInput(
         companyExperience.endDate,
         companyExperience.position,
         companyExperience.activities,
-        companyExperience.profileImage,
         companyExperience.companyId,
         companyExperience.memberId,
         isView,

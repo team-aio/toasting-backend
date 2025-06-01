@@ -49,12 +49,14 @@ class GetCompanyExperienceServiceTest : BehaviorSpec() {
 
             company = companyRepository.save(
                 Company(
-                    name = "토스"
+                    name = "토스",
+                    profileImage = "profile_image.png",
                 )
             )
             company2 = companyRepository.save(
                 Company(
                     name = "카카오",
+                    profileImage = "profile_image.png",
                 )
             )
         }
@@ -68,7 +70,6 @@ class GetCompanyExperienceServiceTest : BehaviorSpec() {
                 position = "Backend Developer",
                 startDate = LocalDate.of(2022, 1, 1),
                 endDate = LocalDate.of(2023, 1, 1),
-                profileImage = "profile_image.png",
                 activities = "백엔드 개발 및 배포",
                 isView = true,
             )
@@ -79,7 +80,6 @@ class GetCompanyExperienceServiceTest : BehaviorSpec() {
                 position = "Frontend Developer",
                 startDate = LocalDate.of(2023, 2, 1),
                 endDate = null,
-                profileImage = "profile_image.png",
                 activities = "프론트 개발",
                 isView = false,
             )
@@ -138,6 +138,14 @@ class GetCompanyExperienceServiceTest : BehaviorSpec() {
                     results.find { it.name == company.name }?.isCustom shouldBe false
                     results.find { it.name == company2.name }?.isCustom shouldBe false
                     results.find { it.name == "사이드프로젝트팀" }?.isCustom shouldBe true
+                }
+                Then("CompanyExperience의 imageUrl은 회사의 profileImage와 같다") {
+                    results.find { it.name == company.name }?.imageUrl shouldBe company.profileImage
+                    results.find { it.name == company2.name }?.imageUrl shouldBe company2.profileImage
+                }
+                Then("CustomCompanyExperience의 imageUrl은 커스텀 경험의 profileImage와 같다") {
+                    val customExp = customCompanyExperienceRepository.findAll().first()
+                    results.find { it.isCustom }?.imageUrl shouldBe customExp.profileImage
                 }
 
             }

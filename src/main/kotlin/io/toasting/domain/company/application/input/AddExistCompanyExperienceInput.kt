@@ -10,14 +10,12 @@ data class AddExistCompanyExperienceInput(
     val endDate: LocalDate?,
     val position: String,
     val activities: String,
-    val imageUrl: String,
 ) {
     fun toEntity(): CompanyExperience = CompanyExperience(
         startDate = startDate,
         endDate = endDate,
         position = position,
         activities = activities,
-        profileImage = imageUrl,
         companyId = companyId,
         memberId = memberId,
         isView = true,

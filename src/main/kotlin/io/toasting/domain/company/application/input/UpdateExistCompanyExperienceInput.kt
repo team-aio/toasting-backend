@@ -8,12 +8,10 @@ data class UpdateExistCompanyExperienceInput(
     val memberId: Long,
     val experienceId: Long,
     val companyId: Long,
-    val name: String,
     val startDate: LocalDate,
     val endDate: LocalDate?,
     val position: String,
     val activities: String,
-    val imageUrl: String,
 ) {
     fun toEntity(company: Company, companyExperience: CompanyExperience) = CompanyExperience(
         companyExperience.id!!,
@@ -21,7 +19,6 @@ data class UpdateExistCompanyExperienceInput(
         endDate,
         position,
         activities,
-        imageUrl,
         company.id!!,
         memberId,
         companyExperience.isView,
