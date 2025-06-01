@@ -2,6 +2,8 @@ package io.toasting.domain.member.application
 
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
+import io.kotest.extensions.spring.SpringTestExtension
+import io.kotest.extensions.spring.SpringTestLifecycleMode
 import io.kotest.matchers.shouldBe
 import io.toasting.creator.member.MemberCreator
 import io.toasting.creator.member.SocialLoginCreator
@@ -23,7 +25,7 @@ import java.time.LocalDateTime
 @Transactional
 @ActiveProfiles("test")
 class DeleteMemberServiceTest : BehaviorSpec() {
-    override fun extensions() = listOf(SpringExtension)
+    override fun extensions() = listOf(SpringTestExtension(SpringTestLifecycleMode.Root))
 
     @Autowired
     private lateinit var deleteMemberService: DeleteMemberService

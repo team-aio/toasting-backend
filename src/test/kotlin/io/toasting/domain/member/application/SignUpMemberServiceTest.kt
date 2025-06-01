@@ -3,6 +3,8 @@ package io.toasting.domain.member.application
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
+import io.kotest.extensions.spring.SpringTestExtension
+import io.kotest.extensions.spring.SpringTestLifecycleMode
 import io.kotest.matchers.shouldBe
 import io.toasting.creator.member.SignUpSocialLoginInputCreator
 import io.toasting.domain.member.exception.MemberExceptionHandler
@@ -16,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles
 @Transactional
 @ActiveProfiles("test")
 class SignUpMemberServiceTest : BehaviorSpec() {
-    override fun extensions() = listOf(SpringExtension)
+    override fun extensions() = listOf(SpringTestExtension(SpringTestLifecycleMode.Root))
 
     @Autowired
     private lateinit var signUpMemberService: SignUpMemberService

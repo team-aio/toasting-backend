@@ -4,6 +4,8 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.extensions.Extension
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
+import io.kotest.extensions.spring.SpringTestExtension
+import io.kotest.extensions.spring.SpringTestLifecycleMode
 import io.kotest.matchers.shouldBe
 import io.toasting.creator.member.MemberCreator
 import io.toasting.domain.member.application.input.AddFollowInput
@@ -21,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 @ActiveProfiles("test")
 class FollowServiceTest : BehaviorSpec() {
-    override fun extensions(): List<Extension> = listOf(SpringExtension)
+    override fun extensions() = listOf(SpringTestExtension(SpringTestLifecycleMode.Root))
 
     @Autowired
     private lateinit var followService: FollowService

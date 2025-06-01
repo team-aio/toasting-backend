@@ -54,11 +54,6 @@ class UpdateCompanyExperienceServiceTest : BehaviorSpec() {
 
     init {
         beforeSpec {
-            companyExperienceRepository.deleteAll()
-            customCompanyExperienceRepository.deleteAll()
-            companyRepository.deleteAll()
-            memberRepository.deleteAll()
-
             member = memberRepository.save(
                 Member.defaultMember("userX", "userX@toasting.io", UUID.randomUUID())
             )

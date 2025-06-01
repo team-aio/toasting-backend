@@ -43,10 +43,6 @@ class GetCompanyExperienceServiceTest : BehaviorSpec() {
 
     init {
         beforeSpec {
-            customCompanyExperienceRepository.deleteAll()
-            companyExperienceRepository.deleteAll()
-            companyRepository.deleteAll()
-
             company = companyRepository.save(
                 Company(
                     name = "토스",
