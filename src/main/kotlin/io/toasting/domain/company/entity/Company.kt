@@ -14,7 +14,8 @@ class Company(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-
     @Column(name = "name")
-    val name: String
+    val name: String,
+    @Column(name = "profile_image")
+    val profileImage: String,
 ) : BaseEntity()
