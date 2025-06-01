@@ -9,6 +9,15 @@ services:
     networks:
       - toasting
 
+  toasting-crawler:
+    image: ${DOCKER_HUB_USERNAME}/toasting-cralwer:latest
+    restart: always
+    container_name: toasting-cralwer
+    ports:
+      - "3000:3000"
+    networks:
+      - toasting
+
 networks:
   toasting:
-    external: true
+    name: toasting
