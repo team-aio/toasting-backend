@@ -3,20 +3,20 @@ package io.toasting.domain.company.exception
 import io.toasting.api.code.BaseErrorCode
 import io.toasting.global.api.exception.GeneralException
 
-sealed class CustomCompanyExperienceExceptionHandler {
+sealed class CustomCompanyExperienceExceptionHandler(errorCode: BaseErrorCode) : GeneralException(errorCode) {
     class CustomCompanyExperienceNotFoundException(
         errorCode: BaseErrorCode,
-    ) : GeneralException(errorCode)
+    ) : CustomCompanyExperienceExceptionHandler(errorCode)
 
     class UnauthorizedDeleteCustomCompanyExperienceException(
         errorCode: BaseErrorCode,
-    ) : GeneralException(errorCode)
+    ) : CustomCompanyExperienceExceptionHandler(errorCode)
 
     class UnauthorizedUpdateException(
         errorCode: BaseErrorCode,
-    ) : GeneralException(errorCode)
+    ) : CustomCompanyExperienceExceptionHandler(errorCode)
 
     class UnauthorizedUpdateIsViewException(
         errorCode: BaseErrorCode,
-    ) : GeneralException(errorCode)
+    ) : CustomCompanyExperienceExceptionHandler(errorCode)
 }
