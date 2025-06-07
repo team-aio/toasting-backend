@@ -12,13 +12,11 @@ data class UpdateCompanyExperienceIsViewRequest(
         memberId = memberId,
         experienceId = experienceId,
         isView = isView,
-        isCustom = isCustom,
     )
 
     fun toExistInput(memberId: Long) = UpdateExistCompanyExperienceIsViewInput(
         memberId = memberId,
         experienceId = experienceId,
         isView = isView,
-        isCustom = isCustom,
     )
 }

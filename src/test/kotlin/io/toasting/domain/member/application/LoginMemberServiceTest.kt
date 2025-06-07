@@ -2,6 +2,8 @@ package io.toasting.domain.member.application
 
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
+import io.kotest.extensions.spring.SpringTestExtension
+import io.kotest.extensions.spring.SpringTestLifecycleMode
 import io.toasting.domain.member.application.input.LoginGoogleInput
 import io.toasting.domain.member.entity.SocialLogin
 import io.toasting.domain.member.repository.MemberRepository
@@ -14,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest
 @SpringBootTest
 @Transactional
 class LoginMemberServiceTest private constructor() : BehaviorSpec() {
-    override fun extensions() = listOf(SpringExtension)
+    override fun extensions() = listOf(SpringTestExtension(SpringTestLifecycleMode.Root))
 
     @Autowired
     private lateinit var loginMemberService: LoginMemberService

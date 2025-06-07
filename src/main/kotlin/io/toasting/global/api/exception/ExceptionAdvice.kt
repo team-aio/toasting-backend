@@ -52,7 +52,7 @@ class ExceptionAdvice : ResponseEntityExceptionHandler() {
         request: WebRequest,
     ): ResponseEntity<Any>? {
         val errorReasonDto = ex.getErrorReason()
-        val body = ErrorApiResponse.onFailure(errorReasonDto.code, errorReasonDto.message, null)
+        val body = ErrorApiResponse.onFailure(errorReasonDto.code, errorReasonDto.message)
         return toResponseEntity(
             ex,
             HttpHeaders.EMPTY,
@@ -69,7 +69,7 @@ class ExceptionAdvice : ResponseEntityExceptionHandler() {
     ): ResponseEntity<Any>? {
         ex.printStackTrace()
         val errorReason = ErrorStatus.INTERNAL_SERVER_ERROR.getReason()
-        val errorPoint = ErrorApiResponse.onFailure(errorReason.code, errorReason.message, ex.message)
+        val errorPoint = ErrorApiResponse.onFailure(errorReason.code, errorReason.message)
 
         return toResponseEntity(ex, HttpHeaders.EMPTY, request, HttpStatus.INTERNAL_SERVER_ERROR, errorPoint)
     }
@@ -80,12 +80,10 @@ class ExceptionAdvice : ResponseEntityExceptionHandler() {
         headers: HttpHeaders,
         request: WebRequest,
     ): ResponseEntity<Any>? {
-        val body: ErrorApiResponse<Any> =
-            ErrorApiResponse.onFailure(
-                ErrorStatus.VALIDATION_FAIL.status,
-                errorMessage,
-                null,
-            )
+        val body = ErrorApiResponse.onFailure(
+            ErrorStatus.VALIDATION_FAIL.status,
+            errorMessage,
+        )
 
         return toResponseEntity(ex, headers, request, ErrorStatus.VALIDATION_FAIL.httpStatus, body)
     }
@@ -95,7 +93,7 @@ class ExceptionAdvice : ResponseEntityExceptionHandler() {
         headers: HttpHeaders,
         request: WebRequest,
         httpStatus: HttpStatus,
-        body: ErrorApiResponse<*>,
+        body: ErrorApiResponse,
     ): ResponseEntity<Any>? =
         super.handleExceptionInternal(
             e,

@@ -1,21 +1,42 @@
 package io.toasting.domain.company.application
 
+import io.toasting.api.code.status.ErrorStatus
+import io.toasting.domain.company.exception.CompanyExperienceExceptionHandler.CompanyExperienceNotFoundException
+import io.toasting.domain.company.exception.CompanyExperienceExceptionHandler.UnauthorizedDeleteCompanyExperienceException
+import io.toasting.domain.company.exception.CustomCompanyExperienceExceptionHandler.CustomCompanyExperienceNotFoundException
+import io.toasting.domain.company.exception.CustomCompanyExperienceExceptionHandler.UnauthorizedDeleteCustomCompanyExperienceException
+import io.toasting.domain.company.repository.CompanyExperienceRepository
+import io.toasting.domain.company.repository.CustomCompanyExperienceRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
-class DeleteCompanyExperienceService {
+class DeleteCompanyExperienceService(
+    private val companyExperienceRepository: CompanyExperienceRepository,
+    private val customCompanyExperienceRepository: CustomCompanyExperienceRepository
+) {
 
-    /*
-     * 이미 존재하는 회사로 경력을 삭제하는 경우
-     */
+    @Transactional(readOnly = false)
     fun deleteExistCompanyExperience(memberId: Long, experienceId: Long) {
-        //TODO
+        val experience = companyExperienceRepository.findById(experienceId)
+            .orElseThrow { CompanyExperienceNotFoundException(ErrorStatus.COMPANY_EXPERIENCE_NOT_FOUND) }
+
+        if (experience.memberId != memberId) {
+            throw UnauthorizedDeleteCompanyExperienceException(ErrorStatus.UNAUTHORIZED_DELETE_COMPANY_EXPERIENCE)
+        }
+
+        companyExperienceRepository.delete(experience)
     }
 
-    /*
-     * 직접 입력으로 경력을 삭제하는 경우
-     */
+    @Transactional(readOnly = false)
     fun deleteCustomCompanyExperience(memberId: Long, experienceId: Long) {
-        //TODO
+        val customExperience = customCompanyExperienceRepository.findById(experienceId)
+            .orElseThrow { CustomCompanyExperienceNotFoundException(ErrorStatus.CUSTOM_COMPANY_EXPERIENCE_NOT_FOUND) }
+
+        if (customExperience.memberId != memberId) {
+            throw UnauthorizedDeleteCustomCompanyExperienceException(ErrorStatus.UNAUTHORIZED_DELETE_CUSTOM_COMPANY_EXPERIENCE)
+        }
+
+        customCompanyExperienceRepository.delete(customExperience)
     }
 }

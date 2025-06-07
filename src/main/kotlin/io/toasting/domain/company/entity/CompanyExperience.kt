@@ -23,8 +23,6 @@ class CompanyExperience(
     val position: String,
     @Column(name = "activities", columnDefinition = "text")
     val activities: String,
-    @Column(name = "profile_image")
-    val profileImage: String,
     @Column(name = "company_id")
     val companyId: Long,
     @Column(name = "member_id")

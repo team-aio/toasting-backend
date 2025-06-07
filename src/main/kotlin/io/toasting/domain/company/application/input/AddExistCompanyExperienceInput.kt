@@ -1,12 +1,23 @@
 package io.toasting.domain.company.application.input
 
+import io.toasting.domain.company.entity.CompanyExperience
+import java.time.LocalDate
+
 data class AddExistCompanyExperienceInput(
     val memberId: Long,
-    val companyId: Boolean,
-    val name: String,
-    val startDate: String,
-    val endDate: String,
+    val companyId: Long,
+    val startDate: LocalDate,
+    val endDate: LocalDate?,
     val position: String,
     val activities: String,
-    val imageUrl: String,
-)
+) {
+    fun toEntity(): CompanyExperience = CompanyExperience(
+        startDate = startDate,
+        endDate = endDate,
+        position = position,
+        activities = activities,
+        companyId = companyId,
+        memberId = memberId,
+        isView = true,
+    )
+}
