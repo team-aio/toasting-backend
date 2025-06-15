@@ -75,6 +75,7 @@ jobs:
             export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
             export SPRING_PROFILES_ACTIVE=dev
             
+            docker network ls --format '{{.Name}}' | grep -q '^toasting$' || docker network create toasting
             docker-compose down
             docker-compose pull
             docker image prune -a -f

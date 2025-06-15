@@ -21,3 +21,4 @@ services:
 networks:
   toasting:
     name: toasting
+    external: true

@@ -3,6 +3,8 @@ package io.toasting.domain.member.application
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
+import io.kotest.extensions.spring.SpringTestExtension
+import io.kotest.extensions.spring.SpringTestLifecycleMode
 import io.toasting.domain.member.entity.Member
 import io.toasting.domain.member.exception.MemberExceptionHandler
 import io.toasting.domain.member.repository.MemberRepository
@@ -16,7 +18,7 @@ import java.util.UUID
 @Transactional
 @ActiveProfiles("test")
 class CheckMemberServiceTest : BehaviorSpec() {
-    override fun extensions() = listOf(SpringExtension)
+    override fun extensions() = listOf(SpringTestExtension(SpringTestLifecycleMode.Root))
 
     @Autowired
     private lateinit var checkMemberService: CheckMemberService
