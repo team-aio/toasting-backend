@@ -9,12 +9,21 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 import java.time.LocalDate
 
 private const val DEFAULT_COUNT = 0
 
 @Entity
-@Table(name = "crumbs")
+@Table(
+    name = "crumbs",
+    uniqueConstraints = [
+        UniqueConstraint(
+            name = "uk_crumbs_member_id_activity_date",
+            columnNames = ["member_id", "activity_date"]
+        )
+    ]
+)
 class Crumbs private constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
