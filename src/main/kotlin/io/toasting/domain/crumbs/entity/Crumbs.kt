@@ -44,7 +44,7 @@ class Crumbs private constructor(
 
     val commentIds: List<Long>
         get() = _commentIds.toList()
-    
+
     val postIds: List<Long>
         get() = _postIds.toList()
 
@@ -63,4 +63,59 @@ class Crumbs private constructor(
             )
     }
 
+    fun addCommentId(commentId: Long) {
+        activityCount++
+
+        _commentIds.add(commentId)
+    }
+
+    fun removeCommentId(commentId: Long) {
+        check(activityCount > 0) { "activityCount는 0보다 작을 수 없습니다." }
+
+        activityCount--
+
+        _commentIds.remove(commentId)
+    }
+
+    fun addPostId(postId: Long) {
+        activityCount++
+
+        _postIds.add(postId)
+    }
+
+    fun removePostId(postId: Long) {
+        check(activityCount > 0) { "activityCount는 0보다 작을 수 없습니다." }
+
+        activityCount--
+
+        _postIds.remove(postId)
+    }
+
+    fun addBookmarkId(bookmarkId: Long) {
+        activityCount++
+
+        _bookmarkIds.add(bookmarkId)
+    }
+
+    fun removeBookmarkId(bookmarkId: Long) {
+        check(activityCount > 0) { "activityCount는 0보다 작을 수 없습니다." }
+
+        activityCount--
+
+        _bookmarkIds.remove(bookmarkId)
+    }
+
+    fun addLikeId(likeId: Long) {
+        activityCount++
+
+        _likeIds.add(likeId)
+    }
+
+    fun removeLikeId(likeId: Long) {
+        check(activityCount > 0) { "activityCount는 0보다 작을 수 없습니다." }
+
+        activityCount--
+
+        _likeIds.remove(likeId)
+    }
 }
