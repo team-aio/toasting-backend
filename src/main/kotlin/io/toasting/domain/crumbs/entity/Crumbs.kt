@@ -42,10 +42,17 @@ class Crumbs private constructor(
     @Column(name = "likes_ids")
     private val _likeIds = mutableListOf<Long>()
 
-    val commentIds: List<Long> = _commentIds
-    val postIds: List<Long> = _postIds
-    val bookmarkIds: List<Long> = _bookmarkIds
-    val likeIds: List<Long> = _likeIds
+    val commentIds: List<Long>
+        get() = _commentIds.toList()
+    
+    val postIds: List<Long>
+        get() = _postIds.toList()
+
+    val bookmarkIds: List<Long>
+        get() = _bookmarkIds.toList()
+
+    val likeIds: List<Long>
+        get() = _likeIds.toList()
 
     companion object {
         fun create(memberId: Long, activityDate: LocalDate) =
