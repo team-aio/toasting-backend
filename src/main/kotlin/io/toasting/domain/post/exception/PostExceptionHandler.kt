@@ -11,4 +11,16 @@ sealed class PostExceptionHandler {
     class AlreadyLinkedBlog(
         errorCode: BaseErrorCode
     ) : GeneralException(errorCode)
+
+    class AlreadyPinnedPostException(
+        errorCode: BaseErrorCode
+    ) : GeneralException(errorCode)
+
+    class NotPinnedPostException(
+        errorCode: BaseErrorCode
+    ) : GeneralException(errorCode)
+
+    class NotWriterByPinException(
+        errorCode: BaseErrorCode
+    ) : GeneralException(errorCode)
 }
