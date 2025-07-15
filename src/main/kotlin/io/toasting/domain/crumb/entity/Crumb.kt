@@ -1,4 +1,4 @@
-package io.toasting.domain.crumbs.entity
+package io.toasting.domain.crumb.entity
 
 import io.toasting.domain.model.BaseEntity
 import io.toasting.global.converter.StringListConverter
@@ -16,7 +16,7 @@ private const val DEFAULT_COUNT = 0
 
 @Entity
 @Table(
-    name = "crumbs",
+    name = "crumb",
     uniqueConstraints = [
         UniqueConstraint(
             name = "uk_crumbs_member_id_activity_date",
@@ -24,7 +24,7 @@ private const val DEFAULT_COUNT = 0
         )
     ]
 )
-class Crumbs private constructor(
+class Crumb private constructor(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
@@ -65,7 +65,7 @@ class Crumbs private constructor(
 
     companion object {
         fun create(memberId: Long, activityDate: LocalDate) =
-            Crumbs(
+            Crumb(
                 activityCount = DEFAULT_COUNT,
                 memberId = memberId,
                 activityDate = activityDate,
