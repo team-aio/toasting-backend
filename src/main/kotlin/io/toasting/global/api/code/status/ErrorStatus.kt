@@ -73,6 +73,7 @@ enum class ErrorStatus(
         "숨기기 여부를 수정할 권한이 없습니다."
     ),
     INVALID_DATE_FORMAT(HttpStatus.BAD_REQUEST, "INVALID_DATE_FORMAT", "날짜 형식이 올바르지 않습니다.(yyyy-MM-dd 형식이어야 합니다.)"),
+    CRUMB_NOT_FOUND(HttpStatus.NOT_FOUND, "CRUMB_NOT_FOUND", "빵가루를 찾을 수 없습니다."),
     ;
 
     override fun getReason() =
