@@ -75,7 +75,8 @@ class SecurityConfig {
                         "/v1/reissue",
                         "/v1/posts/search",
                         "/v1/members/exist/**",
-                        "/v1/members/profile/**"
+                        "/v1/members/profile/**",
+                        "/v1/members/*/crumbs/**"
                     ).permitAll()
                     .anyRequest()
                     .authenticated()
