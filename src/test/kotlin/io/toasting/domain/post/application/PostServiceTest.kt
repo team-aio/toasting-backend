@@ -48,9 +48,6 @@ class PostServiceTest : BehaviorSpec() {
     @Autowired
     private lateinit var memberRepository: MemberRepository
 
-    @MockkBean
-    private lateinit var postCrawler: PostCrawler
-
     private lateinit var member1: Member
     private lateinit var member2: Member
     private lateinit var member3: Member
