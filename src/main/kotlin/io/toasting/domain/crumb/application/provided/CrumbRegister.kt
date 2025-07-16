@@ -1,4 +1,4 @@
-package io.toasting.domain.crumb.application
+package io.toasting.domain.crumb.application.provided
 
 import java.time.LocalDate
 
@@ -14,7 +14,7 @@ interface CrumbRegister {
 
     fun addBookmarkCrumb(memberId: Long, bookmarkId: Long, activityDate: LocalDate)
     fun removeBookmarkCrumb(memberId: Long, bookmarkId: Long, activityDate: LocalDate)
-    
+
     fun addLikeCrumb(memberId: Long, likeId: Long, activityDate: LocalDate)
     fun removeLikeCrumb(memberId: Long, likeId: Long, activityDate: LocalDate)
 

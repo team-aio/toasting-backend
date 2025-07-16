@@ -1,4 +1,4 @@
-package io.toasting.domain.crumb.application
+package io.toasting.domain.crumb.application.provided
 
 import io.toasting.domain.crumb.entity.Crumb
 import java.time.LocalDate
