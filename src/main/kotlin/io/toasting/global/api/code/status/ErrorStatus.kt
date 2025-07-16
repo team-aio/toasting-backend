@@ -73,6 +73,21 @@ enum class ErrorStatus(
         "숨기기 여부를 수정할 권한이 없습니다."
     ),
     INVALID_DATE_FORMAT(HttpStatus.BAD_REQUEST, "INVALID_DATE_FORMAT", "날짜 형식이 올바르지 않습니다.(yyyy-MM-dd 형식이어야 합니다.)"),
+    ALREADY_PINNED_POST(
+        HttpStatus.BAD_REQUEST,
+        "ALREADY_PINNED_POST",
+        "이미 고정한 게시글입니다."
+    ),
+    NOT_PINNED_POST(
+        HttpStatus.BAD_REQUEST,
+        "NOT_PINNED_POST",
+        "고정하지 않은 게시글입니다."
+    ),
+    NOT_WRITER_BY_PIN(
+        HttpStatus.BAD_REQUEST,
+        "NOT_WRITER_BY_PIN",
+        "게시글 작성자가 아닙니다."
+    )
     ;
 
     override fun getReason() =
