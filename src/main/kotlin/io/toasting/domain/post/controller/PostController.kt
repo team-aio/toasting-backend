@@ -80,20 +80,14 @@ internal class PostController(
         return ApiResponse.onSuccess()
     }
 
-    @DeleteMapping("/blog/{sourceType}/{id}")
-    @Operation(summary = "블로그 연동 취소", description = "Tistory 또는 Velog 연동을 취소합니다. id에는 각 블로그의 닉네임이 들어갑니다.")
+    @DeleteMapping("/blog/{sourceType}")
+    @Operation(summary = "블로그 연동 취소", description = "Tistory 또는 Velog 연동을 취소합니다.")
     fun unlinkBlog(
         @AuthenticationPrincipal memberDetails: MemberDetails,
         @PathVariable("sourceType") sourceType: SourceType,
-        @PathVariable("id")
-        @Size(
-            min = 2,
-            max = 255,
-            message = "아이디는 2 ~ 255글자 입니다."
-        ) id: String,
     ): ApiResponse<Unit> {
         val memberId = memberUuidConverter.toMemberId(memberDetails.username)
-        linkBlogService.unlinkBlog(memberId, id, sourceType)
+        linkBlogService.unlinkBlog(memberId, sourceType)
         return ApiResponse.onSuccess()
     }
 

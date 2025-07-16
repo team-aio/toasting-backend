@@ -25,7 +25,7 @@ class LinkBlogService(
 ) {
     @Transactional(readOnly = false)
     fun linkBlog(memberId: Long, id: String, sourceType: SourceType) {
-        var member = memberRepository.findById(memberId)
+        val member = memberRepository.findById(memberId)
             .orElseThrow { MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
         validateAlreadyLinkedBlog(member, sourceType)
         member.registerBlog(sourceType, id)
@@ -54,7 +54,18 @@ class LinkBlogService(
         postRepository.saveAll(postList)
     }
 
-    fun parseDateToLocalDateTime(dateStr: String): LocalDateTime {
+    @Transactional(readOnly = false)
+    fun unlinkBlog(memberId: Long, sourceType: SourceType) {
+        val member = memberRepository.findById(memberId)
+            .orElseThrow { MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
+        validateLinkedBlog(member, sourceType)
+        member.unlinkBlog(sourceType)
+        memberRepository.save(member)
+
+        postRepository.deleteAllByMemberIdAndSourceType(memberId, sourceType)
+    }
+
+    private fun parseDateToLocalDateTime(dateStr: String): LocalDateTime {
         val format = SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH)
         val date = format.parse(dateStr)
 
@@ -63,10 +74,17 @@ class LinkBlogService(
             .toLocalDateTime()
     }
 
-    fun validateAlreadyLinkedBlog(member: Member, sourceType: SourceType) {
+    private fun validateAlreadyLinkedBlog(member: Member, sourceType: SourceType) {
         if ((sourceType == SourceType.TISTORY && !member.tistoryId.isNullOrBlank()) ||
             (sourceType == SourceType.VELOG && !member.velogId.isNullOrBlank())) {
             throw PostExceptionHandler.AlreadyLinkedBlog(ErrorStatus.ALREADY_LINKED_BLOG)
+        }
+    }
+
+    private fun validateLinkedBlog(member: Member, sourceType: SourceType) {
+        if ((sourceType == SourceType.TISTORY && member.tistoryId.isNullOrBlank()) ||
+            (sourceType == SourceType.VELOG && member.velogId.isNullOrBlank())) {
+            throw PostExceptionHandler.NotLinkedBlog(ErrorStatus.NOT_LINKED_BLOG)
         }
     }
 }
