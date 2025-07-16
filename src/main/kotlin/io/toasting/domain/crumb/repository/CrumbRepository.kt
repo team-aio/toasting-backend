@@ -11,7 +11,7 @@ interface CrumbRepository : JpaRepository<Crumb, Long> {
      * @param start 시작날짜 (include)
      * @param end 종료날짜 (include)
      */
-    fun findByMemberIdAndActivityDateBetween(memberId: Long, start: LocalDate, end: LocalDate)
+    fun findByMemberIdAndActivityDateBetween(memberId: Long, start: LocalDate, end: LocalDate): List<Crumb>
 
     fun findByMemberIdAndActivityDate(memberId: Long, activityDate: LocalDate): Crumb?
 }
