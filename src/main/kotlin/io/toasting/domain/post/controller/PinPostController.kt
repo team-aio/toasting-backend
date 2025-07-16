@@ -1,5 +1,6 @@
 package io.toasting.domain.post.controller
 
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.toasting.domain.member.application.converter.MemberUuidConverter
 import io.toasting.domain.member.entity.MemberDetails
@@ -27,6 +28,7 @@ class PinPostController(
     private val getPinnedPostService: GetPinnedPostService,
     ) {
 
+    @Operation(summary = "게시글 고정", description = "나의 게시글 중, 고절할 게시글을 추가합니다.")
     @PostMapping("/{postId}/pin")
     fun pinPost(
         @PathVariable("postId") postId: Long,
@@ -37,6 +39,7 @@ class PinPostController(
         return ApiResponse.onSuccess()
     }
 
+    @Operation(summary = "게시글 고정 해제", description = "고정한 게시글을 해제합니다.")
     @DeleteMapping("/{postId}/pin")
     fun unpinPost(
         @PathVariable("postId") postId: Long,
@@ -47,6 +50,7 @@ class PinPostController(
         return ApiResponse.onSuccess()
     }
 
+    @Operation(summary = "고정 게시글 리스트 조회", description = "writerId(유저)의 고정 게시글 리스트를 조회합니다.")
     @GetMapping("/pin")
     fun getPinnedPosts(
         @AuthenticationPrincipal memberDetails: MemberDetails,
