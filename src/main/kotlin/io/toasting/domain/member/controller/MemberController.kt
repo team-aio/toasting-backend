@@ -9,10 +9,12 @@ import io.toasting.domain.member.application.CheckMemberService
 import io.toasting.domain.member.application.DeleteMemberService
 import io.toasting.domain.member.application.GetProfileService
 import io.toasting.domain.member.application.LoginMemberService
+import io.toasting.domain.member.application.MemberBlogService
 import io.toasting.domain.member.application.SignUpMemberService
 import io.toasting.domain.member.application.converter.MemberUuidConverter
 import io.toasting.domain.member.controller.request.LoginGoogleRequest
 import io.toasting.domain.member.controller.request.SignUpSocialLoginRequest
+import io.toasting.domain.member.controller.response.GetLikedBlogStatusResponse
 import io.toasting.domain.member.controller.response.GetMyProfileResponse
 import io.toasting.domain.member.controller.response.GetProfileResponse
 import io.toasting.domain.member.controller.response.LoginGoogleResponse
@@ -60,6 +62,7 @@ class MemberController(
     private val memberUuidConverter: MemberUuidConverter,
     private val deleteMemberService: DeleteMemberService,
     private val linkBlogService: LinkBlogService,
+    private val memberBlogService: MemberBlogService,
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -196,4 +199,15 @@ class MemberController(
         SocialType.from(snsType)
         SocialType.from(signUpSocialLoginRequest.snsType)
     }
+
+    @GetMapping("/blog/status")
+    @Operation(summary = "블로그 연동 현황 조회", description = "블로그 연동 현황을 조회합니다. 연동되지 않았을 시, 값은 null입니다.")
+    fun getLinkedBlogStatus(
+        @AuthenticationPrincipal memberDetails: MemberDetails,
+    ): ApiResponse<GetLikedBlogStatusResponse> =
+        memberBlogService
+            .getLinkedBlogStatus(memberUuidConverter.toMemberId(memberDetails.username))
+            .let { GetLikedBlogStatusResponse.from(it) }
+            .let { response -> ApiResponse.onSuccess(response)}
+
 }
