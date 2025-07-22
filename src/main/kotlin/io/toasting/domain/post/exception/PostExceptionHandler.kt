@@ -23,4 +23,8 @@ sealed class PostExceptionHandler {
     class NotWriterByPinException(
         errorCode: BaseErrorCode
     ) : GeneralException(errorCode)
+
+    class NotLinkedBlog(
+        errorCode: BaseErrorCode
+    ) : GeneralException(errorCode)
 }

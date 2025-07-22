@@ -48,9 +48,6 @@ class PostServiceTest : BehaviorSpec() {
     @Autowired
     private lateinit var memberRepository: MemberRepository
 
-    @MockkBean
-    private lateinit var postCrawler: PostCrawler
-
     private lateinit var member1: Member
     private lateinit var member2: Member
     private lateinit var member3: Member
@@ -166,45 +163,6 @@ class PostServiceTest : BehaviorSpec() {
                     }
                 }
             }
-        }
-
-        Given("member가 있고,") {
-            every { postCrawler.crawlPost(any(), any()) } returns PostCreator.crawledPostList()
-            When("tistory 블로그를 연동했을 때") {
-                postService.linkBlog(member1.id!!, "test", SourceType.VELOG)
-
-                val postList = postRepository.findAll()
-                Then("tistory 게시글 10개가 저장된다.") {
-                    postList.size shouldBe 10
-                }
-                Then("크롤링된 게시글과 저장된 게시글 정보가 일치한다.") {
-                    val firstPost = postList.first()
-
-                    firstPost.memberId shouldBe member1.id
-                    firstPost.content!!.length shouldBeGreaterThan firstPost.shortContent!!.length
-                    firstPost.shortContent!!.length shouldBeLessThanOrEqual 100
-                    firstPost.postedAt!!.year shouldBe 2024
-                    firstPost.postedAt!!.monthValue shouldBe 5
-                    firstPost.postedAt!!.dayOfMonth shouldBe 2
-                    firstPost.content shouldContain "<hr"
-                }
-                Then("블로그 id가 저장된다") {
-                    val member = memberRepository.findById(member1.id!!).get()
-
-                    member.velogId shouldBe "test"
-                }
-            }
-
-            When("tistory 블로그를 연동하면") {
-                member2.registerBlog(SourceType.TISTORY, "test")
-                memberRepository.save(member2)
-                Then("ALREADY_LINKED_BLOG 예외를 던진다.") {
-                    shouldThrow<PostExceptionHandler.AlreadyLinkedBlog> {
-                        postService.linkBlog(member2.id!!, "test", SourceType.TISTORY)
-                    }
-                }
-            }
-
         }
 
         Given("member1이 작성한 게시글1이 있고,") {

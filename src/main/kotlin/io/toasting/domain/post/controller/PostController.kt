@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import io.toasting.api.PageResponse
 import io.toasting.domain.member.application.converter.MemberUuidConverter
 import io.toasting.domain.member.entity.MemberDetails
+import io.toasting.domain.post.application.LinkBlogService
 import io.toasting.domain.post.application.NonMemberPostService
 import io.toasting.domain.post.application.PostService
 import io.toasting.domain.post.application.out.SearchPostsOutput
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*
 internal class PostController(
     private val postService: PostService,
     private val nonMemberPostService: NonMemberPostService,
+    private val linkBlogService: LinkBlogService,
     private val memberUuidConverter: MemberUuidConverter,
 ) {
     @GetMapping("/search")
@@ -74,7 +76,18 @@ internal class PostController(
         ) id: String,
     ): ApiResponse<Unit> {
         val memberId = memberUuidConverter.toMemberId(memberDetails.username)
-        postService.linkBlog(memberId, id, sourceType)
+        linkBlogService.linkBlog(memberId, id, sourceType)
+        return ApiResponse.onSuccess()
+    }
+
+    @DeleteMapping("/blog/{sourceType}")
+    @Operation(summary = "블로그 연동 취소", description = "Tistory 또는 Velog 연동을 취소합니다.")
+    fun unlinkBlog(
+        @AuthenticationPrincipal memberDetails: MemberDetails,
+        @PathVariable("sourceType") sourceType: SourceType,
+    ): ApiResponse<Unit> {
+        val memberId = memberUuidConverter.toMemberId(memberDetails.username)
+        linkBlogService.unlinkBlog(memberId, sourceType)
         return ApiResponse.onSuccess()
     }
 

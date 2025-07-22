@@ -9,10 +9,12 @@ import io.toasting.domain.member.application.CheckMemberService
 import io.toasting.domain.member.application.DeleteMemberService
 import io.toasting.domain.member.application.GetProfileService
 import io.toasting.domain.member.application.LoginMemberService
+import io.toasting.domain.member.application.MemberBlogService
 import io.toasting.domain.member.application.SignUpMemberService
 import io.toasting.domain.member.application.converter.MemberUuidConverter
 import io.toasting.domain.member.controller.request.LoginGoogleRequest
 import io.toasting.domain.member.controller.request.SignUpSocialLoginRequest
+import io.toasting.domain.member.controller.response.GetLikedBlogStatusResponse
 import io.toasting.domain.member.controller.response.GetMyProfileResponse
 import io.toasting.domain.member.controller.response.GetProfileResponse
 import io.toasting.domain.member.controller.response.LoginGoogleResponse
@@ -20,6 +22,7 @@ import io.toasting.domain.member.entity.MemberDetails
 import io.toasting.domain.member.exception.MemberExceptionHandler.MemberException
 import io.toasting.domain.member.repository.RefreshTokenRepository
 import io.toasting.domain.member.vo.SocialType
+import io.toasting.domain.post.application.LinkBlogService
 import io.toasting.domain.post.application.PostService
 import io.toasting.domain.post.vo.SourceType
 import io.toasting.global.api.ApiResponse
@@ -58,7 +61,8 @@ class MemberController(
     private val refreshTokenRepository: RefreshTokenRepository, // TODO : 의존성 방향만 맞춤, 바로 Repository를 호출하면 아면 추후 리팩토링
     private val memberUuidConverter: MemberUuidConverter,
     private val deleteMemberService: DeleteMemberService,
-    private val postService: PostService,
+    private val linkBlogService: LinkBlogService,
+    private val memberBlogService: MemberBlogService,
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -121,10 +125,10 @@ class MemberController(
         val velogId = signUpSocialLoginRequest.velogId
         val tistoryId = signUpSocialLoginRequest.tistoryId
         if (velogId != null) {
-            postService.linkBlog(memberId, velogId, SourceType.VELOG)
+            linkBlogService.linkBlog(memberId, velogId, SourceType.VELOG)
         }
         if (tistoryId != null) {
-            postService.linkBlog(memberId, tistoryId, SourceType.TISTORY)
+            linkBlogService.linkBlog(memberId, tistoryId, SourceType.TISTORY)
         }
         return ApiResponse.onSuccess()
     }
@@ -195,4 +199,15 @@ class MemberController(
         SocialType.from(snsType)
         SocialType.from(signUpSocialLoginRequest.snsType)
     }
+
+    @GetMapping("/blog/status")
+    @Operation(summary = "블로그 연동 현황 조회", description = "블로그 연동 현황을 조회합니다. 연동되지 않았을 시, 값은 null입니다.")
+    fun getLinkedBlogStatus(
+        @AuthenticationPrincipal memberDetails: MemberDetails,
+    ): ApiResponse<GetLikedBlogStatusResponse> =
+        memberBlogService
+            .getLinkedBlogStatus(memberUuidConverter.toMemberId(memberDetails.username))
+            .let { GetLikedBlogStatusResponse.from(it) }
+            .let { response -> ApiResponse.onSuccess(response)}
+
 }

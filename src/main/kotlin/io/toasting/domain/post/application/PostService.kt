@@ -68,44 +68,6 @@ class PostService(
             .toSet()
     }
 
-    @Transactional(readOnly = false)
-    fun linkBlog(memberId: Long, id: String, sourceType: SourceType) {
-        var member = memberRepository.findById(memberId)
-            .orElseThrow { MemberExceptionHandler.MemberNotFoundException(ErrorStatus.MEMBER_NOT_FOUND) }
-        validateAlreadyLinkedBlog(member, sourceType)
-        member.registerBlog(sourceType, id)
-        memberRepository.save(member)
-
-        val crawledPostList = postCrawler.crawlPost(id, sourceType)
-
-        val postList = mutableListOf<Post>()
-        for (crawledPost in crawledPostList) {
-            val html = crawledPost.content
-            val text = Jsoup.parse(html).text()
-            val shortContent = text.take(100)
-            val postedAt = parseDateToLocalDateTime(crawledPost.posted_at)
-
-            val post = Post(
-                sourceType = sourceType,
-                url = crawledPost.link,
-                postedAt = postedAt,
-                shortContent = shortContent,
-                content = crawledPost.content,
-                title = crawledPost.title,
-                memberId = memberId
-            )
-            postList.add(post)
-        }
-        postRepository.saveAll(postList)
-    }
-
-    fun validateAlreadyLinkedBlog(member: Member, sourceType: SourceType) {
-        if ((sourceType == SourceType.TISTORY && !member.tistoryId.isNullOrBlank()) ||
-            (sourceType == SourceType.VELOG && !member.velogId.isNullOrBlank())) {
-            throw PostExceptionHandler.AlreadyLinkedBlog(ErrorStatus.ALREADY_LINKED_BLOG)
-        }
-    }
-
     fun getPostDetail(postId: Long): GetPostDetailOutput {
         val post = postRepository.findById(postId)
             .orElseThrow { PostExceptionHandler.PostNotFoundException(ErrorStatus.POST_NOT_FOUND) }
@@ -115,12 +77,5 @@ class PostService(
         return GetPostDetailOutput.of(post, member)
     }
 
-    fun parseDateToLocalDateTime(dateStr: String): LocalDateTime {
-        val format = SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH)
-        val date = format.parse(dateStr)
 
-        return date.toInstant()
-            .atZone(ZoneId.systemDefault())
-            .toLocalDateTime()
-    }
 }

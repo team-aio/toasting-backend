@@ -59,4 +59,12 @@ class Member(
             this.velogId = id
         }
     }
+
+    fun unlinkBlog(sourceType: SourceType) {
+        if (sourceType == SourceType.TISTORY) {
+            this.tistoryId = null
+        } else {
+            this.velogId = null
+        }
+    }
 }
